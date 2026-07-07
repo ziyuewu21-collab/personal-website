@@ -20,9 +20,14 @@
 ## 任务(按顺序,每个做完跑 verify loop 再 commit)
 
 ### T1 — 上线(Ziyue 15 分钟 + 模型引导)
-1. Ziyue:GitHub 建空 repo `personal-site`(public 或 private 都行)
-2. 模型跑:`git remote add origin <repo-url> && git push -u origin main`
-3. Ziyue:vercel.com → Add New Project → import 该 repo → 框架自动识别 Astro → Deploy(不需要任何 env var)
+
+凭证事实(2026-07-06 已查):这台电脑**没装 gh CLI、没存 GitHub 凭证**,但 Git Credential Manager 已就位。手机上 Claude 绑的 GitHub 是 claude.ai connector,**和本机 push 权限无关**——不要指望它,也不要为此装任何东西。
+
+1. Ziyue:浏览器登录 github.com → 右上 + → New repository → 名字 `personal-site` → **不勾任何初始化选项**(no README/gitignore)→ Create,把 repo URL 给模型
+2. 模型在 `3-BUILDING/personal-site` 跑:`git remote add origin <repo-url>` 然后 `git push -u origin main`
+   - **预期行为**:第一次 push 时 Windows 会弹出浏览器/登录窗口(Git Credential Manager)→ 提醒 Ziyue 在弹窗里登录 GitHub 并授权 → 之后永久记住,不再弹
+   - 弹窗没出现且报 `Authentication failed` → 跑 `git credential-manager github login` 再重试;还不行 → 进 ESCALATE-QUEUE,今天先做 T2/T4
+3. Ziyue:vercel.com 用 **Continue with GitHub** 登录 → Add New Project → import `personal-site` → 框架自动识别 Astro → Deploy(不需要任何 env var)
 4. 验收:线上 URL 打开,5 个区块都在,console 无红错
 5. 把线上 URL 写进本文件末尾的 Log,并提醒 Ziyue 加进 CV 和 LinkedIn
 
