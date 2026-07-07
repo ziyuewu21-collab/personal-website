@@ -1,0 +1,39 @@
+---
+import { site } from "../data/site";
+
+// Links with empty URLs are hidden automatically — fill them in src/data/site.ts.
+const links = [
+  { label: "Email", href: `mailto:${site.email}` },
+  { label: "LinkedIn", href: site.linkedin },
+  { label: "Substack", href: site.substack },
+  { label: "GitHub", href: site.github },
+].filter((l) => l.href);
+---
+
+<footer id="contact" class="bg-(--color-paper-alt)">
+  <div class="mx-auto w-full max-w-[1100px] px-4 py-12">
+    <h2 class="text-xl font-bold">Get in touch</h2>
+    <p class="mt-2 max-w-[65ch] text-(--color-ink-soft)">
+      Looking for a PM who has taught the learner, studied the science, and
+      shipped the product? Email is fastest.
+    </p>
+    <ul class="mt-6 flex flex-wrap gap-6 text-sm font-semibold">
+      {
+        links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="py-3 text-(--color-accent) hover:underline"
+              rel="noopener"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="mt-8 text-sm text-(--color-ink-soft)">
+      © {new Date().getFullYear()} {site.name}
+    </p>
+  </div>
+</footer>

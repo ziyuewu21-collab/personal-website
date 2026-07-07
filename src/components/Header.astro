@@ -1,0 +1,27 @@
+---
+import { site } from "../data/site";
+
+const nav = [
+  { label: "Work", href: "#projects" },
+  { label: "Research", href: "#research" },
+  { label: "Writing", href: "#writing" },
+  { label: "Contact", href: "#contact" },
+];
+---
+
+<header class="mx-auto w-full max-w-[1100px] px-4 py-6">
+  <nav class="flex flex-wrap items-center justify-between gap-4" aria-label="Main">
+    <a href="/" class="text-lg font-bold">{site.name}</a>
+    <ul class="flex flex-wrap items-center gap-6 text-sm font-semibold text-(--color-ink-soft)">
+      {
+        nav.map((item) => (
+          <li>
+            <a href={item.href} class="py-3 hover:text-(--color-accent)">
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>

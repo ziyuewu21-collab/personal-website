@@ -1,0 +1,125 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+import { projects, research } from "../data/projects";
+---
+
+<Base>
+  <!-- Hero -->
+  <section class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-24">
+    <h1 class="max-w-[24ch] text-[32px] md:text-[44px]">
+      Product manager for language learning.
+    </h1>
+    <p class="mt-6 max-w-[65ch] text-lg text-(--color-ink-soft)">
+      UCL speech science + a shipped edtech product — I build tools for how
+      people actually learn to communicate.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-4">
+      <a
+        href="#projects"
+        class="rounded-[6px] bg-(--color-accent) px-6 py-3 font-semibold text-white hover:opacity-90"
+      >
+        View work
+      </a>
+      {
+        site.cvReady && (
+          <a
+            href="/cv.pdf"
+            class="rounded-[6px] border border-(--color-ink-soft) px-6 py-3 font-semibold hover:border-(--color-accent) hover:text-(--color-accent)"
+          >
+            Download CV
+          </a>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="bg-(--color-paper-alt) scroll-mt-8">
+    <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
+      <h2 class="text-2xl md:text-[32px]">Work</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          projects.map((p) => (
+            <article class="flex flex-col rounded-[8px] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
+              <div class="flex items-start justify-between gap-3">
+                <h3 class="text-xl">{p.title}</h3>
+                {p.status === "building" && (
+                  <span class="shrink-0 rounded-[6px] bg-(--color-accent) px-2 py-1 text-xs font-semibold text-white">
+                    Building now
+                  </span>
+                )}
+              </div>
+              <p class="mt-2 text-sm font-semibold text-(--color-ink-soft)">
+                {p.role}
+              </p>
+              <p class="mt-4 text-sm">{p.description}</p>
+              <p class="mt-3 text-sm font-semibold">{p.result}</p>
+              <ul class="mt-4 flex flex-wrap gap-2 pt-2">
+                {p.tags.map((t) => (
+                  <li class="rounded-[6px] bg-(--color-paper-alt) px-2 py-1 text-xs font-semibold text-(--color-ink-soft)">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Research → Product -->
+  <section id="research" class="scroll-mt-8">
+    <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
+      <h2 class="text-2xl md:text-[32px]">Research that shapes how I build</h2>
+      <p class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
+        I use the science of language learning to make product decisions, not
+        papers for their own sake.
+      </p>
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        {
+          research.map((r) => (
+            <article class="rounded-[8px] border border-gray-200 p-6">
+              <p class="text-sm">{r.finding}</p>
+              <p class="mt-4 text-sm font-semibold text-(--color-accent)">
+                → {r.takeaway}
+              </p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Writing -->
+  <section id="writing" class="bg-(--color-paper-alt) scroll-mt-8">
+    <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
+      <h2 class="text-2xl md:text-[32px]">Writing</h2>
+      <p class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
+        I write in public about building AI products for language learning —
+        what works, what doesn't, and what the research says.
+      </p>
+      <ul class="mt-6 flex flex-wrap gap-6 text-sm font-semibold">
+        {
+          site.linkedin && (
+            <li>
+              <a href={site.linkedin} class="py-3 text-(--color-accent) hover:underline" rel="noopener">
+                LinkedIn →
+              </a>
+            </li>
+          )
+        }
+        {
+          site.substack && (
+            <li>
+              <a href={site.substack} class="py-3 text-(--color-accent) hover:underline" rel="noopener">
+                Substack →
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
