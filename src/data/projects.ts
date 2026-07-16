@@ -32,7 +32,7 @@ export const projects: Project[] = [
     status: "shipped",
   },
   {
-    title: "IELTS storytelling speaking app",
+    title: "MyTurn — storytelling speaking app",
     role: "Founder — currently building",
     description:
       "Scenario-based speaking practice that trains storytelling — having something to say — rather than vocabulary drills. Built on what I saw teaching IELTS: learners fail at real communication, not word lists.",
