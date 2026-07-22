@@ -36,7 +36,8 @@ export const projects: Project[] = [
     role: "Founder — currently building",
     description:
       "Scenario-based speaking practice that trains storytelling — having something to say — rather than vocabulary drills. Built on what I saw teaching IELTS: learners fail at real communication, not word lists.",
-    result: "MVP in development: one scenario, one round, AI feedback.",
+    result:
+      "MVP in development at OpenAI Build Week (July 2026): one scenario, one round, AI feedback. Live link coming when it ships.",
     tags: ["Speaking", "AI feedback"],
     status: "building",
   },
