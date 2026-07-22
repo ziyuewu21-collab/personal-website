@@ -9,9 +9,26 @@ export type Project = {
   result: string;
   tags: string[];
   status?: "shipped" | "building";
+  // Optional outbound links (live product, demo video, repo). Same rule as site.ts:
+  // omit the array or leave it empty and the card renders no link row.
+  links?: { label: string; url: string }[];
 };
 
 export const projects: Project[] = [
+  {
+    title: "MyTurn — speaking practice with the people in your life",
+    role: "Founder — product, spec and shipping; code written by AI to my spec",
+    description:
+      "You describe someone you actually know; the AI speaks as them, in first person. Nothing is corrected mid-conversation — feedback waits until you finish, and it asks how the story landed rather than counting grammar errors. Built on what I saw teaching IELTS: learners fail at real communication, not word lists.",
+    result:
+      "Shipped and submitted to OpenAI Build Week 2026 (Education track), built with GPT-5.6 and Codex. Every product decision — no turn limit, no mid-conversation correction, no invented memories — traces to research on social interaction in language learning.",
+    tags: ["Speaking", "AI roleplay", "0 → 1"],
+    status: "shipped",
+    links: [
+      { label: "Live product", url: "https://myturn-nine.vercel.app" },
+      { label: "Demo video", url: "https://www.youtube.com/watch?v=HYlbiHjeg0E" },
+    ],
+  },
   {
     title: "AI story-based vocabulary product",
     role: "PM intern — owned the company's first consumer product, reporting to the CEO",
@@ -30,16 +47,6 @@ export const projects: Project[] = [
     result: "Bid passed review.",
     tags: ["B2G", "Requirements analysis", "AI workflows"],
     status: "shipped",
-  },
-  {
-    title: "MyTurn — storytelling speaking app",
-    role: "Founder — currently building",
-    description:
-      "Scenario-based speaking practice that trains storytelling — having something to say — rather than vocabulary drills. Built on what I saw teaching IELTS: learners fail at real communication, not word lists.",
-    result:
-      "MVP in development at OpenAI Build Week (July 2026): one scenario, one round, AI feedback. Live link coming when it ships.",
-    tags: ["Speaking", "AI feedback"],
-    status: "building",
   },
 ];
 
