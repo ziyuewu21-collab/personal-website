@@ -1,5 +1,5 @@
 ---
-// Base layout: head metadata, font, header, footer. Every page uses this.
+// Base layout: head metadata, fonts, doodle filters, header, footer. Every page uses this.
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -32,11 +32,24 @@ const { title = site.title, description = site.description } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body class="flex min-h-screen flex-col">
+    <!-- Noise filters for the line-boil effect (.boil in global.css) -->
+    <svg width="0" height="0" class="absolute" aria-hidden="true" focusable="false">
+      <defs>
+        {
+          [1, 2, 3].map((seed) => (
+            <filter id={`boil-${seed}`}>
+              <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed={seed} />
+              <feDisplacementMap in="SourceGraphic" scale="2.2" />
+            </filter>
+          ))
+        }
+      </defs>
+    </svg>
     <Header />
     <main id="main" class="flex-1">
       <slot />
@@ -44,3 +57,35 @@ const { title = site.title, description = site.description } = Astro.props;
     <Footer />
   </body>
 </html>
+
+<script>
+  // Draw scribbles and highlighter marks the first time they scroll into view.
+  // Scribble paths use non-scaling strokes, so dashes are in screen pixels: measure
+  // each path on screen and use that as its dash length.
+  document.querySelectorAll<SVGPathElement>(".scribble path").forEach((path) => {
+    const m = path.getScreenCTM();
+    if (!m) return;
+    const total = path.getTotalLength();
+    let len = 0;
+    let prev: DOMPoint | null = null;
+    for (let i = 0; i <= 40; i++) {
+      const pt = path.getPointAtLength((total * i) / 40).matrixTransform(m);
+      if (prev) len += Math.hypot(pt.x - prev.x, pt.y - prev.y);
+      prev = pt;
+    }
+    path.style.setProperty("--len", `${Math.ceil(len) + 4}`);
+  });
+  const targets = document.querySelectorAll(".scribble, .mark");
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add("is-drawn");
+          io.unobserve(e.target);
+        }
+      }
+    },
+    { threshold: 0.6 },
+  );
+  targets.forEach((t) => io.observe(t));
+</script>

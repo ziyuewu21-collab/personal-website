@@ -1,0 +1,175 @@
+---
+// CELTA report, redrawn as a doodle checklist. Every box is one criterion from the real
+// report; hover, focus or tap a box to read it. The full list sits in <details> for
+// skimmers and screen readers. Data: src/data/teaching.ts.
+import { report, workingOn, type Rating } from "../data/teaching";
+
+const all = report.flatMap((g) => g.items);
+const count = (r: Rating) => all.filter((i) => i.rating === r).length;
+const ratingLabel: Record<Rating, string> = { e: "Excellent", s: "At standard", w: "Needs attention" };
+const highlights = [
+  "Establishing rapport and ensuring all students are involved",
+  "Teacher presence and manner, including voice and delivery",
+  "Identifying appropriate learning aims and outcomes",
+  "Participating in and responding to feedback",
+];
+---
+
+<div class="sketch bg-white p-5 md:p-7" data-report>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <h3 class="hand text-3xl">My CELTA report, redrawn</h3>
+    <p class="text-sm text-(--color-ink-soft)">{all.length} criteria, each rated by my tutors</p>
+  </div>
+
+  <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
+    <div class="rounded-[12px] bg-(--color-highlight) px-2 py-3">
+      <dt class="text-xs font-semibold">Excellent</dt>
+      <dd class="hand text-4xl leading-none">{count("e")}</dd>
+    </div>
+    <div class="rounded-[12px] bg-(--color-paper-alt) px-2 py-3">
+      <dt class="text-xs font-semibold">At standard</dt>
+      <dd class="hand text-4xl leading-none">{count("s")}</dd>
+    </div>
+    <div class="rounded-[12px] border-2 border-dashed border-(--color-ink-soft) px-2 py-3">
+      <dt class="text-xs font-semibold">Needs attention</dt>
+      <dd class="hand text-4xl leading-none">{count("w")}</dd>
+    </div>
+  </dl>
+
+  <div class="mt-6 space-y-3">
+    {
+      report.map((g) => (
+        <div class="grid gap-2 md:grid-cols-[13rem_1fr] md:items-center">
+          <p class="text-xs font-semibold text-(--color-ink-soft)">{g.area}</p>
+          <ul class="flex flex-wrap gap-1.5">
+            {g.items.map((i) => (
+              <li>
+                <button
+                  type="button"
+                  class:list={["box", `box-${i.rating}`]}
+                  data-label={`${ratingLabel[i.rating]}: ${i.text}`}
+                  aria-label={`${ratingLabel[i.rating]}: ${i.text}`}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    {i.rating === "e" ? (
+                      <path d="M12 3 L14.6 9 L21 9.6 L16.2 13.8 L17.7 20.2 L12 16.8 L6.3 20.2 L7.8 13.8 L3 9.6 L9.4 9 Z" />
+                    ) : (
+                      <path d="M5 12.5 L10 17 L19 6.5" />
+                    )}
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="hand mt-4 min-h-[3.5rem] text-xl leading-snug text-(--color-accent)" aria-live="polite" data-detail>
+    Tap a box to read what it measures.
+  </p>
+
+  <div class="mt-4 grid gap-6 md:grid-cols-2">
+    <div>
+      <p class="text-sm font-semibold">Rated excellent for</p>
+      <ul class="mt-2 space-y-1.5 text-sm">
+        {
+          highlights.map((h) => (
+            <li class="flex gap-2">
+              <span class="hand text-lg leading-5 text-(--color-accent)" aria-hidden="true">★</span>
+              {h}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="note relative rotate-[1deg] rounded-[4px] bg-(--color-highlight) p-4 shadow-[2px_3px_0_var(--color-ink)]">
+      <p class="hand text-2xl leading-none">Working on: {workingOn.title}</p>
+      <p class="mt-2 text-sm">{workingOn.text}</p>
+    </div>
+  </div>
+
+  <details class="mt-6 text-sm">
+    <summary class="cursor-pointer py-2 font-semibold text-(--color-accent)">See all {all.length} criteria</summary>
+    <div class="mt-3 grid gap-5 md:grid-cols-2">
+      {
+        report.map((g) => (
+          <div>
+            <p class="font-semibold">{g.area}</p>
+            <ul class="mt-1 space-y-1 text-(--color-ink-soft)">
+              {g.items.map((i) => (
+                <li>
+                  <span class:list={["font-semibold", i.rating === "e" ? "text-(--color-accent)" : "text-(--color-ink)"]}>
+                    {ratingLabel[i.rating]}
+                  </span>
+                  {" · "}
+                  {i.text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </details>
+</div>
+
+<style>
+  .box {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 2px solid var(--color-ink);
+    border-radius: 7px 3px 8px 4px / 4px 8px 3px 7px;
+    background: #fff;
+    transition: transform 120ms ease;
+  }
+  .box:hover, .box:focus-visible, .box.is-active {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+  .box svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .box-e {
+    background: var(--color-highlight);
+  }
+  .box-e svg {
+    fill: var(--color-accent);
+    stroke: var(--color-accent);
+    stroke-width: 1.2;
+  }
+  .note::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 64px;
+    height: 18px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgb(201 211 255 / 0.85);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-report]").forEach((root) => {
+    const detail = root.querySelector<HTMLElement>("[data-detail]")!;
+    const boxes = root.querySelectorAll<HTMLButtonElement>(".box");
+    const show = (b: HTMLButtonElement) => {
+      boxes.forEach((x) => x.classList.toggle("is-active", x === b));
+      detail.textContent = b.dataset.label ?? "";
+    };
+    boxes.forEach((b) => {
+      b.addEventListener("mouseenter", () => show(b));
+      b.addEventListener("focus", () => show(b));
+      b.addEventListener("click", () => show(b));
+    });
+  });
+</script>

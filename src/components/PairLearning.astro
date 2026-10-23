@@ -1,0 +1,174 @@
+---
+// Interactive doodle: two people learning a made-up word ("dax", a classic novel word in
+// word-learning studies). Toggle the learner from listening to taking part: she asks,
+// gestures, and the two look at each other. Copy lives in data/projects.ts.
+import { pairDemo } from "../data/projects";
+---
+
+<figure class="pair" data-mode="listen" data-pair>
+  <div class="toggle" role="group" aria-label="Learner's role">
+    <button type="button" data-set="listen" aria-pressed="true">{pairDemo.listen.label}</button>
+    <button type="button" data-set="active" aria-pressed="false">{pairDemo.active.label}</button>
+  </div>
+
+  <div class="sketch mt-4 overflow-hidden bg-white p-2 md:p-4">
+    <svg viewBox="0 0 560 290" class="block h-auto w-full" aria-hidden="true">
+      <g class="boil" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <!-- gaze line: only when they look at each other -->
+        <path class="gaze" d="M164 112 C 240 88, 320 88, 396 112" stroke="var(--color-accent)" stroke-width="2.5" stroke-dasharray="5 8" />
+        <path class="spark" d="M280 74 L284 86 L296 90 L284 94 L280 106 L276 94 L264 90 L276 86 Z" fill="var(--color-highlight)" stroke-width="2" />
+
+        <!-- explainer (left) -->
+        <g transform="translate(150 0)">
+          <path d="M-40 222 C -42 168, -24 150, 0 148 C 24 150, 42 168, 40 222 Z" fill="var(--color-mint)" stroke-width="3" />
+          <g class="e-point">
+            <path d="M26 172 C 52 178, 80 186, 100 192" stroke-width="5" />
+            <circle cx="104" cy="194" r="7" fill="var(--color-skin)" stroke-width="2.5" />
+          </g>
+          <circle cx="0" cy="112" r="32" fill="var(--color-skin)" stroke-width="3" />
+          <path d="M-34 112 C -36 70, 36 70, 34 112 C 26 96, 10 88, -4 88 C -18 92, -28 100, -34 112 Z" fill="var(--color-ink)" stroke-width="2.5" />
+          <g class="e-eyes" fill="var(--color-ink)" stroke="none">
+            <circle cx="-11" cy="116" r="3.4" />
+            <circle cx="11" cy="116" r="3.4" />
+          </g>
+          <path class="e-smile" d="M-9 130 Q0 138 9 130" stroke-width="2.5" />
+          <ellipse class="e-talk" cx="0" cy="132" rx="5" ry="4.5" fill="#b8433d" stroke-width="2" />
+        </g>
+
+        <!-- learner (right) -->
+        <g transform="translate(410 0)">
+          <path d="M-40 222 C -42 168, -24 150, 0 148 C 24 150, 42 168, 40 222 Z" fill="var(--color-peach)" stroke-width="3" />
+          <g class="l-rest">
+            <path d="M-26 174 C -40 192, -50 206, -58 214" stroke-width="5" />
+            <circle cx="-60" cy="216" r="7" fill="var(--color-skin)" stroke-width="2.5" />
+          </g>
+          <g class="l-gesture">
+            <path d="M-26 170 C -46 152, -56 132, -60 112" stroke-width="5" />
+            <circle cx="-61" cy="104" r="8" fill="var(--color-skin)" stroke-width="2.5" />
+            <path class="swoosh" d="M-80 92 C -86 100, -86 110, -80 118 M-42 92 C -36 100, -36 110, -42 118" stroke-width="2" />
+          </g>
+          <circle cx="0" cy="112" r="32" fill="var(--color-skin)" stroke-width="3" />
+          <circle cx="4" cy="72" r="12" fill="var(--color-ink)" stroke-width="2.5" />
+          <path d="M-32 108 C -32 74, 32 74, 32 108 C 20 94, -20 94, -32 108 Z" fill="var(--color-ink)" stroke-width="2.5" />
+          <g class="l-eyes" fill="var(--color-ink)" stroke="none">
+            <circle cx="-11" cy="116" r="3.4" />
+            <circle cx="11" cy="116" r="3.4" />
+          </g>
+          <path class="l-flat" d="M-7 132 L7 132" stroke-width="2.5" />
+          <ellipse class="l-talk" cx="0" cy="133" rx="5" ry="4.5" fill="#b8433d" stroke-width="2" />
+        </g>
+
+        <!-- table + the "dax" -->
+        <path d="M70 222 C 200 218, 360 226, 490 220" stroke-width="3" />
+        <path d="M104 222 L102 286 M456 221 L458 286" stroke-width="3" />
+        <g class="dax">
+          <path d="M256 218 C 244 198, 258 176, 276 182 C 284 164, 308 170, 304 188 C 320 192, 318 214, 300 218 Z" fill="var(--color-highlight)" stroke-width="3" />
+          <path d="M276 202 C 282 194, 292 200, 286 207 C 281 211, 276 206, 280 203" stroke-width="2" />
+          <circle cx="298" cy="198" r="2.2" fill="var(--color-ink)" stroke="none" />
+          <circle cx="266" cy="206" r="2.2" fill="var(--color-ink)" stroke="none" />
+        </g>
+        <text class="hand" x="312" y="252" fill="var(--color-ink-soft)" stroke="none" font-size="20">← a "dax"</text>
+
+        <!-- speech: listening -->
+        <g class="say-listen">
+          <path d="M36 22 C 100 14, 210 16, 250 26 C 256 40, 254 56, 246 64 C 200 70, 120 70, 86 66 L 132 84 L 70 64 C 42 60, 30 40, 36 22 Z" fill="#fff" stroke-width="2.5" />
+          <text class="hand" x="52" y="50" fill="var(--color-ink)" stroke="none" font-size="21">This is a dax. You use it to...</text>
+          <text class="hand" x="456" y="62" fill="var(--color-ink-soft)" stroke="none" font-size="22">mm.</text>
+        </g>
+        <!-- speech: taking part -->
+        <g class="say-active">
+          <path d="M308 20 C 372 12, 484 14, 524 24 C 530 38, 528 54, 520 62 C 480 68, 452 68, 438 66 L 418 84 L 420 66 C 360 66, 320 62, 312 58 C 302 48, 302 32, 308 20 Z" fill="#fff" stroke-width="2.5" />
+          <text class="hand" x="322" y="48" fill="var(--color-ink)" stroke="none" font-size="21">So it spins, like this?</text>
+          <path d="M40 30 C 80 24, 150 26, 172 32 C 176 42, 174 52, 168 58 C 150 62, 140 62, 132 62 L 140 78 L 118 62 C 80 62, 50 60, 44 56 C 36 48, 36 38, 40 30 Z" fill="#fff" stroke-width="2.5" />
+          <text class="hand" x="56" y="51" fill="var(--color-ink)" stroke="none" font-size="21">Yes, exactly!</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <figcaption class="mt-4 max-w-[60ch] text-(--color-ink-soft)" aria-live="polite" data-caption data-listen={pairDemo.listen.caption} data-active={pairDemo.active.caption}>
+    {pairDemo.listen.caption}
+  </figcaption>
+</figure>
+
+<style>
+  .e-eyes, .l-eyes {
+    transition: transform 400ms ease 200ms;
+  }
+  /* listening: both stare at the object */
+  .e-eyes { transform: translate(3px, 3px); }
+  .l-eyes { transform: translate(-3px, 3px); }
+  /* taking part: they look at each other */
+  [data-mode="active"] .e-eyes { transform: translate(4px, -1px); }
+  [data-mode="active"] .l-eyes { transform: translate(-4px, -1px); }
+
+  .gaze, .spark, .say-active, .l-gesture, .l-talk, .e-smile {
+    opacity: 0;
+  }
+  .gaze, .spark, .say-active, .say-listen, .l-gesture, .l-rest, .l-talk, .l-flat, .e-smile, .e-talk, .e-point {
+    transition: opacity 300ms ease;
+  }
+  [data-mode="active"] :is(.l-gesture, .l-talk, .e-smile) {
+    opacity: 1;
+  }
+  [data-mode="active"] :is(.say-listen, .l-rest, .l-flat, .e-talk, .e-point) {
+    opacity: 0;
+  }
+  [data-mode="active"] :is(.gaze, .spark, .say-active) {
+    opacity: 1;
+    transition-delay: 450ms;
+  }
+
+  .gaze {
+    animation: march 1.2s linear infinite;
+  }
+  @keyframes march {
+    to { stroke-dashoffset: -26; }
+  }
+  .spark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: twinkle 1.8s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { transform: scale(0.85) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(20deg); }
+  }
+
+  .e-talk, .l-talk {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: chat 0.26s steps(2) infinite;
+  }
+  @keyframes chat {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.4); }
+  }
+
+  .l-gesture {
+    transform-box: view-box;
+    transform-origin: -26px 170px;
+  }
+  [data-mode="active"] .l-gesture {
+    animation: gesture 1.4s ease-in-out infinite;
+  }
+  @keyframes gesture {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-12deg); }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-pair]").forEach((root) => {
+    const caption = root.querySelector<HTMLElement>("[data-caption]")!;
+    const buttons = root.querySelectorAll<HTMLButtonElement>("[data-set]");
+    buttons.forEach((b) =>
+      b.addEventListener("click", () => {
+        const mode = b.dataset.set!;
+        root.dataset.mode = mode;
+        buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        caption.textContent = caption.dataset[mode] ?? "";
+      }),
+    );
+  });
+</script>

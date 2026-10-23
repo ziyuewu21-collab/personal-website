@@ -1,39 +1,46 @@
 ---
 import { site } from "../data/site";
+import Avatar from "./Avatar.astro";
 
 // Links with empty URLs are hidden automatically — fill them in src/data/site.ts.
 const links = [
-  { label: "Email", href: `mailto:${site.email}` },
   { label: "LinkedIn", href: site.linkedin },
   { label: "Substack", href: site.substack },
   { label: "GitHub", href: site.github },
 ].filter((l) => l.href);
 ---
 
-<footer id="contact" class="bg-(--color-paper-alt)">
-  <div class="mx-auto w-full max-w-[1100px] px-4 py-12">
-    <h2 class="text-xl font-bold">Get in touch</h2>
-    <p class="mt-2 max-w-[65ch] text-(--color-ink-soft)">
-      Looking for a PM who has taught the learner, studied the science, and
-      shipped the product? Email is fastest.
-    </p>
-    <ul class="mt-6 flex flex-wrap gap-6 text-sm font-semibold">
-      {
-        links.map((l) => (
-          <li>
-            <a
-              href={l.href}
-              class="py-3 text-(--color-accent) hover:underline"
-              rel="noopener"
-            >
-              {l.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="mt-8 text-sm text-(--color-ink-soft)">
-      © {new Date().getFullYear()} {site.name}
-    </p>
+<footer id="contact" class="mt-8 border-t-2 border-(--color-ink) bg-(--color-paper-alt)">
+  <div class="mx-auto grid w-full max-w-[1100px] items-end gap-8 px-4 pt-12 pb-10 md:grid-cols-[1fr_220px]">
+    <div>
+      <p class="hand text-2xl text-(--color-accent)">your turn to talk</p>
+      <h2 class="mt-1 text-[28px] md:text-[40px]">Get in touch</h2>
+      <p class="mt-3 max-w-[60ch] text-(--color-ink-soft)">
+        Looking for a PM who has taught the learner, studied the science, and
+        shipped the product? Email is fastest.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+        <a href={`mailto:${site.email}`} class="btn btn-primary">{site.email}</a>
+        <ul class="flex flex-wrap gap-6 text-sm font-semibold">
+          {
+            links.map((l) => (
+              <li>
+                <a href={l.href} class="inline-block py-3 text-(--color-accent) hover:underline" rel="noopener">
+                  {l.label} →
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <p class="mt-10 text-sm text-(--color-ink-soft)">
+        © {new Date().getFullYear()} {site.name}
+      </p>
+    </div>
+    <Avatar
+      class="mx-auto -mb-10 w-[170px] md:w-[210px]"
+      bubble="right"
+      lines={["Bye for now!", "I reply fast, promise.", "再见!", "Still here? Email me :)"]}
+    />
   </div>
 </footer>

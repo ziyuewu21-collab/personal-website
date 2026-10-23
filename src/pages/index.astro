@@ -1,77 +1,102 @@
 ---
 import Base from "../layouts/Base.astro";
+import Avatar from "../components/Avatar.astro";
+import Scribble from "../components/Scribble.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Squiggle from "../components/Squiggle.astro";
+import Classroom from "../components/Classroom.astro";
+import ReportCard from "../components/ReportCard.astro";
+import PairLearning from "../components/PairLearning.astro";
 import { site } from "../data/site";
 import { projects, research } from "../data/projects";
+import { celta, principles } from "../data/teaching";
+
+// Floating doodles around the hero avatar: languages, questions, a star.
+const floaters = [
+  { text: "Aa", pos: "top-[36%] -right-[8%]", r: "-8deg", delay: "0s" },
+  { text: "文", pos: "top-[46%] -left-[10%]", r: "6deg", delay: "-1.2s" },
+  { text: "?", pos: "top-[16%] right-[0%]", r: "10deg", delay: "-2.1s" },
+  { text: "¡hola!", pos: "bottom-[16%] -right-[10%]", r: "-6deg", delay: "-0.6s" },
+  { text: "★", pos: "bottom-[30%] -left-[2%]", r: "12deg", delay: "-3s" },
+];
 ---
 
 <Base>
   <!-- Hero -->
-  <section class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-24">
-    <h1 class="max-w-[24ch] text-[32px] md:text-[44px]">
-      Product manager for language learning.
-    </h1>
-    <p class="mt-6 max-w-[65ch] text-lg text-(--color-ink-soft)">
-      UCL speech science + a shipped edtech product — I build tools for how
-      people actually learn to communicate.
-    </p>
-    <div class="mt-8 flex flex-wrap gap-4">
-      <a
-        href="#projects"
-        class="rounded-[6px] bg-(--color-accent) px-6 py-3 font-semibold text-white hover:opacity-90"
-      >
-        View work
-      </a>
+  <section class="mx-auto grid w-full max-w-[1100px] items-center gap-6 px-4 pt-4 pb-14 md:grid-cols-[1.15fr_0.85fr] md:gap-12 md:pt-10 md:pb-20">
+    <div class="order-2 md:order-1">
+      <h1 class="max-w-[18ch] text-[32px] md:text-[54px]">
+        Product manager for <Scribble kind="circle">language learning</Scribble>.
+      </h1>
+      <p class="mt-6 max-w-[52ch] text-lg text-(--color-ink-soft)">
+        UCL speech science, CELTA teacher training and a shipped edtech product.
+        I build tools for how people actually learn to communicate:{" "}
+        <Scribble kind="mark">with other people</Scribble>.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#projects" class="btn btn-primary">View work</a>
+        <a href="#teaching" class="btn btn-ghost">How I teach</a>
+        {
+          site.cvReady && (
+            <a href="/cv.pdf" class="btn btn-ghost">
+              Download CV
+            </a>
+          )
+        }
+      </div>
+      <div class="aim relative mt-10 inline-block max-w-[24rem] -rotate-2 rounded-[4px] bg-(--color-highlight) px-5 py-4 shadow-[3px_4px_0_var(--color-ink)]">
+        <p class="hand text-2xl leading-none font-bold">Lesson aim</p>
+        <p class="hand mt-1 text-xl leading-snug">{site.lessonAim}</p>
+      </div>
+    </div>
+
+    <div class="relative order-1 mx-auto w-[200px] pt-14 md:order-2 md:w-full md:max-w-[360px] md:pt-20">
       {
-        site.cvReady && (
-          <a
-            href="/cv.pdf"
-            class="rounded-[6px] border border-(--color-ink-soft) px-6 py-3 font-semibold hover:border-(--color-accent) hover:text-(--color-accent)"
+        floaters.map((f) => (
+          <span
+            class={`float hand pointer-events-none absolute text-2xl text-(--color-ink-soft) md:text-3xl ${f.pos}`}
+            style={`--r:${f.r}; animation-delay:${f.delay}`}
+            aria-hidden="true"
           >
-            Download CV
-          </a>
-        )
+            {f.text}
+          </span>
+        ))
       }
+      <Avatar lines={site.heroLines} />
     </div>
   </section>
 
+  <Squiggle />
+
   <!-- Projects -->
-  <section id="projects" class="bg-(--color-paper-alt) scroll-mt-8">
+  <section id="projects" class="scroll-mt-8">
     <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
-      <h2 class="text-2xl md:text-[32px]">Work</h2>
-      <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <SectionHead kicker="01 · the work" title="Work">
+        <p>Three products, from a government tender to my own app.</p>
+      </SectionHead>
+      <div class="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {
           projects.map((p) => (
-            <article class="flex flex-col rounded-[8px] bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.1)]">
-              <div class="flex items-start justify-between gap-3">
-                <h3 class="text-xl">{p.title}</h3>
-                {p.status === "building" && (
-                  <span class="shrink-0 rounded-[6px] bg-(--color-accent) px-2 py-1 text-xs font-semibold text-white">
-                    Building now
-                  </span>
-                )}
-              </div>
-              <p class="mt-2 text-sm font-semibold text-(--color-ink-soft)">
-                {p.role}
-              </p>
+            <article class="card sketch relative flex flex-col p-6 pt-8">
+              <span class="tape" aria-hidden="true" />
+              {p.status === "shipped" && <span class="stamp hand">shipped</span>}
+              {p.status === "building" && <span class="stamp hand">building</span>}
+              <h3 class="text-xl">{p.title}</h3>
+              <p class="mt-2 text-sm font-semibold text-(--color-ink-soft)">{p.role}</p>
               <p class="mt-4 text-sm">{p.description}</p>
               <p class="mt-3 text-sm font-semibold">{p.result}</p>
-              <ul class="mt-4 flex flex-wrap gap-2 pt-2">
+              <ul class="mt-auto flex flex-wrap gap-2 pt-5">
                 {p.tags.map((t) => (
-                  <li class="rounded-[6px] bg-(--color-paper-alt) px-2 py-1 text-xs font-semibold text-(--color-ink-soft)">
+                  <li class="rounded-full border-[1.5px] border-(--color-ink-soft) px-2.5 py-0.5 text-xs font-semibold text-(--color-ink-soft)">
                     {t}
                   </li>
                 ))}
               </ul>
               {p.links && p.links.length > 0 && (
-                <ul class="mt-4 flex flex-wrap gap-4 text-sm font-semibold">
+                <ul class="mt-3 flex flex-wrap gap-x-5 text-sm font-semibold">
                   {p.links.map((l) => (
                     <li>
-                      <a
-                        href={l.url}
-                        class="py-3 text-(--color-accent) hover:underline"
-                        rel="noopener"
-                        target="_blank"
-                      >
+                      <a href={l.url} class="inline-block py-3 text-(--color-accent) hover:underline" rel="noopener" target="_blank">
                         {l.label} →
                       </a>
                     </li>
@@ -85,42 +110,132 @@ import { projects, research } from "../data/projects";
     </div>
   </section>
 
-  <!-- Research → Product -->
-  <section id="research" class="scroll-mt-8">
+  <Squiggle />
+
+  <!-- Teaching (CELTA) -->
+  <section id="teaching" class="scroll-mt-8">
     <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
-      <h2 class="text-2xl md:text-[32px]">Research that shapes how I build</h2>
-      <p class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
-        I use the science of language learning to make product decisions, not
-        papers for their own sake.
-      </p>
-      <div class="mt-8 grid gap-6 md:grid-cols-2">
+      <SectionHead kicker="02 · the classroom" title="How I teach">
+        <p>
+          {celta.course} at {celta.centre}, {celta.dates}: {celta.hours}, with
+          {" "}{celta.modes.toLowerCase()}. Overall grade
+          {" "}<strong class="text-(--color-ink)">{celta.grade}</strong>, {celta.gradeNote}.
+        </p>
+      </SectionHead>
+
+      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1.35fr_0.65fr]">
+        <Classroom />
+        <div class="lg:pt-16">
+          <h3 class="hand text-3xl">Student-centred, in one picture</h3>
+          <p class="mt-3">
+            Flip the classroom. When it's student-centred, the learners do most
+            of the talking, and my job moves from explaining to{" "}
+            <Scribble kind="mark">designing the task</Scribble>, monitoring and
+            giving feedback.
+          </p>
+          <p class="mt-3 text-(--color-ink-soft)">
+            It's the same job I do as a PM: set up the conditions, then watch
+            what people actually do.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="hand mt-16 text-3xl">Classroom habits I build products with</h3>
+      <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {
-          research.map((r) => (
-            <article class="rounded-[8px] border border-gray-200 p-6">
-              <p class="text-sm">{r.finding}</p>
-              <p class="mt-4 text-sm font-semibold text-(--color-accent)">
-                → {r.takeaway}
-              </p>
+          principles.map((p, i) => (
+            <article class="sketch flex flex-col p-5">
+              <div class="flex items-center gap-3">
+                <svg viewBox="0 0 48 48" class="boil h-11 w-11 shrink-0" aria-hidden="true">
+                  <g fill="none" stroke="var(--color-ink)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    {p.icon === "ear" && (
+                      <>
+                        <path d="M16 20 C 16 10, 34 8, 34 20 C 34 28, 26 30, 26 36 C 26 42, 18 42, 17 37" fill="var(--color-skin)" />
+                        <path d="M22 20 C 22 16, 28 16, 28 20 C 28 23, 24 24, 24 27" />
+                        <path d="M38 14 C 41 18, 41 24, 38 28 M42 10 C 47 17, 47 25, 42 32" stroke="var(--color-accent)" />
+                      </>
+                    )}
+                    {p.icon === "question" && (
+                      <>
+                        <path d="M8 10 C 20 6, 36 6, 42 10 C 44 18, 44 26, 40 30 C 32 32, 24 32, 18 31 L 10 40 L 12 30 C 6 26, 6 16, 8 10 Z" fill="var(--color-highlight)" />
+                        <path d="M20 16 C 20 11, 30 11, 30 16 C 30 20, 25 20, 25 24" />
+                        <circle cx="25" cy="27.5" r="0.8" fill="var(--color-ink)" />
+                      </>
+                    )}
+                    {p.icon === "steps" && (
+                      <>
+                        <path d="M6 40 L 18 40 L 18 30 L 28 30 L 28 20 L 38 20 L 38 10 L 44 10" />
+                        <circle cx="12" cy="34" r="3" fill="var(--color-accent)" stroke="none" />
+                      </>
+                    )}
+                    {p.icon === "flag" && (
+                      <>
+                        <path d="M12 42 L 12 6" />
+                        <path d="M12 8 C 20 4, 26 12, 38 8 L 38 24 C 26 28, 20 20, 12 24 Z" fill="var(--color-highlight)" />
+                      </>
+                    )}
+                  </g>
+                </svg>
+                <h4 class="hand text-[26px] leading-tight">{p.habit}</h4>
+              </div>
+              <p class="mt-3 text-sm">{p.classroom}</p>
+              <p class="hand mt-4 text-xl text-(--color-accent)">→ in product</p>
+              <p class="mt-1 text-sm font-semibold">{p.product}</p>
             </article>
           ))
         }
       </div>
+
+      <div class="mt-16">
+        <ReportCard />
+      </div>
     </div>
   </section>
 
-  <!-- Writing -->
-  <section id="writing" class="bg-(--color-paper-alt) scroll-mt-8">
+  <Squiggle />
+
+  <!-- Research → Product -->
+  <section id="research" class="scroll-mt-8">
     <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
-      <h2 class="text-2xl md:text-[32px]">Writing</h2>
-      <p class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
-        I write in public about building AI products for language learning —
-        what works, what doesn't, and what the research says.
-      </p>
+      <SectionHead kicker="03 · the research" title="Why learning is social">
+        <p>
+          I study how people learn new words from each other: the questions, the
+          gestures, the looking back and forth. I use that science to make product
+          decisions, not papers for their own sake.
+        </p>
+      </SectionHead>
+      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+        <PairLearning />
+        <div class="space-y-6 lg:pt-16">
+          {
+            research.map((r) => (
+              <article class="sketch p-5">
+                <p class="text-sm">{r.finding}</p>
+                <p class="mt-3 text-sm font-semibold text-(--color-accent)">→ {r.takeaway}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Squiggle />
+
+  <!-- Writing -->
+  <section id="writing" class="scroll-mt-8">
+    <div class="mx-auto w-full max-w-[1100px] px-4 py-16">
+      <SectionHead kicker="04 · in public" title="Writing">
+        <p>
+          I write in public about building AI products for language learning:
+          what works, what doesn't, and what the research says.
+        </p>
+      </SectionHead>
       <ul class="mt-6 flex flex-wrap gap-6 text-sm font-semibold">
         {
           site.linkedin && (
             <li>
-              <a href={site.linkedin} class="py-3 text-(--color-accent) hover:underline" rel="noopener">
+              <a href={site.linkedin} class="inline-block py-3 text-(--color-accent) hover:underline" rel="noopener">
                 LinkedIn →
               </a>
             </li>
@@ -129,7 +244,7 @@ import { projects, research } from "../data/projects";
         {
           site.substack && (
             <li>
-              <a href={site.substack} class="py-3 text-(--color-accent) hover:underline" rel="noopener">
+              <a href={site.substack} class="inline-block py-3 text-(--color-accent) hover:underline" rel="noopener">
                 Substack →
               </a>
             </li>
@@ -139,3 +254,46 @@ import { projects, research } from "../data/projects";
     </div>
   </section>
 </Base>
+
+<style>
+  .aim::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 72px;
+    height: 20px;
+    transform: translateX(-50%) rotate(4deg);
+    background: rgb(201 211 255 / 0.85);
+  }
+
+  .card {
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 5px 7px 0 var(--color-ink);
+  }
+  .tape {
+    position: absolute;
+    top: -11px;
+    left: 24px;
+    width: 84px;
+    height: 22px;
+    transform: rotate(-4deg);
+    background: rgb(255 226 122 / 0.85);
+  }
+  .stamp {
+    position: absolute;
+    top: -16px;
+    right: 16px;
+    padding: 0 10px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-accent);
+    background: var(--color-paper);
+    border: 2px solid var(--color-accent);
+    border-radius: 999px;
+    transform: rotate(8deg);
+  }
+</style>

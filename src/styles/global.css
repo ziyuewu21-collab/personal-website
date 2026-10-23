@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
-/* Design tokens — single source: vibe-coding/design-system.md. Do not add values outside the scale. */
+/* Design tokens. v2 (2026-10): notebook paper + ballpoint ink + one highlighter.
+   Components read these; don't hardcode colours elsewhere. */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
 
-  --color-accent: #4f46e5; /* the ONLY accent on the site */
-  --color-ink: #111827;
-  --color-ink-soft: #6b7280;
-  --color-paper: #ffffff;
-  --color-paper-alt: #f9fafb;
+  --color-accent: #2f4bd6; /* ballpoint blue: links, buttons, the ONLY accent */
+  --color-highlight: #ffe27a; /* highlighter: marks behind words, never text */
+  --color-ink: #1f1d1a;
+  --color-ink-soft: #5f5a52;
+  --color-paper: #fbf8f1;
+  --color-paper-alt: #f3eee2;
+  --color-skin: #fff1e4; /* doodle fills only */
+  --color-blush: #f4a7a0; /* doodle cheeks only */
+  --color-sweater: #c9d3ff; /* doodle clothes only */
+  --color-peach: #ffd5c2; /* doodle clothes only */
+  --color-mint: #cfe8d5; /* doodle clothes only */
+  --color-butter: #ffe9a8; /* doodle clothes only */
+  --color-lilac: #e3d6ff; /* doodle clothes only */
 }
 
 html {
   font-family: var(--font-sans);
   color: var(--color-ink);
-  background: var(--color-paper);
+  background-color: var(--color-paper);
   scroll-behavior: smooth;
 }
 
 body {
   font-size: 16px;
   line-height: 1.6;
+  /* Dotted notebook paper */
+  background-image: radial-gradient(circle, rgb(31 29 26 / 0.08) 1px, transparent 1.3px);
+  background-size: 22px 22px;
 }
 
 h1, h2, h3 {
@@ -31,5 +44,130 @@ h1, h2, h3 {
 /* Keep default focus visible for keyboard users (a11y floor) */
 a:focus-visible, button:focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+/* ---------- Hand-drawn building blocks ---------- */
+
+.hand {
+  font-family: var(--font-hand);
+}
+
+/* Sketchy box: wobbly corners + offset ink shadow */
+.sketch {
+  border: 2px solid var(--color-ink);
+  border-radius: 18px 6px 20px 8px / 8px 20px 6px 18px;
+  box-shadow: 3px 4px 0 var(--color-ink);
+  background: #fff;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: 2px solid var(--color-ink);
+  border-radius: 14px 5px 16px 6px / 6px 16px 5px 14px;
+  box-shadow: 3px 3px 0 var(--color-ink);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 5px 0 var(--color-ink);
+}
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+.btn-ghost {
+  background: #fff;
+}
+
+/* Segmented toggle used by the classroom + pair-learning doodles */
+.toggle {
+  display: inline-flex;
+  padding: 4px;
+  gap: 4px;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: #fff;
+}
+.toggle button {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink-soft);
+  transition: background 160ms ease, color 160ms ease;
+}
+.toggle button[aria-pressed="true"] {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+/* Scribbles: underline / circle drawn on scroll (see Scribble.astro) */
+.scribble {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.scribble > svg {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+/* --len is the on-screen path length, measured in Base.astro */
+.scribble path {
+  stroke-dasharray: var(--len, 3000);
+  stroke-dashoffset: var(--len, 3000);
+  transition: stroke-dashoffset 900ms cubic-bezier(0.65, 0, 0.35, 1) 200ms;
+}
+.scribble.is-drawn path {
+  stroke-dashoffset: 0;
+}
+.mark {
+  background-image: linear-gradient(transparent 55%, var(--color-highlight) 55%, var(--color-highlight) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition: background-size 800ms cubic-bezier(0.65, 0, 0.35, 1) 150ms;
+}
+.mark.is-drawn {
+  background-size: 100% 100%;
+}
+
+/* Line boil: SVG doodles jitter like a hand-drawn cartoon.
+   Three noise filters (defined in Base.astro) swapped in steps. */
+.boil {
+  animation: boil 0.45s steps(1) infinite;
+}
+@keyframes boil {
+  0% { filter: url(#boil-1); }
+  33% { filter: url(#boil-2); }
+  66% { filter: url(#boil-3); }
+}
+
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .boil, .float { animation: none; }
+  .scribble path { transition: none; stroke-dashoffset: 0; }
+  .mark { transition: none; background-size: 100% 100%; }
+  *, *::before, *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

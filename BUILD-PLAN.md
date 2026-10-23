@@ -16,6 +16,7 @@
 2. 空 URL 的链接自动隐藏(Footer 和 Writing 区块已实现)——补 URL 就是填字符串,不写新 if
 3. CV 按钮由 `site.ts` 的 `cvReady` 开关控制,`public/cv.pdf` 存在后才设 true
 4. 样式只用 global.css 里的 tokens 和 Tailwind scale 值(design-system.md 的禁止清单适用)
+5. CELTA 报告的评级只能照抄原件(`src/data/teaching.ts` 顶部注释),不许"四舍五入"成 excellent
 
 ## 任务(按顺序,每个做完跑 verify loop 再 commit)
 
@@ -49,7 +50,8 @@
 - 唯一预期例外:og.png 若 T3 未做则标记 pending
 
 ### 禁止事项(便宜模型高发)
-- 不加暗色模式、动画、新区块、新页面
+- 不加暗色模式、新页面;**v2 起动画和 Teaching 区块已由 Ziyue 批准加入**(见 SPEC.md v2)——但不要再新增动画或区块
+- doodle 组件(`Avatar` / `Classroom` / `PairLearning` / `ReportCard`)里的 SVG 路径不要"优化"或重排,改动后必须截图对比
 - 不把 data 文件"重构"成 content collections(v2 做 case-study 页时才引入)
 - 不升级/新增依赖(包括 "npm audit fix --force")
 - 不改定位句和任何数字事实
@@ -58,3 +60,4 @@
 
 - 2026-07-06 — 架构 + v1 全部区块 + 验证 + 首次 commit(强模型完成)
 - 2026-07-22 — MyTurn 卡片更新为 shipped + live/demo 外链 + 移到第一张;`Project` 类型新增可选 `links[]`,卡片模板按"有就画、没有就隐藏"渲染(沿用架构规则 #2)。`npm run build` 通过;dev server 1280px + 375px 验证通过(无横向滚动,链接可点 41px 高),console 无报错;commit `8a49414`。**T1 仍未做——站点尚未上线,无 git remote**
+- 2026-10-23 — v2 doodle 改版(Ziyue 提出):新 tokens(纸 + 圆珠笔蓝 + 荧光黄)、Caveat 手写字体、line-boil 滤镜;Hero 头像(眼睛跟随/眨眼/点击挥手换台词)+ Lesson aim 便利贴;新 Teaching 区块(教室切换、principles、CELTA 报告还原);Research 区块加两人学词 doodle;Work 卡片纸张化;Footer 加小头像。新增 `src/data/teaching.ts`。`npm run build` 通过;1280px + 375px 截图验证,无横向滚动,console 无报错;交互脚本验证(鼠标跟随、点击/Enter 换台词、键盘切换、reduced-motion 不挥手)。参考站点被云端网络策略拦截,未能直接对照。**T1 仍未做**

@@ -1,0 +1,16 @@
+---
+// Section heading: handwritten kicker ("01 · work") over the h2, plus optional intro text.
+interface Props {
+  kicker: string;
+  title: string;
+}
+const { kicker, title } = Astro.props;
+---
+
+<div>
+  <p class="hand text-2xl text-(--color-accent)">{kicker}</p>
+  <h2 class="mt-1 text-[28px] md:text-[40px]">{title}</h2>
+  <div class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
+    <slot />
+  </div>
+</div>

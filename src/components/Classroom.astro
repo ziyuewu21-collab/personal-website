@@ -1,0 +1,266 @@
+---
+// Interactive doodle: flip a classroom between teacher-led and student-centred.
+// The teacher walks from the board to the desks, students turn to each other and
+// start talking, and the talk-time bar swaps over. Captions live in data/teaching.ts.
+import { classroomModes } from "../data/teaching";
+
+const students = [
+  { x: 335, shirt: "var(--color-peach)", hair: "bun", sc: 3 },
+  { x: 405, shirt: "var(--color-mint)", hair: "short", sc: -3 },
+  { x: 505, shirt: "var(--color-butter)", hair: "curly", sc: 3 },
+  { x: 575, shirt: "var(--color-lilac)", hair: "long", sc: -3 },
+];
+---
+
+<figure class="classroom" data-mode="tl" data-classroom>
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="toggle" role="group" aria-label="Classroom style">
+      <button type="button" data-set="tl" aria-pressed="true">{classroomModes.tl.label}</button>
+      <button type="button" data-set="sc" aria-pressed="false">{classroomModes.sc.label}</button>
+    </div>
+    <span class="hint hand text-xl text-(--color-accent)" aria-hidden="true">← flip it</span>
+  </div>
+
+  <div class="sketch mt-4 overflow-hidden bg-white p-2 md:p-4">
+    <svg viewBox="0 0 640 310" class="block h-auto w-full" aria-hidden="true">
+      <g class="boil" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <!-- floor -->
+        <path d="M0 296 C 160 292, 480 300, 640 294" stroke-width="2.5" />
+
+        <!-- whiteboard -->
+        <path d="M30 40 L250 34 L254 160 L28 166 Z" fill="#fff" stroke-width="3" />
+        <path d="M40 172 L242 168" stroke-width="3" />
+        <g class="board-tl hand" fill="var(--color-ink)" stroke="none" font-size="22">
+          <text x="46" y="74">Present perfect</text>
+          <text x="46" y="106" fill="var(--color-accent)">have + past participle</text>
+          <text x="46" y="138" font-size="19">I have eaten. She has gone.</text>
+        </g>
+        <g class="board-sc hand" fill="var(--color-ink)" stroke="none" font-size="24">
+          <text x="46" y="76" fill="var(--color-accent)">Task:</text>
+          <text x="46" y="108">Plan a day out</text>
+          <text x="46" y="140">for the whole class</text>
+        </g>
+
+        <!-- teacher (walks between board and desks) -->
+        <g class="teacher">
+          <path d="M-24 118 C -26 92, 26 92, 24 118 L 26 152 L -26 152 Z" fill="var(--color-ink)" stroke-width="2.5" />
+          <path d="M-26 240 C -28 180, -20 146, 0 144 C 20 146, 28 180, 26 240 Z" fill="var(--color-sweater)" stroke-width="2.5" />
+          <path d="M-10 240 L-12 294 M10 240 L12 294" stroke-width="3" />
+          <circle cx="0" cy="118" r="21" fill="var(--color-skin)" stroke-width="2.5" />
+          <path d="M-21 114 C -20 96, 20 94, 21 112 C 14 106, 8 102, 4 98 C -2 106, -12 110, -21 114 Z" fill="var(--color-ink)" stroke-width="2" />
+          <g class="t-eyes" fill="var(--color-ink)" stroke="none">
+            <circle cx="-7" cy="122" r="2.6" />
+            <circle cx="7" cy="122" r="2.6" />
+          </g>
+          <path class="t-smile" d="M-6 131 Q0 136 6 131" stroke-width="2" />
+          <ellipse class="t-talk" cx="0" cy="132" rx="3.6" ry="3.2" fill="#b8433d" stroke-width="1.5" />
+          <g class="t-point">
+            <path d="M-18 162 C -34 150, -44 136, -52 122" stroke-width="4" />
+            <circle cx="-54" cy="118" r="5" fill="var(--color-skin)" stroke-width="2" />
+          </g>
+          <g class="t-notes">
+            <path d="M-16 164 C -4 182, 6 184, 12 180" stroke-width="4" />
+            <path d="M8 160 L32 156 L34 188 L10 190 Z" fill="#fff" stroke-width="2" />
+            <path d="M14 167 L28 165 M14 174 L28 172 M14 181 L24 180" stroke-width="1.5" />
+          </g>
+        </g>
+
+        <!-- students -->
+        {
+          students.map((s, i) => (
+            <g class="student" style={`--x:${s.x}px; --look:${s.sc}px; --delay:${(i % 2) * 0.22}s`}>
+              <path d="M-22 240 C -22 214, -12 206, 0 206 C 12 206, 22 214, 22 240 Z" fill={s.shirt} stroke-width="2.5" />
+              {s.hair === "long" && (
+                <path d="M-18 186 C -22 164, 22 164, 18 186 L 20 214 L 12 214 C 14 196, 10 184, 0 180 C -10 184, -14 196, -12 214 L -20 214 Z" fill="var(--color-ink)" stroke-width="2" />
+              )}
+              <circle cx="0" cy="188" r="17" fill="var(--color-skin)" stroke-width="2.5" />
+              {s.hair === "bun" && (
+                <>
+                  <circle cx="0" cy="166" r="7" fill="var(--color-ink)" stroke-width="2" />
+                  <path d="M-17 186 C -17 168, 17 168, 17 186 C 10 177, -10 177, -17 186 Z" fill="var(--color-ink)" stroke-width="2" />
+                </>
+              )}
+              {s.hair === "short" && <path d="M-18 188 C -20 166, 18 164, 18 184 C 8 175, -6 175, -18 188 Z" fill="var(--color-ink)" stroke-width="2" />}
+              {s.hair === "curly" && (
+                <g fill="var(--color-ink)" stroke-width="2">
+                  <circle cx="-13" cy="178" r="7" />
+                  <circle cx="-4" cy="172" r="7.5" />
+                  <circle cx="6" cy="172" r="7.5" />
+                  <circle cx="14" cy="179" r="6.5" />
+                </g>
+              )}
+              {s.hair === "long" && <path d="M-17 184 C -12 170, 12 168, 17 182 C 8 176, -6 176, -17 184 Z" fill="var(--color-ink)" stroke-width="2" />}
+              <g class="s-eyes" fill="var(--color-ink)" stroke="none">
+                <circle cx="-6" cy="190" r="2.4" />
+                <circle cx="6" cy="190" r="2.4" />
+              </g>
+              <path class="s-flat" d="M-4 199 L4 199" stroke-width="2" />
+              <ellipse class="s-talk" cx="0" cy="200" rx="4" ry="3.4" fill="#b8433d" stroke-width="1.5" />
+            </g>
+          ))
+        }
+
+        <!-- desks (drawn after students so they sit behind them) -->
+        <path d="M296 236 L444 234 M308 236 L306 296 M432 234 L434 296" stroke-width="3" />
+        <path d="M466 236 L614 234 M478 236 L476 296 M602 234 L604 296" stroke-width="3" />
+
+        <!-- speech -->
+        <g class="say-tl">
+          <path d="M300 34 C 370 26, 460 28, 496 36 C 504 56, 502 76, 494 90 C 440 96, 360 96, 316 90 L 296 106 L 304 88 C 296 70, 294 50, 300 34 Z" fill="#fff" stroke-width="2.5" />
+          <g class="hand" fill="var(--color-ink)" stroke="none" font-size="19">
+            <text x="312" y="58">So, the present perfect is</text>
+            <text x="312" y="80">formed with have plus...</text>
+          </g>
+          <text class="hand zzz" x="522" y="158" fill="var(--color-ink-soft)" stroke="none" font-size="22">z z z</text>
+        </g>
+        <g class="say-sc">
+          <g class="pop-a">
+            <path d="M316 116 C 350 108, 410 108, 428 118 C 432 130, 430 142, 424 148 C 396 152, 358 152, 334 148 L 326 162 L 326 146 C 312 138, 312 124, 316 116 Z" fill="#fff" stroke-width="2.5" />
+            <text class="hand" x="328" y="137" fill="var(--color-ink)" stroke="none" font-size="19">museum first?</text>
+          </g>
+          <g class="pop-b">
+            <path d="M490 116 C 524 108, 584 108, 606 118 C 610 130, 608 142, 600 148 L 598 164 L 584 150 C 556 153, 524 152, 500 147 C 486 138, 486 124, 490 116 Z" fill="#fff" stroke-width="2.5" />
+            <text class="hand" x="502" y="137" fill="var(--color-ink)" stroke="none" font-size="19">no, food first!</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <div class="mt-3 px-2 pb-2 md:px-0">
+      <p class="hand text-lg text-(--color-ink-soft)">Who's doing the talking?</p>
+      <div class="talkbar mt-1 flex h-9 overflow-hidden rounded-full border-2 border-(--color-ink) text-xs font-semibold">
+        <span class="seg-t flex items-center justify-start bg-(--color-sweater) px-3">Teacher</span>
+        <span class="seg-s flex items-center justify-end bg-(--color-highlight) px-3">Students</span>
+      </div>
+    </div>
+  </div>
+
+  <figcaption class="mt-4 max-w-[60ch] text-(--color-ink-soft)" aria-live="polite" data-caption data-tl={classroomModes.tl.caption} data-sc={classroomModes.sc.caption}>
+    {classroomModes.tl.caption}
+  </figcaption>
+</figure>
+
+<style>
+  .teacher {
+    transform: translateX(278px);
+    transition: transform 900ms cubic-bezier(0.45, 0, 0.25, 1);
+  }
+  [data-mode="sc"] .teacher {
+    transform: translateX(455px);
+  }
+
+  .t-eyes {
+    transition: transform 400ms ease 300ms;
+    transform: translate(2.5px, 0);
+  }
+  [data-mode="sc"] .t-eyes {
+    transform: translate(-2px, 2px);
+  }
+
+  .student {
+    transform: translateX(var(--x));
+  }
+  .s-eyes {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: translateX(-3px) scaleY(0.35); /* looking at the board, half asleep */
+    transition: transform 400ms ease 500ms;
+  }
+  [data-mode="sc"] .s-eyes {
+    transform: translateX(var(--look)) scaleY(1);
+  }
+
+  /* things that only exist in one mode */
+  .board-sc, .say-sc, .t-notes, .s-talk, .t-smile {
+    opacity: 0;
+  }
+  .board-tl, .board-sc, .say-tl, .say-sc, .t-notes, .t-point, .s-talk, .s-flat, .t-smile, .t-talk {
+    transition: opacity 300ms ease;
+  }
+  [data-mode="sc"] :is(.board-sc, .t-notes, .s-talk, .t-smile) {
+    opacity: 1;
+  }
+  [data-mode="sc"] :is(.board-tl, .say-tl, .t-point, .s-flat, .t-talk) {
+    opacity: 0;
+  }
+  [data-mode="sc"] .say-sc {
+    opacity: 1;
+    transition-delay: 700ms;
+  }
+
+  .t-talk {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: chat 0.24s steps(2) infinite;
+  }
+  .s-talk {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  [data-mode="sc"] .s-talk {
+    animation: chat 0.26s steps(2) infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes chat {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.4); }
+  }
+
+  .zzz {
+    animation: drift 2.4s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .pop-a, .pop-b {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    transform: scale(0.6);
+    transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1) 800ms;
+  }
+  .pop-b {
+    transition-delay: 1000ms;
+  }
+  [data-mode="sc"] :is(.pop-a, .pop-b) {
+    transform: scale(1);
+  }
+
+  .seg-t, .seg-s {
+    transition: flex-basis 900ms cubic-bezier(0.45, 0, 0.25, 1);
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .seg-t { flex-basis: 82%; }
+  .seg-s { flex-basis: 18%; }
+  [data-mode="sc"] .seg-t { flex-basis: 24%; }
+  [data-mode="sc"] .seg-s { flex-basis: 76%; }
+
+  .hint {
+    animation: nudge 1.6s ease-in-out infinite;
+  }
+  [data-touched] .hint {
+    display: none;
+  }
+  @keyframes nudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-6px); }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-classroom]").forEach((root) => {
+    const caption = root.querySelector<HTMLElement>("[data-caption]")!;
+    const buttons = root.querySelectorAll<HTMLButtonElement>("[data-set]");
+    buttons.forEach((b) =>
+      b.addEventListener("click", () => {
+        const mode = b.dataset.set!;
+        root.dataset.mode = mode;
+        root.dataset.touched = "";
+        buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        caption.textContent = caption.dataset[mode] ?? "";
+      }),
+    );
+  });
+</script>

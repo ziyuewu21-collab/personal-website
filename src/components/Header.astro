@@ -3,20 +3,21 @@ import { site } from "../data/site";
 
 const nav = [
   { label: "Work", href: "#projects" },
+  { label: "Teaching", href: "#teaching" },
   { label: "Research", href: "#research" },
   { label: "Writing", href: "#writing" },
   { label: "Contact", href: "#contact" },
 ];
 ---
 
-<header class="mx-auto w-full max-w-[1100px] px-4 py-6">
-  <nav class="flex flex-wrap items-center justify-between gap-4" aria-label="Main">
-    <a href="/" class="text-lg font-bold">{site.name}</a>
-    <ul class="flex flex-wrap items-center gap-6 text-sm font-semibold text-(--color-ink-soft)">
+<header class="mx-auto w-full max-w-[1100px] px-4 pt-5 pb-2 md:py-5">
+  <nav class="flex flex-wrap items-center justify-between gap-x-6 gap-y-2" aria-label="Main">
+    <a href="/" class="hand text-[28px] leading-none font-bold">{site.name}</a>
+    <ul class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-semibold text-(--color-ink-soft) md:gap-x-6">
       {
         nav.map((item) => (
           <li>
-            <a href={item.href} class="py-3 hover:text-(--color-accent)">
+            <a href={item.href} class="inline-block py-3 hover:text-(--color-accent)">
               {item.label}
             </a>
           </li>

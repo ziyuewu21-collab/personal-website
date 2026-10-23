@@ -1,0 +1,276 @@
+---
+// Doodle self-portrait. Eyes follow the pointer, she blinks on her own, and a click
+// (or Enter/Space) makes her wave and say the next line. All instances on a page share
+// one script. To change how she looks, edit the paths below; to change what she
+// says, pass different `lines`.
+interface Props {
+  lines: string[];
+  class?: string;
+  bubble?: "left" | "right";
+}
+const { lines, class: className = "", bubble = "left" } = Astro.props;
+---
+
+<div class:list={["avatar relative select-none", className]} data-avatar data-lines={JSON.stringify(lines)}>
+  <p
+    class:list={["bubble hand sketch absolute z-10 px-4 py-2 text-xl leading-tight md:text-2xl", `bubble-${bubble}`]}
+    data-bubble
+    aria-live="polite"
+  >
+    {lines[0]}
+  </p>
+  <button type="button" class="block w-full cursor-pointer rounded-[24px]" aria-label="Say hi to Ziyue. Each click, she says something new.">
+    <svg viewBox="0 0 300 340" class="block h-auto w-full overflow-visible" aria-hidden="true">
+      <g class="boil"><g class="av-figure" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round">
+        <!-- hair, back layer -->
+        <path
+          d="M150 60 C 98 58, 70 98, 72 150 C 73 190, 66 228, 76 258 C 100 266, 200 266, 224 258 C 234 228, 227 190, 228 150 C 230 98, 202 62, 150 60 Z"
+          fill="var(--color-ink)"
+          stroke-width="3"
+        />
+        <!-- neck -->
+        <path d="M137 196 L136 250 L164 250 L163 196 Z" fill="var(--color-skin)" stroke="none" />
+        <path d="M137 198 L136 246 M163 198 L164 246" fill="none" stroke-width="3" />
+        <!-- jumper -->
+        <path d="M62 340 C 64 282, 98 246, 150 242 C 202 246, 236 282, 238 340" fill="var(--color-sweater)" stroke-width="3" />
+        <path d="M126 246 C 136 262, 164 262, 174 246" fill="none" stroke-width="3" />
+        <path d="M100 300 C 98 316, 98 328, 99 340" fill="none" stroke-width="2.5" />
+        <!-- waving arm: ink tube under a jumper-coloured tube = outlined sleeve -->
+        <g class="av-arm">
+          <path d="M196 270 C 222 256, 238 236, 246 210" fill="none" stroke-width="22" />
+          <path d="M196 270 C 222 256, 238 236, 246 210" fill="none" stroke="var(--color-sweater)" stroke-width="16" />
+          <circle cx="248" cy="196" r="13" fill="var(--color-skin)" stroke-width="3" />
+          <path d="M238 190 C 236 184, 238 179, 242 178" fill="none" stroke-width="2.5" />
+        </g>
+        <!-- face -->
+        <path
+          d="M150 76 C 186 75, 211 103, 210 142 C 209 181, 185 208, 150 208 C 115 208, 90 182, 90 142 C 90 103, 114 77, 150 76 Z"
+          fill="var(--color-skin)"
+          stroke-width="3"
+        />
+        <!-- fringe -->
+        <path
+          d="M90 138 C 88 100, 114 72, 152 72 C 190 72, 214 100, 211 140 C 204 126, 196 112, 190 100 C 176 116, 150 124, 120 122 C 108 122, 96 128, 90 138 Z"
+          fill="var(--color-ink)"
+          stroke-width="3"
+        />
+        <path d="M168 80 C 158 98, 142 110, 122 116" fill="none" stroke="var(--color-paper)" stroke-width="2" opacity="0.35" />
+        <!-- brows -->
+        <g class="av-brows" fill="none" stroke-width="3">
+          <path d="M115 136 Q127 130 139 135" />
+          <path d="M161 135 Q173 130 185 136" />
+        </g>
+        <!-- eyes: socket is a fixed reference point, pupil moves inside it -->
+        {
+          [127, 173].map((cx) => (
+            <g class="av-eye">
+              <circle class="av-socket" cx={cx} cy="153" r="6" fill="none" stroke="none" />
+              <g class="av-pupil">
+                <circle cx={cx} cy="153" r="6" fill="var(--color-ink)" stroke="none" />
+                <circle cx={cx - 2} cy="150.5" r="1.8" fill="#fff" stroke="none" />
+              </g>
+            </g>
+          ))
+        }
+        <!-- cheeks, nose, mouth -->
+        <ellipse cx="113" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+        <ellipse cx="187" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+        <path d="M151 160 Q147 168 153 169" fill="none" stroke-width="2.5" />
+        <path class="av-smile" d="M136 182 Q150 195 164 182" fill="none" stroke-width="3" />
+        <ellipse class="av-talk" cx="150" cy="186" rx="8" ry="7" fill="#b8433d" stroke-width="2.5" />
+      </g></g>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .bubble {
+    width: max-content;
+    max-width: 15rem;
+    transform-origin: bottom center;
+  }
+  .bubble-left {
+    top: -2%;
+    left: -4%;
+  }
+  .bubble-right {
+    top: -2%;
+    right: -4%;
+  }
+  /* little tail pointing down at her head */
+  .bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -9px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-right: 2px solid var(--color-ink);
+    border-bottom: 2px solid var(--color-ink);
+    transform: rotate(45deg) skew(8deg, 8deg);
+  }
+  .bubble-left::after {
+    right: 28%;
+  }
+  .bubble-right::after {
+    left: 28%;
+  }
+  .bubble.pop {
+    animation: pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop {
+    from { transform: scale(0.6) rotate(-4deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  .av-figure {
+    animation: breathe 4.5s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(2px); }
+  }
+
+  .av-eye {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 70ms ease;
+  }
+  .is-blinking .av-eye {
+    transform: scaleY(0.12);
+  }
+  .av-pupil {
+    transition: transform 120ms ease-out;
+  }
+
+  .av-brows {
+    transition: transform 180ms ease;
+  }
+  .avatar:hover .av-brows,
+  .is-talking .av-brows {
+    transform: translateY(-3px);
+  }
+
+  .av-talk {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .is-talking .av-smile {
+    opacity: 0;
+  }
+  .is-talking .av-talk {
+    opacity: 1;
+    animation: talk 0.22s steps(2) infinite;
+  }
+  @keyframes talk {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(0.45); }
+  }
+
+  .av-arm {
+    transform-origin: 198px 268px;
+  }
+  .is-waving .av-arm {
+    animation: wave 0.55s ease-in-out 3;
+  }
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    30% { transform: rotate(-16deg); }
+    70% { transform: rotate(10deg); }
+  }
+</style>
+
+<script>
+  const avatars = [...document.querySelectorAll<HTMLElement>("[data-avatar]")];
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // --- eyes follow the pointer ---
+  let frame = 0;
+  let lastMove = 0;
+  function lookAt(x: number, y: number) {
+    for (const a of avatars) {
+      a.querySelectorAll<SVGGElement>(".av-eye").forEach((eye) => {
+        const socket = eye.querySelector(".av-socket")!.getBoundingClientRect();
+        const dx = x - (socket.left + socket.width / 2);
+        const dy = y - (socket.top + socket.height / 2);
+        const dist = Math.hypot(dx, dy) || 1;
+        const reach = Math.min(1, dist / 180) * 4.5; // SVG units the pupil may travel
+        eye
+          .querySelector(".av-pupil")!
+          .setAttribute("style", `transform: translate(${((dx / dist) * reach).toFixed(2)}px, ${((dy / dist) * reach).toFixed(2)}px)`);
+      });
+    }
+  }
+  function onPointer(e: PointerEvent) {
+    lastMove = performance.now();
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => lookAt(e.clientX, e.clientY));
+  }
+  window.addEventListener("pointermove", onPointer, { passive: true });
+  window.addEventListener("pointerdown", onPointer, { passive: true });
+
+  // No pointer for a while (or a phone): glance around on her own.
+  setInterval(() => {
+    if (performance.now() - lastMove < 3000) return;
+    const a = avatars[Math.floor(Math.random() * avatars.length)];
+    if (!a) return;
+    const r = a.getBoundingClientRect();
+    lookAt(r.left + Math.random() * r.width * 1.6 - r.width * 0.3, r.top + Math.random() * r.height * 0.8);
+  }, 2600);
+
+  // --- blinking ---
+  for (const a of avatars) {
+    const blink = () => {
+      a.classList.add("is-blinking");
+      setTimeout(() => a.classList.remove("is-blinking"), 130);
+      if (Math.random() < 0.2) setTimeout(blink, 260); // sometimes a double blink
+    };
+    const loop = () => {
+      setTimeout(() => {
+        blink();
+        loop();
+      }, 2200 + Math.random() * 3200);
+    };
+    loop();
+  }
+
+  // --- click: wave + next line ---
+  function wave(a: HTMLElement) {
+    if (reduceMotion) return;
+    a.classList.remove("is-waving");
+    void a.offsetWidth; // restart the animation
+    a.classList.add("is-waving");
+    setTimeout(() => a.classList.remove("is-waving"), 1700);
+  }
+  for (const a of avatars) {
+    const lines: string[] = JSON.parse(a.dataset.lines || "[]");
+    const bubble = a.querySelector<HTMLElement>("[data-bubble]")!;
+    let i = 0;
+    let talkTimer = 0;
+    a.querySelector("button")!.addEventListener("click", () => {
+      i = (i + 1) % lines.length;
+      bubble.textContent = lines[i];
+      bubble.classList.remove("pop");
+      void bubble.offsetWidth;
+      bubble.classList.add("pop");
+      wave(a);
+      a.classList.add("is-talking");
+      clearTimeout(talkTimer);
+      talkTimer = window.setTimeout(() => a.classList.remove("is-talking"), Math.min(2200, 600 + lines[i].length * 35));
+    });
+  }
+
+  // Wave hello once when each avatar first comes into view.
+  const hello = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        hello.unobserve(e.target);
+        setTimeout(() => wave(e.target as HTMLElement), 400);
+      }
+    },
+    { threshold: 0.5 },
+  );
+  avatars.forEach((a) => hello.observe(a));
+</script>

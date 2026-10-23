@@ -70,3 +70,16 @@ export const research: ResearchItem[] = [
       "Tools that only count words miss where learning actually happens. Interaction is the unit of progress, not vocabulary size.",
   },
 ];
+
+// Interactive pair doodle in the Research section (PairLearning.astro).
+export const pairDemo = {
+  listen: {
+    label: "Just listening",
+    caption: "One person explains. The other nods along.",
+  },
+  active: {
+    label: "Taking part",
+    caption:
+      "The learner asks, gestures and explains it back. They look at the thing, then at each other.",
+  },
+};

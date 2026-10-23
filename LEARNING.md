@@ -22,3 +22,20 @@
 - **想自己改的话**:想给 MyTurn 再加一个链接(比如以后仓库转 public 了加 GitHub),打开 `src/data/projects.ts`,在 MyTurn 那张卡的 `links: [` 里再抄一行 `{ label: "GitHub", url: "https://github.com/..." },` 就行,不用碰 index.astro。想换卡片顺序,就把整个 `{ ... },` 块上下挪位置
 
 **检验问题**:如果你想让"AI story-based vocabulary product"那张卡也带一个链接,你会去动哪个文件?要加什么?
+
+## v2 doodle 改版 — 2026-10-23
+
+- **代码在哪**:
+  - `src/components/Avatar.astro` — 头像本体。上半部分是 SVG(头发、脸、眼睛、挥手的胳膊各是一段 `<path>`),下半部分 `<script>` 管三件事:眼睛跟鼠标、随机眨眼、点击换台词
+  - `src/components/Classroom.astro` — 教室切换。两个按钮只改一个东西:最外层的 `data-mode="tl"` 或 `"sc"`。所有变化(老师走过去、学生张嘴、talk 条翻转)都是 CSS 根据这个值自动切换的
+  - `src/components/PairLearning.astro` — 两人学 "dax",同样的套路(`data-mode="listen"` / `"active"`)
+  - `src/components/ReportCard.astro` — CELTA 报告 36 格。格子是从 `src/data/teaching.ts` 的 `report` 列表一格一格画出来的
+  - `src/data/teaching.ts` — CELTA 事实、36 项评级、4 条"课堂习惯 → 产品"、教室说明文字
+  - `src/data/site.ts` — 新增 `heroLines`(头像台词)和 `lessonAim`(便利贴)
+- **数据怎么流**:和 v1 一样,文字全在 data 文件,构建时填进组件。新东西是**少量浏览器里的 JS**:页面加载后,脚本监听鼠标位置,算出"鼠标在眼睛的哪个方向",把瞳孔往那边挪最多 4.5 个单位;点击时把气泡文字换成 `heroLines` 的下一句。"手绘抖动"是一个 SVG 噪声滤镜,三张不同的噪声图每 0.15 秒轮换一次
+- **想自己改的话**:
+  - 换头像台词 → `src/data/site.ts` 的 `heroLines`,一行一句,第一句是默认显示的
+  - 换发型 → `Avatar.astro` 里注释 `hair, back layer` 和 `fringe` 下面那两段 `<path>`(最好让模型改,告诉它你想要什么发型)
+  - 改 CELTA 某项评级(比如发现抄错了)→ `src/data/teaching.ts` 里那一行的 `rating: "e"` / `"s"`,上面的 13/23/0 会自动重算
+
+**检验问题**:如果你想让头像第一句话改成 "Hello!",你会打开哪个文件、改哪里?如果教室切换按钮点了没反应,你会先去哪个文件找原因?

@@ -42,3 +42,25 @@ date: 2026-07-06
 
 ## 技术与视觉
 全部按 skill 文件执行:`vibe-coding/stack.md`(Astro + Tailwind + Vercel)、`vibe-coding/design-system.md`(tokens 已定)。此处不重复、不另做决定。
+
+---
+
+## v2 — 手绘 doodle 改版 + Teaching 区块(Ziyue 2026-10-23 提出)
+
+**为什么改**:Ziyue 想要动画简笔画个人形象 + 有趣的交互(参考 gordontu.com / krishnagupta.web.app / jinhyuk.org;这三个站在云端环境被网络策略拦截,未能直接参考),并展示 CELTA 训练 + 毕业论文(social learning)背后的 student-centred 教学理念。
+
+**设计原则**:网站本身用她的教学方式讲话——先让访客动手(elicit),再给结论。招聘方 30 秒测试仍然成立:定位句和 Work 仍在最前面。
+
+区块顺序:Hero → Work → How I teach(新)→ Why learning is social(原 Research 扩充)→ Writing → Contact
+
+- **Hero**:doodle 头像(眼睛跟随鼠标、自动眨眼、点击挥手 + 换台词)+ CELTA 格式的 "Lesson aim" 便利贴
+- **How I teach**:教室 doodle 可切换 Teacher-led / Student-centred(老师走下讲台、学生开口、talk-time 条翻转)、4 条"课堂习惯 → 产品决策"、CELTA 报告 36 项逐格还原(13 excellent / 23 standard / 0 needs attention)+ 诚实写出 "Working on: Instructions"
+- **Why learning is social**:两人学新词 "dax" 的 doodle,可切换 Just listening / Taking part(提问、手势、对视)+ 原有两条 research 卡
+
+**v2 解除的 v1 限制**:动画、新区块(Teaching)。暗色模式仍不做(纸张质感是设计本身)。
+
+**待 Ziyue 确认的文案**(都在 data 文件里,改字不碰组件):
+- [ ] Hero 副标题加了 "CELTA teacher training"(动了已确认的定位句第二句)
+- [ ] `src/data/teaching.ts` 的 4 条 principles 和 workingOn(来源:CELTA 课堂笔记 + 报告,措辞是模型写的)
+- [ ] `src/data/site.ts` 的 heroLines(头像台词)
+- [ ] 头像长相:默认黑色及肩发 + 斜刘海,需按本人调整(发型/眼镜/标志物)

@@ -1,0 +1,45 @@
+---
+// Hand-drawn mark around inline text. Drawn when scrolled into view (script in Base.astro).
+// kind="underline" — wavy pen line under the words
+// kind="circle"    — loose loop around the words
+// kind="mark"      — highlighter swipe behind the words
+interface Props {
+  kind?: "underline" | "circle" | "mark";
+}
+const { kind = "underline" } = Astro.props;
+---
+
+{
+  kind === "mark" ? (
+    <span class="mark">
+      <slot />
+    </span>
+  ) : (
+    <span class="scribble">
+      <slot />
+      {kind === "underline" ? (
+        <svg class="-bottom-2 left-0 h-3 w-full" viewBox="0 0 200 16" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M3 11 C 40 4, 80 15, 120 8 S 180 6, 197 10"
+            fill="none"
+            stroke="var(--color-accent)"
+            stroke-width="3"
+            stroke-linecap="round"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
+      ) : (
+        <svg class="-top-[18%] -left-[7%] h-[136%] w-[114%]" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            d="M118 5 C 60 1, 8 10, 6 30 C 4 52, 70 58, 120 56 C 176 54, 198 42, 194 26 C 190 10, 140 3, 80 8"
+            fill="none"
+            stroke="var(--color-accent)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            vector-effect="non-scaling-stroke"
+          />
+        </svg>
+      )}
+    </span>
+  )
+}
