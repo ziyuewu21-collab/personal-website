@@ -35,21 +35,23 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
       <g class="boil"><g class="av-figure" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round">
         <!-- hair, back layer -->
         <path
-          d="M150 60 C 98 58, 70 98, 72 150 C 73 190, 66 228, 76 258 C 100 266, 200 266, 224 258 C 234 228, 227 190, 228 150 C 230 98, 202 62, 150 60 Z"
-          fill="var(--color-ink)"
+          d="M150 60 C 98 58, 70 98, 72 150 C 73 190, 66 228, 76 262 C 100 270, 200 270, 224 262 C 234 228, 227 190, 228 150 C 230 98, 202 62, 150 60 Z"
+          fill="var(--color-hair)"
           stroke-width="3"
         />
-        <!-- neck -->
+        <!-- neck + gold necklace -->
         <path d="M137 196 L136 250 L164 250 L163 196 Z" fill="var(--color-skin)" stroke="none" />
         <path d="M137 198 L136 246 M163 198 L164 246" fill="none" stroke-width="3" />
+        <path d="M138 222 Q150 236 162 222" fill="none" stroke="var(--color-gold)" stroke-width="1.6" />
+        <circle cx="150" cy="233" r="2.6" fill="none" stroke="var(--color-gold)" stroke-width="1.6" />
         <!-- jumper -->
         <path d="M62 340 C 64 282, 98 246, 150 242 C 202 246, 236 282, 238 340" fill="var(--color-sweater)" stroke-width="3" />
         <path d="M126 246 C 136 262, 164 262, 174 246" fill="none" stroke-width="3" />
         <path d="M100 300 C 98 316, 98 328, 99 340" fill="none" stroke-width="2.5" />
         <!-- waving arm: ink tube under a jumper-coloured tube = outlined sleeve -->
         <g class="av-arm">
-          <path d="M196 270 C 222 256, 238 236, 246 210" fill="none" stroke-width="22" />
-          <path d="M196 270 C 222 256, 238 236, 246 210" fill="none" stroke="var(--color-sweater)" stroke-width="16" />
+          <path d="M210 268 C 226 256, 238 236, 246 210" fill="none" stroke-width="22" />
+          <path d="M210 268 C 226 256, 238 236, 246 210" fill="none" stroke="var(--color-sweater)" stroke-width="16" />
           <circle cx="248" cy="196" r="13" fill="var(--color-skin)" stroke-width="3" />
           <path d="M238 190 C 236 184, 238 179, 242 178" fill="none" stroke-width="2.5" />
         </g>
@@ -59,36 +61,60 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
           fill="var(--color-skin)"
           stroke-width="3"
         />
-        <!-- fringe -->
+        <!-- layered side hair, falling in front of the shoulders -->
         <path
-          d="M90 138 C 88 100, 114 72, 152 72 C 190 72, 214 100, 211 140 C 204 126, 196 112, 190 100 C 176 116, 150 124, 120 122 C 108 122, 96 128, 90 138 Z"
-          fill="var(--color-ink)"
+          d="M92 120 C 80 168, 78 232, 74 292 L 82 304 L 90 296 L 98 308 L 106 298 C 110 268, 114 238, 108 212 C 100 194, 93 172, 93 148 Z"
+          fill="var(--color-hair)"
           stroke-width="3"
         />
-        <path d="M168 80 C 158 98, 142 110, 122 116" fill="none" stroke="var(--color-paper)" stroke-width="2" opacity="0.35" />
+        <path
+          d="M208 120 C 220 168, 222 232, 226 292 L 218 304 L 210 296 L 202 308 L 194 298 C 190 268, 186 238, 192 212 C 200 194, 207 172, 207 148 Z"
+          fill="var(--color-hair)"
+          stroke-width="3"
+        />
+        <!-- top of the head: middle part, no fringe -->
+        <path
+          d="M88 150 C 84 96, 112 62, 152 62 C 190 62, 216 96, 212 150 C 206 126, 196 106, 182 96 C 170 90, 162 88, 156 82 C 148 90, 136 94, 122 99 C 106 107, 94 126, 88 150 Z"
+          fill="var(--color-hair)"
+          stroke-width="3"
+        />
+        <g fill="none" stroke="var(--color-hair-light)" stroke-width="2" opacity="0.8">
+          <path d="M150 70 C 136 76, 118 86, 104 104" />
+          <path d="M82 200 C 80 230, 80 260, 78 290" />
+          <path d="M218 200 C 220 230, 220 260, 222 290" />
+        </g>
         <!-- brows -->
         <g class="av-brows" fill="none" stroke-width="3">
-          <path d="M115 136 Q127 130 139 135" />
-          <path d="M161 135 Q173 130 185 136" />
+          <path d="M113 131 Q127 125 141 130" />
+          <path d="M159 130 Q173 125 187 131" />
         </g>
         <!-- eyes: socket is a fixed reference point, pupil moves inside it -->
         {
           [127, 173].map((cx) => (
             <g class="av-eye">
-              <circle class="av-socket" cx={cx} cy="153" r="6" fill="none" stroke="none" />
+              <circle class="av-socket" cx={cx} cy="154" r="6" fill="none" stroke="none" />
               <g class="av-pupil">
-                <circle cx={cx} cy="153" r="6" fill="var(--color-ink)" stroke="none" />
-                <circle cx={cx - 2} cy="150.5" r="1.8" fill="#fff" stroke="none" />
+                <circle cx={cx} cy="154" r="6" fill="var(--color-ink)" stroke="none" />
+                <circle cx={cx - 2} cy="151.5" r="1.8" fill="#fff" stroke="none" />
               </g>
             </g>
           ))
         }
+        <!-- clear square glasses: thicker top bar, thin rims -->
+        <g class="av-glasses" fill="none" stroke="var(--color-frame)">
+          <path d="M106 140 L148 140 L146 162 C 145 167, 141 170, 136 170 L 116 170 C 111 170, 108 167, 107 162 Z" fill="#fff" fill-opacity="0.18" stroke-width="2.2" />
+          <path d="M152 140 L194 140 L193 162 C 192 167, 189 170, 184 170 L 164 170 C 159 170, 155 167, 154 162 Z" fill="#fff" fill-opacity="0.18" stroke-width="2.2" />
+          <path d="M104 140 L148 139 M152 139 L196 140" stroke-width="4" />
+          <path d="M148 143 Q150 140 152 143" stroke-width="2.2" />
+          <path d="M104 141 L91 138 M196 141 L209 138" stroke-width="2.2" />
+          <path d="M136 146 L142 152 M182 146 L188 152" stroke="#fff" stroke-width="2" opacity="0.9" />
+        </g>
         <!-- cheeks, nose, mouth -->
-        <ellipse cx="113" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
-        <ellipse cx="187" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
-        <path d="M151 160 Q147 168 153 169" fill="none" stroke-width="2.5" />
-        <path class="av-smile" d="M136 182 Q150 195 164 182" fill="none" stroke-width="3" />
-        <ellipse class="av-talk" cx="150" cy="186" rx="8" ry="7" fill="#b8433d" stroke-width="2.5" />
+        <ellipse cx="111" cy="182" rx="10" ry="6" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+        <ellipse cx="189" cy="182" rx="10" ry="6" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+        <path d="M151 162 Q147 170 153 171" fill="none" stroke-width="2.5" />
+        <path class="av-smile" d="M134 184 Q150 199 166 184" fill="none" stroke-width="3" />
+        <ellipse class="av-talk" cx="150" cy="189" rx="9" ry="8" fill="#b8433d" stroke-width="2.5" />
       </g></g>
     </svg>
   </button>
@@ -196,7 +222,7 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
   }
 
   .av-arm {
-    transform-origin: 198px 268px;
+    transform-origin: 210px 268px;
   }
   .is-waving .av-arm {
     animation: wave 0.55s ease-in-out 3;
