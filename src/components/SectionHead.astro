@@ -1,15 +1,25 @@
 ---
-// Section heading: handwritten kicker ("01 · work") over the h2, plus optional intro text.
+// Section heading: lesson-stage kicker ("Stage 03 · Task · Ss ↔ Ss") over the h2,
+// plus optional intro text. Stage data: src/data/lesson.ts.
+import { stages } from "../data/lesson";
+
 interface Props {
-  kicker: string;
+  stage: string; // section id, e.g. "teaching"
   title: string;
 }
-const { kicker, title } = Astro.props;
+const { stage, title } = Astro.props;
+const s = stages.find((x) => x.id === stage);
 ---
 
 <div>
-  <p class="hand text-2xl text-(--color-accent)">{kicker}</p>
-  <h2 class="mt-1 text-[28px] md:text-[40px]">{title}</h2>
+  {
+    s && (
+      <p class="mono text-(--color-accent)">
+        Stage {s.n} · {s.name} · <span class="normal-case">{s.interaction}</span>
+      </p>
+    )
+  }
+  <h2 class="mt-3 text-[28px] tracking-tight md:text-[40px]">{title}</h2>
   <div class="mt-4 max-w-[65ch] text-(--color-ink-soft)">
     <slot />
   </div>

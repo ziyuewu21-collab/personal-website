@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
-/* Design tokens. v2 (2026-10): notebook paper + ballpoint ink + one highlighter.
+/* Design tokens. v3 (2026-10): white paper, ink, one blue accent, one highlighter.
+   Doodles carry the personality; the layout stays quiet.
    Components read these; don't hardcode colours elsewhere. */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --font-hand: "Caveat", "Segoe Print", "Bradley Hand", cursive; /* inside doodles + logo only */
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; /* labels, HUD */
 
   --color-accent: #2f4bd6; /* ballpoint blue: links, buttons, the ONLY accent */
   --color-highlight: #ffe27a; /* highlighter: marks behind words, never text */
   --color-ink: #1f1d1a;
   --color-ink-soft: #5f5a52;
-  --color-paper: #fbf8f1;
-  --color-paper-alt: #f3eee2;
+  --color-paper: #ffffff;
+  --color-paper-alt: #f6f5f1;
+  --color-line: #e4e1da; /* hairlines */
   --color-skin: #fff1e4; /* doodle fills only */
   --color-blush: #f4a7a0; /* doodle cheeks only */
   --color-sweater: #c9d3ff; /* doodle clothes only */
@@ -31,9 +34,6 @@ html {
 body {
   font-size: 16px;
   line-height: 1.6;
-  /* Dotted notebook paper */
-  background-image: radial-gradient(circle, rgb(31 29 26 / 0.08) 1px, transparent 1.3px);
-  background-size: 22px 22px;
 }
 
 h1, h2, h3 {
@@ -47,68 +47,81 @@ a:focus-visible, button:focus-visible {
   outline-offset: 3px;
 }
 
-/* ---------- Hand-drawn building blocks ---------- */
+/* ---------- Building blocks ----------
+   In the components layer so Tailwind utilities (hidden, normal-case, …) can override them. */
+@layer components {
 
-.hand {
-  font-family: var(--font-hand);
-}
+  .hand {
+    font-family: var(--font-hand);
+  }
 
-/* Sketchy box: wobbly corners + offset ink shadow */
-.sketch {
-  border: 2px solid var(--color-ink);
-  border-radius: 18px 6px 20px 8px / 8px 20px 6px 18px;
-  box-shadow: 3px 4px 0 var(--color-ink);
-  background: #fff;
-}
+  /* Small uppercase monospace label: kickers, tags, HUD */
+  .mono {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  border: 2px solid var(--color-ink);
-  border-radius: 14px 5px 16px 6px / 6px 16px 5px 14px;
-  box-shadow: 3px 3px 0 var(--color-ink);
-  transition: transform 120ms ease, box-shadow 120ms ease;
-}
-.btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 5px 0 var(--color-ink);
-}
-.btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0 var(--color-ink);
-}
-.btn-primary {
-  background: var(--color-accent);
-  color: #fff;
-}
-.btn-ghost {
-  background: #fff;
-}
+  /* Quiet frame for doodles and cards */
+  .sketch {
+    border: 1.5px solid var(--color-ink);
+    border-radius: 14px;
+    background: #fff;
+  }
 
-/* Segmented toggle used by the classroom + pair-learning doodles */
-.toggle {
-  display: inline-flex;
-  padding: 4px;
-  gap: 4px;
-  border: 2px solid var(--color-ink);
-  border-radius: 999px;
-  background: #fff;
-}
-.toggle button {
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-ink-soft);
-  transition: background 160ms ease, color 160ms ease;
-}
-.toggle button[aria-pressed="true"] {
-  background: var(--color-ink);
-  color: #fff;
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.7rem 1.3rem;
+    font-weight: 600;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 4px;
+    transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-primary {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .btn-ghost {
+    background: #fff;
+  }
+  .btn-ghost:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  /* Segmented toggle used by the classroom + pair-learning doodles */
+  .toggle {
+    display: inline-flex;
+    padding: 4px;
+    gap: 4px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: #fff;
+  }
+  .toggle button {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .toggle button[aria-pressed="true"] {
+    background: var(--color-ink);
+    color: #fff;
+  }
 }
 
 /* Scribbles: underline / circle drawn on scroll (see Scribble.astro) */

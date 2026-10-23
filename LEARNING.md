@@ -39,3 +39,17 @@
   - 改 CELTA 某项评级(比如发现抄错了)→ `src/data/teaching.ts` 里那一行的 `rating: "e"` / `"s"`,上面的 13/23/0 会自动重算
 
 **检验问题**:如果你想让头像第一句话改成 "Hello!",你会打开哪个文件、改哪里?如果教室切换按钮点了没反应,你会先去哪个文件找原因?
+
+## v3 lesson-plan 概念 — 2026-10-23
+
+- **代码在哪**:
+  - `src/data/lesson.ts` — 教案本体:5 个 stage 的名字、谁在说话、talk 比例、分钟数;还有聊天框的台词
+  - `src/components/LessonHud.astro` — 底部那条胶囊。脚本做的事:每次滚动,看哪个区块的顶部已经过了屏幕 45% 那条线 → 那就是当前 stage → 换文字、挪 talk 条、算时钟
+  - `src/components/ChatContact.astro` — 聊天框。三步:问名字 → 问留言 → 生成一个 `mailto:` 链接(就是"点了打开你的邮件 App 并填好内容"的那种链接)。**没有服务器,也不存任何东西**——所以你收到的就是一封普通邮件
+  - `src/pages/index.astro` — 每个 `<section id="...">` 的 id 对应 lesson.ts 里的一个 stage
+- **数据怎么流**:lesson.ts 的 stage 列表 → 构建时写进 HUD 的 `data-stages` 属性 → 浏览器里脚本读出来,配合滚动位置实时更新。区块标题上方那行 "STAGE 03 · TASK · Ss ↔ Ss" 也是从同一个列表生成的,所以改一处两边都变
+- **想自己改的话**:
+  - 改某个 stage 的名字或分钟数 → `src/data/lesson.ts` 那一行(总分钟数 `lessonMinutes` 要等于各 stage 相加)
+  - 改聊天框说的话 → `src/data/lesson.ts` 的 `chat`,`{name}` 会被替换成访客的名字
+
+**检验问题**:如果你在页面中间新加一个区块,但没在 lesson.ts 里加对应的 stage,底部的教案条会怎样?为什么聊天框不需要后端?

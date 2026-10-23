@@ -1,0 +1,22 @@
+---
+// Just the head from Avatar.astro, static. Used next to chat messages.
+// Keep the paths in step with Avatar.astro if her look changes.
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<svg viewBox="62 52 176 176" class={className} aria-hidden="true">
+  <g stroke="var(--color-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="150" cy="140" r="86" fill="var(--color-paper-alt)" stroke="none" />
+    <path d="M150 60 C 98 58, 70 98, 72 150 C 73 190, 66 228, 76 258 L 224 258 C 234 228, 227 190, 228 150 C 230 98, 202 62, 150 60 Z" fill="var(--color-ink)" />
+    <path d="M150 76 C 186 75, 211 103, 210 142 C 209 181, 185 208, 150 208 C 115 208, 90 182, 90 142 C 90 103, 114 77, 150 76 Z" fill="var(--color-skin)" />
+    <path d="M90 138 C 88 100, 114 72, 152 72 C 190 72, 214 100, 211 140 C 204 126, 196 112, 190 100 C 176 116, 150 124, 120 122 C 108 122, 96 128, 90 138 Z" fill="var(--color-ink)" />
+    <circle cx="127" cy="153" r="7" fill="var(--color-ink)" stroke="none" />
+    <circle cx="173" cy="153" r="7" fill="var(--color-ink)" stroke="none" />
+    <ellipse cx="113" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+    <ellipse cx="187" cy="173" rx="11" ry="6.5" fill="var(--color-blush)" stroke="none" opacity="0.7" />
+    <path d="M136 182 Q150 195 164 182" fill="none" />
+  </g>
+</svg>

@@ -1,16 +1,19 @@
 ---
-// Base layout: head metadata, fonts, doodle filters, header, footer. Every page uses this.
+// Base layout: head metadata, fonts, doodle filters, header, footer, lesson-plan bar.
+// Every page uses this; pass hud={false} on pages that aren't the lesson (404).
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import LessonHud from "../components/LessonHud.astro";
 import { site } from "../data/site";
 
 interface Props {
   title?: string;
   description?: string;
+  hud?: boolean;
 }
 
-const { title = site.title, description = site.description } = Astro.props;
+const { title = site.title, description = site.description, hud = true } = Astro.props;
 ---
 
 <html lang="en">
@@ -32,7 +35,7 @@ const { title = site.title, description = site.description } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -55,6 +58,7 @@ const { title = site.title, description = site.description } = Astro.props;
       <slot />
     </main>
     <Footer />
+    {hud && <LessonHud />}
   </body>
 </html>
 

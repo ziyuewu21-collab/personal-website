@@ -13,14 +13,14 @@ export const site = {
   github: "", // TODO(Ziyue): add GitHub profile URL when repo is public
   // Set to true only after public/cv.pdf exists (BUILD-PLAN T2)
   cvReady: false,
-  // Hero doodle: the first line shows on load, each click shows the next.
+  // Hero doodle: the first line pops up on load, each click shows the next.
   heroLines: [
-    "Hi! I'm Ziyue. Tap me.",
+    "Hi! Tap me.",
     "Quick question: what makes a new word stick?",
     "Using it with someone. That's my dissertation.",
     "Sorry, CELTA habit. I ask before I tell.",
-    "Scroll down. The classroom is interactive.",
-    "你好! Still here? Say hi at the bottom.",
+    "This page is a lesson plan. See the bar below?",
+    "你好! By the end, it's your turn to talk.",
   ],
   // Mirrors the CELTA lesson-aim formula ("learners will be better able to ...").
   lessonAim: "By the end of this page, you will be better able to say what I build, and why.",

@@ -17,6 +17,7 @@
 3. CV 按钮由 `site.ts` 的 `cvReady` 开关控制,`public/cv.pdf` 存在后才设 true
 4. 样式只用 global.css 里的 tokens 和 Tailwind scale 值(design-system.md 的禁止清单适用)
 5. CELTA 报告的评级只能照抄原件(`src/data/teaching.ts` 顶部注释),不许"四舍五入"成 excellent
+6. 区块 `id` 必须和 `src/data/lesson.ts` 的 stage `id` 一致,否则底部 lesson-plan 条会认错 stage
 
 ## 任务(按顺序,每个做完跑 verify loop 再 commit)
 
@@ -61,3 +62,4 @@
 - 2026-07-06 — 架构 + v1 全部区块 + 验证 + 首次 commit(强模型完成)
 - 2026-07-22 — MyTurn 卡片更新为 shipped + live/demo 外链 + 移到第一张;`Project` 类型新增可选 `links[]`,卡片模板按"有就画、没有就隐藏"渲染(沿用架构规则 #2)。`npm run build` 通过;dev server 1280px + 375px 验证通过(无横向滚动,链接可点 41px 高),console 无报错;commit `8a49414`。**T1 仍未做——站点尚未上线,无 git remote**
 - 2026-10-23 — v2 doodle 改版(Ziyue 提出):新 tokens(纸 + 圆珠笔蓝 + 荧光黄)、Caveat 手写字体、line-boil 滤镜;Hero 头像(眼睛跟随/眨眼/点击挥手换台词)+ Lesson aim 便利贴;新 Teaching 区块(教室切换、principles、CELTA 报告还原);Research 区块加两人学词 doodle;Work 卡片纸张化;Footer 加小头像。新增 `src/data/teaching.ts`。`npm run build` 通过;1280px + 375px 截图验证,无横向滚动,console 无报错;交互脚本验证(鼠标跟随、点击/Enter 换台词、键盘切换、reduced-motion 不挥手)。参考站点被云端网络策略拦截,未能直接对照。**T1 仍未做**
+- 2026-10-23 — v3(看过参考站截图后):整页改为 CELTA lesson plan 概念。新增 `LessonHud`(底部教案条 + plan 弹窗)、`ChatContact`(聊天式联系,mailto)、`HeroIcon`、`AvatarHead`、`src/data/lesson.ts`;Avatar 加 inline 模式(嵌在 hero 句子里,气泡弹出后自动消失);白底 + 等宽标签,Work 改细线列表,Writing 并入 Contact,删 Squiggle。全局组件类移入 `@layer components`(否则 Tailwind 的 `hidden` 等工具类压不过它们)。`npm run build` 通过;1280 + 375 截图无横向滚动、console 无报错;交互脚本验证:5 个 stage 切换 + 导航高亮 + 时钟到 45:00、聊天三步 + mailto 链接正确且访客输入不被当 HTML、plan 弹窗 Esc 关闭。**T1 仍未做**

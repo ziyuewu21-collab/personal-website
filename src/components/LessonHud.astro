@@ -1,0 +1,223 @@
+---
+// Fixed lesson-plan bar at the bottom of the screen. As you scroll it shows the current
+// stage, who's talking, a talk-time meter and a lesson clock. "plan" opens the full
+// lesson plan, which doubles as navigation. Data: src/data/lesson.ts.
+import { stages, lessonMinutes, planExplainer } from "../data/lesson";
+
+let start = 0;
+const rows = stages.map((s) => {
+  const row = { ...s, from: start, to: start + s.minutes };
+  start += s.minutes;
+  return row;
+});
+---
+
+<div class="hud" data-hud data-stages={JSON.stringify(rows)} data-total={lessonMinutes}>
+  <div class="plan-pop sketch" id="lesson-plan" hidden>
+    <p class="mono text-(--color-accent)">Lesson plan · {lessonMinutes} min</p>
+    <p class="mt-2 text-sm text-(--color-ink-soft)">{planExplainer}</p>
+    <table class="mt-4 w-full text-left text-sm">
+      <thead>
+        <tr class="mono text-(--color-ink-soft)">
+          <th class="pb-2 font-normal">Stage</th>
+          <th class="pb-2 font-normal">Who's talking</th>
+          <th class="pb-2 text-right font-normal">Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((r) => (
+            <tr class="border-t border-(--color-line)" data-row={r.id}>
+              <td class="py-2">
+                <a href={`#${r.id}`} class="font-semibold hover:text-(--color-accent)">
+                  <span class="mono mr-1 text-(--color-ink-soft)">{r.n}</span>
+                  {r.name}
+                </a>
+              </td>
+              <td class="mono py-2 normal-case">{r.interaction}</td>
+              <td class="mono py-2 text-right">
+                {r.from}–{r.to}′
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pill">
+    <span class="mono hidden text-(--color-ink-soft) sm:inline" aria-hidden="true">Lesson plan</span>
+    <span class="mono" aria-hidden="true"><b data-hud-n>{rows[0].n}</b><span class="text-(--color-ink-soft)">/{rows.length.toString().padStart(2, "0")}</span></span>
+    <span class="stage font-semibold" data-hud-name aria-hidden="true">{rows[0].name}</span>
+    <span class="mono text-(--color-accent) normal-case" data-hud-ix aria-hidden="true">{rows[0].interaction}</span>
+    <span class="meter" aria-hidden="true">
+      <span class="mono normal-case">T</span>
+      <span class="bar"><i data-hud-bar></i></span>
+      <span class="mono normal-case">Ss</span>
+    </span>
+    <span class="mono hidden w-[5ch] text-right sm:inline" data-hud-clock aria-hidden="true">00:00</span>
+    <button type="button" class="plan-btn mono" aria-expanded="false" aria-controls="lesson-plan" aria-label="Show the lesson plan this page follows">
+      plan
+    </button>
+  </div>
+</div>
+
+<style>
+  .hud {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 40;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+  }
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.4rem 0.4rem 1rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 24px rgb(31 29 26 / 0.12);
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  .stage {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .meter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.625rem;
+  }
+  .bar {
+    position: relative;
+    width: 64px;
+    height: 8px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-highlight);
+    overflow: hidden;
+  }
+  .bar i {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 85%;
+    background: var(--color-sweater);
+    border-right: 1.5px solid var(--color-ink);
+    transition: width 200ms linear;
+  }
+  .plan-btn {
+    min-height: 36px;
+    padding: 0 0.9rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .plan-btn[aria-expanded="true"] {
+    background: var(--color-accent);
+  }
+  .plan-pop {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(26rem, calc(100vw - 24px));
+    padding: 1.1rem 1.2rem;
+    box-shadow: 0 12px 40px rgb(31 29 26 / 0.16);
+  }
+  [data-row].is-current {
+    background: var(--color-paper-alt);
+  }
+  @media (max-width: 400px) {
+    .pill { gap: 0.55rem; padding-left: 0.8rem; }
+    .bar { width: 44px; }
+  }
+</style>
+
+<script>
+  type Row = { id: string; n: string; name: string; interaction: string; teacherTalk: number; from: number; to: number };
+
+  const hud = document.querySelector<HTMLElement>("[data-hud]");
+  if (hud) {
+    const rows: Row[] = JSON.parse(hud.dataset.stages || "[]");
+    const sections = rows.map((r) => document.getElementById(r.id));
+    const $n = hud.querySelector<HTMLElement>("[data-hud-n]")!;
+    const $name = hud.querySelector<HTMLElement>("[data-hud-name]")!;
+    const $ix = hud.querySelector<HTMLElement>("[data-hud-ix]")!;
+    const $bar = hud.querySelector<HTMLElement>("[data-hud-bar]")!;
+    const $clock = hud.querySelector<HTMLElement>("[data-hud-clock]")!;
+    const $btn = hud.querySelector<HTMLButtonElement>(".plan-btn")!;
+    const $pop = hud.querySelector<HTMLElement>(".plan-pop")!;
+    const navLinks = document.querySelectorAll<HTMLAnchorElement>("[data-nav]");
+    let current = -1;
+    let frame = 0;
+
+    const update = () => {
+      const probe = window.innerHeight * 0.45;
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      // Current stage = last section whose top has passed the probe line.
+      let i = 0;
+      sections.forEach((el, k) => {
+        if (el && el.getBoundingClientRect().top <= probe) i = k;
+      });
+      if (atBottom) i = rows.length - 1;
+      const el = sections[i];
+      let f = 0;
+      if (el) {
+        const r = el.getBoundingClientRect();
+        f = Math.min(1, Math.max(0, (probe - r.top) / Math.max(1, r.height)));
+      }
+      if (atBottom) f = 1;
+      const row = rows[i];
+      const next = rows[i + 1] ?? row;
+      const talk = row.teacherTalk + (next.teacherTalk - row.teacherTalk) * f;
+      $bar.style.width = `${talk.toFixed(1)}%`;
+      const minutes = row.from + (row.to - row.from) * f;
+      const mm = Math.floor(minutes);
+      const ss = Math.floor((minutes - mm) * 60);
+      $clock.textContent = `${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+
+      if (i !== current) {
+        current = i;
+        $n.textContent = row.n;
+        $name.textContent = row.name;
+        $ix.textContent = row.interaction;
+        hud.querySelectorAll("[data-row]").forEach((tr) => tr.classList.toggle("is-current", (tr as HTMLElement).dataset.row === row.id));
+        navLinks.forEach((a) => {
+          if (a.getAttribute("href") === `#${row.id}`) a.setAttribute("aria-current", "true");
+          else a.removeAttribute("aria-current");
+        });
+      }
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+
+    const setOpen = (open: boolean) => {
+      $pop.hidden = !open;
+      $btn.setAttribute("aria-expanded", String(open));
+    };
+    $btn.addEventListener("click", () => setOpen($pop.hidden));
+    $pop.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !$pop.hidden) {
+        setOpen(false);
+        $btn.focus();
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (!$pop.hidden && !hud.contains(e.target as Node)) setOpen(false);
+    });
+  }
+</script>

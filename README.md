@@ -1,6 +1,6 @@
 # Ziyue Wu — personal site
 
-Portfolio site for a product manager working on language learning. Static, fast, no tracking. Hand-drawn doodle style: the hero avatar follows your cursor, and the classroom and pair-learning drawings flip when you click them.
+Portfolio site for a product manager working on language learning. Static, fast, no tracking. The page is laid out as a CELTA lesson plan: a bar at the bottom tracks the stage, who's talking and the lesson clock as you scroll. Doodles (an avatar that follows your cursor, a classroom and a pair-learning scene that flip when clicked) carry the personality.
 
 ## Stack
 
@@ -17,6 +17,7 @@ Text and links are data, not markup. To change what the site says, edit these tw
 | `src/data/site.ts` | Name, tagline, email, external profile links, the CV button toggle |
 | `src/data/projects.ts` | The project cards, the research → product items, the pair-learning doodle captions |
 | `src/data/teaching.ts` | CELTA facts, the 36 report ratings, classroom habits → product decisions |
+| `src/data/lesson.ts` | The lesson-plan stages (must match section ids), the contact chat lines |
 
 An empty string for a link hides that link automatically, so filling one in is all that is needed to make it appear.
 

@@ -3,22 +3,33 @@
 // (or Enter/Space) makes her wave and say the next line. All instances on a page share
 // one script. To change how she looks, edit the paths below; to change what she
 // says, pass different `lines`.
+// inline: sits inside a sentence (hero). Her speech bubble pops above her and fades
+// out again instead of staying on screen.
 interface Props {
   lines: string[];
   class?: string;
   bubble?: "left" | "right";
+  inline?: boolean;
 }
-const { lines, class: className = "", bubble = "left" } = Astro.props;
+const { lines, class: className = "", bubble = "left", inline = false } = Astro.props;
 ---
 
-<div class:list={["avatar relative select-none", className]} data-avatar data-lines={JSON.stringify(lines)}>
-  <p
-    class:list={["bubble hand sketch absolute z-10 px-4 py-2 text-xl leading-tight md:text-2xl", `bubble-${bubble}`]}
+<span
+  class:list={["avatar relative select-none", inline ? "avatar-inline inline-block align-bottom" : "block", className]}
+  data-avatar
+  data-lines={JSON.stringify(lines)}
+  data-autohide={inline ? "" : undefined}
+>
+  <span
+    class:list={[
+      "bubble hand sketch absolute z-10 block px-4 py-2 text-xl leading-tight font-normal tracking-normal md:text-2xl",
+      inline ? "bubble-top" : `bubble-${bubble}`,
+    ]}
     data-bubble
     aria-live="polite"
   >
-    {lines[0]}
-  </p>
+    {inline ? "" : lines[0]}
+  </span>
   <button type="button" class="block w-full cursor-pointer rounded-[24px]" aria-label="Say hi to Ziyue. Each click, she says something new.">
     <svg viewBox="0 0 300 340" class="block h-auto w-full overflow-visible" aria-hidden="true">
       <g class="boil"><g class="av-figure" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round">
@@ -81,7 +92,7 @@ const { lines, class: className = "", bubble = "left" } = Astro.props;
       </g></g>
     </svg>
   </button>
-</div>
+</span>
 
 <style>
   .bubble {
@@ -101,12 +112,12 @@ const { lines, class: className = "", bubble = "left" } = Astro.props;
   .bubble::after {
     content: "";
     position: absolute;
-    bottom: -9px;
+    bottom: -8px;
     width: 14px;
     height: 14px;
     background: #fff;
-    border-right: 2px solid var(--color-ink);
-    border-bottom: 2px solid var(--color-ink);
+    border-right: 1.5px solid var(--color-ink);
+    border-bottom: 1.5px solid var(--color-ink);
     transform: rotate(45deg) skew(8deg, 8deg);
   }
   .bubble-left::after {
@@ -115,7 +126,23 @@ const { lines, class: className = "", bubble = "left" } = Astro.props;
   .bubble-right::after {
     left: 28%;
   }
-  .bubble.pop {
+  .bubble-top {
+    bottom: 96%;
+    left: 50%;
+    translate: -50% 0;
+    opacity: 0;
+    scale: 0.6;
+    transition: opacity 180ms ease, scale 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+  .bubble-top::after {
+    left: calc(50% - 7px);
+  }
+  .bubble-top.show {
+    opacity: 1;
+    scale: 1;
+  }
+  .bubble.pop:not(.bubble-top) {
     animation: pop 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @keyframes pop {
@@ -243,31 +270,46 @@ const { lines, class: className = "", bubble = "left" } = Astro.props;
     a.classList.add("is-waving");
     setTimeout(() => a.classList.remove("is-waving"), 1700);
   }
+  const say = new Map<HTMLElement, (i: number) => void>();
   for (const a of avatars) {
     const lines: string[] = JSON.parse(a.dataset.lines || "[]");
     const bubble = a.querySelector<HTMLElement>("[data-bubble]")!;
+    const autohide = a.dataset.autohide !== undefined;
     let i = 0;
     let talkTimer = 0;
-    a.querySelector("button")!.addEventListener("click", () => {
-      i = (i + 1) % lines.length;
-      bubble.textContent = lines[i];
+    let hideTimer = 0;
+    const speak = (n: number) => {
+      bubble.textContent = lines[n];
       bubble.classList.remove("pop");
       void bubble.offsetWidth;
-      bubble.classList.add("pop");
-      wave(a);
+      bubble.classList.add("pop", "show");
       a.classList.add("is-talking");
       clearTimeout(talkTimer);
-      talkTimer = window.setTimeout(() => a.classList.remove("is-talking"), Math.min(2200, 600 + lines[i].length * 35));
+      talkTimer = window.setTimeout(() => a.classList.remove("is-talking"), Math.min(2200, 600 + lines[n].length * 35));
+      if (autohide) {
+        clearTimeout(hideTimer);
+        hideTimer = window.setTimeout(() => bubble.classList.remove("show"), 4000);
+      }
+    };
+    say.set(a, speak);
+    a.querySelector("button")!.addEventListener("click", () => {
+      i = (i + 1) % lines.length;
+      speak(i);
+      wave(a);
     });
   }
 
-  // Wave hello once when each avatar first comes into view.
+  // Wave hello once when each avatar first comes into view; inline ones say line one.
   const hello = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
         if (!e.isIntersecting) continue;
-        hello.unobserve(e.target);
-        setTimeout(() => wave(e.target as HTMLElement), 400);
+        const a = e.target as HTMLElement;
+        hello.unobserve(a);
+        setTimeout(() => {
+          wave(a);
+          if (a.dataset.autohide !== undefined) say.get(a)?.(0);
+        }, 400);
       }
     },
     { threshold: 0.5 },

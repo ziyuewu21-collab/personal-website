@@ -1,0 +1,171 @@
+---
+// Contact as a short chat: name → message → open the visitor's email app with the
+// message prefilled (mailto). No server and nothing stored; the plain email link below
+// works without JavaScript. Copy: src/data/lesson.ts (chat).
+import { site } from "../data/site";
+import { chat } from "../data/lesson";
+import AvatarHead from "./AvatarHead.astro";
+---
+
+<div class="chat sketch max-w-[40rem] p-4 md:p-6" data-chat data-email={site.email} data-copy={JSON.stringify(chat)}>
+  <ol class="space-y-3" aria-live="polite" data-log>
+    <li class="msg them">
+      <AvatarHead class="h-10 w-10 shrink-0" />
+      <p class="bubble">{chat.hello}</p>
+    </li>
+  </ol>
+
+  <a class="btn btn-primary mt-4" hidden data-send href={`mailto:${site.email}`}>{chat.sendLabel} ↗</a>
+
+  <form class="composer mt-4" data-form>
+    <label for="chat-input" class="sr-only" data-label>{chat.namePlaceholder}</label>
+    <input
+      id="chat-input"
+      class="min-w-0 flex-1 bg-transparent px-4 py-3 outline-none"
+      placeholder={chat.namePlaceholder}
+      autocomplete="name"
+      maxlength="80"
+      data-input
+    />
+    <button type="submit" class="send" aria-label="Send">
+      <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true"><path d="M12 19 V5 M6 11 L12 5 L18 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+    </button>
+  </form>
+  <button type="button" class="mono mt-3 block py-2 text-(--color-ink-soft) hover:text-(--color-accent)" hidden data-restart>{chat.restart}</button>
+</div>
+
+<template data-head-tpl><AvatarHead class="h-10 w-10 shrink-0" /></template>
+
+<style>
+  /* Messages are added by the script, so these selectors are :global (no scope attribute). */
+  .chat :global(.msg) {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+  }
+  .chat :global(.msg.me) {
+    justify-content: flex-end;
+  }
+  .chat :global(.bubble) {
+    max-width: 80%;
+    padding: 0.6rem 0.9rem;
+    border: 1.5px solid var(--color-line);
+    border-radius: 14px 14px 14px 4px;
+    background: #fff;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .chat :global(.me .bubble) {
+    border-color: var(--color-ink);
+    border-radius: 14px 14px 4px 14px;
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .chat :global(.typing .bubble) {
+    letter-spacing: 0.2em;
+    color: var(--color-ink-soft);
+  }
+  .composer {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-paper-alt);
+  }
+  .composer:focus-within {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .send {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 2px;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: #fff;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-chat]").forEach((root) => {
+    const copy = JSON.parse(root.dataset.copy || "{}");
+    const email = root.dataset.email || "";
+    const log = root.querySelector<HTMLOListElement>("[data-log]")!;
+    const form = root.querySelector<HTMLFormElement>("[data-form]")!;
+    const input = root.querySelector<HTMLInputElement>("[data-input]")!;
+    const label = root.querySelector<HTMLLabelElement>("[data-label]")!;
+    const send = root.querySelector<HTMLAnchorElement>("[data-send]")!;
+    const restart = root.querySelector<HTMLButtonElement>("[data-restart]")!;
+    const headTpl = document.querySelector<HTMLTemplateElement>("[data-head-tpl]")!;
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const firstMessage = log.firstElementChild!.cloneNode(true);
+
+    let step: "name" | "message" | "done" = "name";
+    let name = "";
+
+    const add = (who: "me" | "them", text: string) => {
+      const li = document.createElement("li");
+      li.className = `msg ${who}`;
+      if (who === "them") li.append(headTpl.content.cloneNode(true));
+      const p = document.createElement("p");
+      p.className = "bubble";
+      p.textContent = text; // visitor text is never parsed as HTML
+      li.append(p);
+      log.append(li);
+      return li;
+    };
+    const reply = (text: string, then?: () => void) => {
+      const typing = add("them", "•••");
+      typing.classList.add("typing");
+      typing.setAttribute("aria-hidden", "true");
+      setTimeout(() => {
+        typing.remove();
+        add("them", text);
+        then?.();
+      }, reduceMotion ? 0 : 700);
+    };
+    const ask = (placeholder: string, autocomplete: string, max: number) => {
+      input.placeholder = placeholder;
+      label.textContent = placeholder;
+      input.autocomplete = autocomplete as AutoFill;
+      input.maxLength = max;
+    };
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      add("me", text);
+      if (step === "name") {
+        name = text;
+        step = "message";
+        ask(copy.messagePlaceholder, "off", 1000);
+        reply(copy.askMessage.replace("{name}", name), () => input.focus());
+      } else if (step === "message") {
+        step = "done";
+        form.hidden = true;
+        const subject = encodeURIComponent(`Hi from ${name}`);
+        const body = encodeURIComponent(`${text}\n\n${name}`);
+        send.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        reply(copy.done.replace("{name}", name), () => {
+          send.hidden = false;
+          restart.hidden = false;
+        });
+      }
+    });
+
+    restart.addEventListener("click", () => {
+      step = "name";
+      name = "";
+      log.replaceChildren(firstMessage.cloneNode(true));
+      send.hidden = true;
+      restart.hidden = true;
+      form.hidden = false;
+      ask(copy.namePlaceholder, "name", 80);
+      input.focus();
+    });
+  });
+</script>

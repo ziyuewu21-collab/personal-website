@@ -17,22 +17,22 @@ const highlights = [
 
 <div class="sketch bg-white p-5 md:p-7" data-report>
   <div class="flex flex-wrap items-end justify-between gap-4">
-    <h3 class="hand text-3xl">My CELTA report, redrawn</h3>
+    <h3 class="text-2xl font-semibold tracking-tight">My CELTA report, redrawn</h3>
     <p class="text-sm text-(--color-ink-soft)">{all.length} criteria, each rated by my tutors</p>
   </div>
 
   <dl class="mt-5 grid grid-cols-3 gap-3 text-center">
     <div class="rounded-[12px] bg-(--color-highlight) px-2 py-3">
-      <dt class="text-xs font-semibold">Excellent</dt>
-      <dd class="hand text-4xl leading-none">{count("e")}</dd>
+      <dt class="mono">Excellent</dt>
+      <dd class="mt-1 text-3xl leading-none font-semibold tracking-tight">{count("e")}</dd>
     </div>
     <div class="rounded-[12px] bg-(--color-paper-alt) px-2 py-3">
-      <dt class="text-xs font-semibold">At standard</dt>
-      <dd class="hand text-4xl leading-none">{count("s")}</dd>
+      <dt class="mono">At standard</dt>
+      <dd class="mt-1 text-3xl leading-none font-semibold tracking-tight">{count("s")}</dd>
     </div>
     <div class="rounded-[12px] border-2 border-dashed border-(--color-ink-soft) px-2 py-3">
-      <dt class="text-xs font-semibold">Needs attention</dt>
-      <dd class="hand text-4xl leading-none">{count("w")}</dd>
+      <dt class="mono">Needs attention</dt>
+      <dd class="mt-1 text-3xl leading-none font-semibold tracking-tight">{count("w")}</dd>
     </div>
   </dl>
 
@@ -66,26 +66,26 @@ const highlights = [
     }
   </div>
 
-  <p class="hand mt-4 min-h-[3.5rem] text-xl leading-snug text-(--color-accent)" aria-live="polite" data-detail>
+  <p class="mt-4 min-h-[3rem] font-semibold text-(--color-accent)" aria-live="polite" data-detail>
     Tap a box to read what it measures.
   </p>
 
   <div class="mt-4 grid gap-6 md:grid-cols-2">
     <div>
-      <p class="text-sm font-semibold">Rated excellent for</p>
+      <p class="mono">Rated excellent for</p>
       <ul class="mt-2 space-y-1.5 text-sm">
         {
           highlights.map((h) => (
             <li class="flex gap-2">
-              <span class="hand text-lg leading-5 text-(--color-accent)" aria-hidden="true">★</span>
+              <span class="leading-5 text-(--color-accent)" aria-hidden="true">★</span>
               {h}
             </li>
           ))
         }
       </ul>
     </div>
-    <div class="note relative rotate-[1deg] rounded-[4px] bg-(--color-highlight) p-4 shadow-[2px_3px_0_var(--color-ink)]">
-      <p class="hand text-2xl leading-none">Working on: {workingOn.title}</p>
+    <div class="note relative rounded-[4px] bg-(--color-highlight) p-4">
+      <p class="mono">Working on · {workingOn.title}</p>
       <p class="mt-2 text-sm">{workingOn.text}</p>
     </div>
   </div>

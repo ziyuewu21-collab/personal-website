@@ -64,3 +64,22 @@ date: 2026-07-06
 - [ ] `src/data/teaching.ts` 的 4 条 principles 和 workingOn(来源:CELTA 课堂笔记 + 报告,措辞是模型写的)
 - [ ] `src/data/site.ts` 的 heroLines(头像台词)
 - [ ] 头像长相:默认黑色及肩发 + 斜刘海,需按本人调整(发型/眼镜/标志物)
+
+---
+
+## v3 — 一个核心概念 + 克制的视觉(2026-10-23,看过参考站截图后)
+
+**参考站的共同点**:每个站只有**一个**和本人身份绑死的概念(Ryan Choi 的 원고지 稿纸格、Anna Cheng 的跳伞 = 滚动、Gordon Tu 把头像嵌进第一句话),其余全部克制(白底、细线、等宽小标签)。v2 的问题是反过来:装饰多,概念散。
+
+**v3 概念:整页就是一份 CELTA lesson plan。**
+- 每个区块 = 一个 stage:01 Lead-in(hero)→ 02 Context(Work)→ 03 Task(Teaching)→ 04 Language focus(Research)→ 05 Feedback(Contact)
+- 底部固定的 lesson-plan 条(借 Anna 的高度表):当前 stage、谁在说话(T → Ss / Ss ↔ Ss / Ss → T)、talk-time 条、按滚动走的 45 分钟课堂时钟;"plan" 按钮打开完整教案表(兼导航)
+- 页面从老师说(T → Ss)走到访客说(Ss → T)= student-centred 本身
+- Hero 借 Gordon:头像嵌在句子里 + 三个小图标行(classroom / lab / shipped)各链到对应区块
+- Contact 借 Gordon:聊天式(名字 → 留言 → 打开邮件 App,mailto,无服务器、不存数据)
+
+**视觉**:白底、去掉点阵/胶带/错位阴影;Caveat 只用在 doodle 里和名字 logo;新增 JetBrains Mono 做标签;Work 改成细线分隔的列表(招聘方更好扫)。Writing 区块并入 Contact。
+
+**待 Ziyue 决定**:
+- [ ] 是否做 Ryan 式"稿纸/田字格"拼贴 hero(需要你的中文名 + 人生片段插画,插画需另外生成)
+- [ ] v2 留下的文案/长相确认项仍有效(见上)

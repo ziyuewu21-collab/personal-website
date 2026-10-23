@@ -1,0 +1,51 @@
+---
+// Small line drawings that sit inline in the hero sentence, one per pillar.
+interface Props {
+  kind: "board" | "flask" | "phone";
+}
+const { kind } = Astro.props;
+---
+
+<svg viewBox="0 0 48 48" class="hero-icon boil" aria-hidden="true">
+  <g fill="none" stroke="var(--color-ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    {
+      kind === "board" && (
+        <>
+          <path d="M6 8 L42 7 L42 32 L6 33 Z" fill="#fff" />
+          <path d="M14 33 L10 44 M34 32 L38 44" />
+          <path d="M12 16 C 16 13, 19 19, 23 15 S 30 18, 34 15" stroke="var(--color-accent)" />
+          <path d="M12 24 L26 23" />
+        </>
+      )
+    }
+    {
+      kind === "flask" && (
+        <>
+          <path d="M14 33 C 20 30, 28 36, 35 32 L38 40 C 39 42, 38 43, 36 43 L12 43 C 10 43, 9 42, 10 40 Z" fill="var(--color-highlight)" stroke="none" />
+          <path d="M18 6 L30 6 M21 6 L21 18 L10 40 C 9 42, 10 43, 12 43 L36 43 C 38 43, 39 42, 38 40 L27 18 L27 6" />
+          <circle cx="22" cy="36" r="1.6" />
+          <circle cx="28" cy="32" r="1.2" />
+        </>
+      )
+    }
+    {
+      kind === "phone" && (
+        <>
+          <path d="M14 4 L34 4 Q38 4 38 8 L38 40 Q38 44 34 44 L14 44 Q10 44 10 40 L10 8 Q10 4 14 4 Z" fill="#fff" />
+          <path d="M15 12 L33 12 L33 24 L23 24 L18 29 L18 24 L15 24 Z" fill="var(--color-sweater)" />
+          <path d="M21 39 L27 39" />
+        </>
+      )
+    }
+  </g>
+</svg>
+
+<style>
+  .hero-icon {
+    display: inline-block;
+    flex: none;
+    width: 1.25em;
+    height: 1.25em;
+    transition: transform 200ms ease;
+  }
+</style>
