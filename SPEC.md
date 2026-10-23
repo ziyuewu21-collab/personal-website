@@ -63,7 +63,7 @@ date: 2026-07-06
 - [ ] Hero 副标题加了 "CELTA teacher training"(动了已确认的定位句第二句)
 - [ ] `src/data/teaching.ts` 的 4 条 principles 和 workingOn(来源:CELTA 课堂笔记 + 报告,措辞是模型写的)
 - [ ] `src/data/site.ts` 的 heroLines(头像台词)
-- [x] 头像长相:按 Ziyue 2026-10-23 发的照片重画——透明方框眼镜、深棕中分及肩层次发(无刘海)、金色细项链(照片本身不进 repo)
+- [x] 头像长相:按 Ziyue 选定的插画定稿——黄色开衫 + 白 T、眨眼微笑(招牌表情)、透明方框眼镜、深棕侧分层次发、露一侧耳朵、脸颊小痣、金色细项链(照片和插画原图都不进 repo,SVG 是重画的)
 
 ---
 
