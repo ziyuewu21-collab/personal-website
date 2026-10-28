@@ -68,3 +68,10 @@
   - 加一个桌面文件 → `items` 加一行 + `titles` 加标题 + index.astro 加一个 `<Window id="...">`
 
 **检验问题**:如果你想让引导者第一步改成先看简历,你要改 `desk.ts` 里的哪一部分?为什么引导者知道你已经打开了 MyTurn?
+
+## v4.1 研究主图 + about_me — 2026-10-28
+
+- **代码在哪**:`src/components/LearnersExplainer.astro`(三个学习者的图,切换按钮只改最外层 `data-mode`,和教室切换同一个套路);`src/data/learning.ts`(图下面的所有文字、导师署名、视频链接、about_me 内容);`src/lib/curl.ts`(那条卷曲的"hey!"线是用公式算出来的,不是手画的,改 `loops` 就能变多变少)
+- **想自己改的话**:about_me 的每一行在 `learning.ts` 的 `aboutMe.rows`,一行一个问题(`q`)和回答(`a`)
+
+**检验问题**:如果你想在 about_me 里加一行"我最喜欢的茶",要在哪个文件加什么?

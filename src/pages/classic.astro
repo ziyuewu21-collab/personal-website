@@ -10,6 +10,7 @@ import Classroom from "../components/Classroom.astro";
 import ReportCard from "../components/ReportCard.astro";
 import PairLearning from "../components/PairLearning.astro";
 import ChatContact from "../components/ChatContact.astro";
+import LearnersExplainer from "../components/LearnersExplainer.astro";
 import { site } from "../data/site";
 import { projects, research } from "../data/projects";
 import { celta, principles } from "../data/teaching";
@@ -194,7 +195,10 @@ const elsewhere = [
           decisions, not papers for their own sake.
         </p>
       </SectionHead>
-      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+      <div class="mt-10 max-w-[860px]">
+        <LearnersExplainer />
+      </div>
+      <div class="mt-14 grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <PairLearning />
         <div class="divide-y divide-(--color-line) lg:pt-14">
           {

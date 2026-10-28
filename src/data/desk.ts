@@ -2,7 +2,7 @@
 // tour, the lesson-plan sticky note, the easter eggs and the Moonish word game.
 // Facts come from site.ts / projects.ts / teaching.ts; this file is voice and layout.
 
-export type IconKind = "app" | "folder" | "board" | "flask" | "pdf" | "chat" | "secret" | "trash" | "game" | "auction";
+export type IconKind = "app" | "folder" | "board" | "flask" | "pdf" | "chat" | "secret" | "trash" | "game" | "auction" | "txt";
 
 export type DeskItem = {
   id: string; // window id
@@ -20,6 +20,7 @@ export const items: DeskItem[] = [
   { id: "lab", label: "Lab notes", icon: "flask" },
   { id: "chat", label: "Say hi.chat", icon: "chat" },
   { id: "games", label: "Classroom games", icon: "game" },
+  { id: "about", label: "about_me.txt", icon: "txt" },
   { id: "answers", label: "answer_key.pdf", icon: "secret", loose: true },
   { id: "trash", label: "Trash", icon: "trash", loose: true },
 ];
@@ -33,6 +34,7 @@ export const titles: Record<string, string> = {
   resume: "Resume.pdf",
   chat: "Say hi.chat",
   games: "Classroom games",
+  about: "about_me.txt",
   game: "Moonish.game",
   auction: "Grammar Auction",
   guess: "Guess my word",
@@ -77,7 +79,7 @@ export const tour = {
     {
       target: "lab",
       say: "Why does that work? It's in my lab notes.",
-      after: "Learners who take part remember more. Want to feel it, not just read it? Try Moonish: 30 seconds.",
+      after: "Robots learn bottom-up, LLMs top-down. Humans? Both. Click through the three learners.",
     },
     {
       target: "resume",

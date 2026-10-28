@@ -105,3 +105,11 @@ date: 2026-07-06
 - [ ] "中英双语"指的是整站切换(EN / 中文),还是只要游戏双语(已做)
 - [ ] `src/data/desk.ts` 里引导台词、彩蛋、游戏文案用她自己的话改
 - [ ] 简历窗口的 UCL 学位全称和日期(`education`,有 TODO)
+
+### v4.1 — 研究和"我是谁"怎么体现(2026-10-28)
+
+- **Lab notes 新主图**:"Who learns a new word best?" 三个学习者遇到 dax:Robot(bottom-up,反复看原始输入)、LLM(top-down,读过海量文本但从没摸过)、Human(both,再加一个人指、比划、问"like this?")。答案句 "Bottom-up or top-down? Both." 出自导师给 robotics/AI 研究者的 seminar;下面是两个 ingredients(多模态输入 / 多模态互动)和"对 AI tutor 和我的产品意味着什么"。`/classic` 的 Research 区块同步
+- **about_me.txt**:"我是谁? who am i?",好奇人、先看全局、爱问为什么、讨厌死记、路痴梗;科学转折:Pashler et al. (2008) 学习风格匹配无证据 → 按任务设计,不按"学习者类型";SQL 例子(global 理解 + sequential 执行)
+- **桌面壁纸**:喜茶式线稿"纸杯电话"——两个人用卷曲的线连着,"hey!" / "你好!"(只在 ≥1200px 宽和手机上显示,避免挡住引导卡)
+
+**待 Ziyue 确认**:`src/data/learning.ts` 的导师署名(Prof. Gabriella Vigliocco)和两个 YouTube 录像的标题(现在叫 Recording 1 / 2);about_me 里"在学 SQL""tube station 迷路"是否属实/愿意公开

@@ -79,6 +79,17 @@ const { kind } = Astro.props;
       )
     }
     {
+      kind === "txt" && (
+        <>
+          <path d="M14 8 L50 8 L50 58 L14 58 Z" />
+          <path d="M14 8 L14 4 M24 8 L24 4 M34 8 L34 4 M44 8 L44 4" />
+          <path d="M21 20 L43 20 M21 28 L43 28" />
+          <circle cx="32" cy="44" r="8" fill="var(--color-cardigan)" />
+          <path d="M28.5 45 Q 32 48 35.5 45" fill="none" />
+        </>
+      )
+    }
+    {
       kind === "auction" && (
         <>
           <path d="M10 56 L42 56 L42 50 C 42 48, 40 46, 38 46 L14 46 C 12 46, 10 48, 10 50 Z" fill="var(--color-cardigan)" />

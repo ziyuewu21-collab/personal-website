@@ -10,6 +10,9 @@ import Guide from "../components/desk/Guide.astro";
 import MoonishGame from "../components/desk/MoonishGame.astro";
 import GrammarAuction from "../components/desk/GrammarAuction.astro";
 import GuessWord from "../components/desk/GuessWord.astro";
+import HeyDoodle from "../components/desk/HeyDoodle.astro";
+import LearnersExplainer from "../components/LearnersExplainer.astro";
+import { aboutMe } from "../data/learning";
 import Classroom from "../components/Classroom.astro";
 import ReportCard from "../components/ReportCard.astro";
 import PairLearning from "../components/PairLearning.astro";
@@ -44,6 +47,10 @@ const profiles = [
       <h1 class="mt-2 text-[40px] leading-none font-semibold tracking-tight md:text-[64px]">{site.name}</h1>
       <p class="mt-3 text-lg font-semibold md:text-xl">Product manager for language learning</p>
       <p class="mono mt-2 text-(--color-ink-soft)">UCL speech science · CELTA {celta.grade} · shipped edtech</p>
+    </div>
+
+    <div class="hey">
+      <HeyDoodle />
     </div>
 
     <ul class="icons" aria-label="Files on the desk">
@@ -165,11 +172,13 @@ const profiles = [
   </Window>
 
   <Window id="lab" width="min(860px, 94vw)">
-    <p class="text-(--color-ink-soft)">
+    <LearnersExplainer />
+    <h3 class="mt-12 text-xl tracking-tight">Ingredient 2, in one picture</h3>
+    <p class="mt-1 text-(--color-ink-soft)">
       I study how people learn new words from each other: the questions, the gestures, the
-      looking back and forth.
+      looking back and forth. Flip the learner's role:
     </p>
-    <div class="mt-6">
+    <div class="mt-4">
       <PairLearning />
     </div>
     <div class="mt-8 divide-y divide-(--color-line)">
@@ -271,6 +280,21 @@ const profiles = [
 
   <Window id="game" width="min(560px, 92vw)">
     <MoonishGame />
+  </Window>
+
+  <Window id="about" width="min(560px, 92vw)">
+    <p class="hand text-4xl leading-none" lang="zh">{aboutMe.heading}</p>
+    <p class="mt-4 text-lg font-semibold tracking-tight">{aboutMe.intro}</p>
+    <dl class="mt-4 divide-y divide-(--color-line)">
+      {
+        aboutMe.rows.map((r) => (
+          <div class="py-3">
+            <dt class="mono text-(--color-accent)">{r.q}</dt>
+            <dd class="mt-1">{r.a}</dd>
+          </div>
+        ))
+      }
+    </dl>
   </Window>
 
   <Window id="answers" width="min(440px, 92vw)">
@@ -520,6 +544,21 @@ const profiles = [
     display: none;
   }
 
+  /* HEYTEA-style doodle on the wallpaper; only where there's room for it */
+  .hey {
+    position: absolute;
+    left: 45%;
+    bottom: 3%;
+    width: min(22vw, 300px);
+    pointer-events: none;
+    display: none;
+  }
+  @media (min-width: 1200px) {
+    .hey {
+      display: block;
+    }
+  }
+
   .noscript {
     position: fixed;
     inset: auto 0 0 0;
@@ -550,6 +589,12 @@ const profiles = [
     }
     .wallpaper {
       position: static;
+    }
+    .hey {
+      position: static;
+      display: block;
+      width: 240px;
+      margin: 1.25rem auto 0;
     }
     .icons {
       position: static;

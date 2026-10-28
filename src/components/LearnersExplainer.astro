@@ -1,0 +1,203 @@
+---
+// "Who learns a new word best?" Three learners meet a dax: a robot (bottom-up), an LLM
+// (top-down) and a human (both, with another person in the loop). HEYTEA-style line art.
+// Then the talk's two ingredients and what they mean for products. Data: data/learning.ts.
+import { curlPath } from "../lib/curl";
+import { learners, ingredients, forProducts, talk } from "../data/learning";
+
+const heyString = curlPath([120, 92], [214, 6], [300, 78], 8, 6);
+const dax = "M0 30 C -12 12, 2 -10, 20 -4 C 28 -22, 52 -16, 48 2 C 64 6, 62 28, 44 32 Z";
+---
+
+<div class="learners" data-learners data-mode="robot" data-captions={JSON.stringify(learners.tabs.map((t) => t.caption))}>
+  <p class="text-xl font-semibold tracking-tight">{learners.question}</p>
+  <div class="toggle mt-3" role="group" aria-label="Pick a learner">
+    {
+      learners.tabs.map((t, i) => (
+        <button type="button" data-set={t.id} aria-pressed={i === 0 ? "true" : "false"}>
+          {t.label} <span class="mono normal-case opacity-70">· {t.way}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="sketch mt-4 overflow-hidden p-2 md:p-4">
+    <svg viewBox="0 0 440 220" class="block h-auto w-full" aria-hidden="true">
+      <g fill="none" stroke="var(--color-ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- ROBOT: bottom-up, sees it again and again -->
+        <g class="scene scene-robot">
+          <path class="sight" d="M118 66 L 300 150 M118 66 L 330 140 M118 66 L 320 172" stroke-width="1.8" stroke-dasharray="5 7" />
+          <path d="M105 40 L 105 24" />
+          <circle cx="105" cy="19" r="6" fill="var(--color-cardigan)" />
+          <rect x="70" y="40" width="70" height="52" rx="10" fill="#fff" />
+          <circle cx="105" cy="66" r="13" fill="#fff" />
+          <circle class="lens" cx="109" cy="66" r="5" fill="var(--color-ink)" stroke="none" />
+          <rect x="60" y="100" width="90" height="78" rx="12" fill="#fff" />
+          <path d="M80 124 L 130 124 M80 140 L 112 140" stroke-width="2.4" />
+          <path d="M60 120 L 40 148 M150 120 L 172 140" />
+          <circle cx="82" cy="190" r="8" fill="#fff" />
+          <circle cx="128" cy="190" r="8" fill="#fff" />
+          <path d={dax} transform="translate(292 136)" fill="var(--color-cardigan)" />
+          <g class="hand again" fill="var(--color-ink)" stroke="none" font-size="20">
+            <text x="232" y="56">again...</text>
+            <text x="268" y="84">and again...</text>
+            <text x="300" y="112">and again</text>
+          </g>
+        </g>
+
+        <!-- LLM: top-down, has read about it, never held it -->
+        <g class="scene scene-llm">
+          <rect x="36" y="160" width="116" height="22" rx="3" fill="#fff" />
+          <rect x="46" y="138" width="98" height="22" rx="3" fill="var(--color-cardigan)" />
+          <rect x="30" y="116" width="122" height="22" rx="3" fill="#fff" />
+          <rect x="52" y="94" width="92" height="22" rx="3" fill="#fff" />
+          <rect x="40" y="72" width="108" height="22" rx="3" fill="#fff" />
+          <path d="M152 92 C 180 80, 196 70, 226 66" stroke-width="2.2" stroke-dasharray="2 6" />
+          <path d="M152 126 C 182 120, 200 100, 228 92" stroke-width="2.2" stroke-dasharray="2 6" />
+          <path d="M236 24 C 300 14, 392 18, 408 30 C 416 52, 414 86, 404 100 C 360 108, 300 108, 262 102 L 246 122 L 250 100 C 230 88, 226 46, 236 24 Z" fill="#fff" />
+          <g class="mono normal-case" fill="var(--color-ink)" stroke="none" font-size="10.5">
+            <text x="252" y="46">"...the dax was..."</text>
+            <text x="252" y="64">"...a dax is like..."</text>
+            <text x="252" y="82">"...two daxes..."</text>
+          </g>
+          <path d={dax} transform="translate(300 152)" stroke-dasharray="6 7" stroke-width="2.4" />
+          <text class="hand" x="372" y="188" fill="var(--color-ink)" stroke="none" font-size="34">?</text>
+        </g>
+
+        <!-- HUMAN: both, and someone in the loop -->
+        <g class="scene scene-human">
+          <path class="hey" d={heyString} stroke-width="2.4" />
+          <text class="hand" x="180" y="40" fill="var(--color-ink)" stroke="none" font-size="22" transform="rotate(-24 180 40)">hey!</text>
+          <!-- teacher (left) -->
+          <path d="M40 220 C 42 170, 60 148, 92 144 C 122 148, 140 170, 142 220" fill="var(--color-cardigan)" />
+          <circle cx="92" cy="98" r="30" fill="#fff" />
+          <path d="M62 92 C 62 70, 82 62, 100 66 C 120 70, 124 86, 122 96 C 110 92, 98 82, 90 72 C 82 82, 72 90, 62 92 Z" fill="var(--color-ink)" />
+          <path d="M96 100 Q 103 105 110 100" />
+          <path d="M108 116 Q 113 120 118 116" />
+          <path class="spin-hand" d="M132 170 C 150 150, 160 128, 164 116" />
+          <circle cx="166" cy="110" r="7" fill="var(--color-skin)" />
+          <path class="spin" d="M150 96 A 18 18 0 1 1 184 112" stroke-width="2" stroke-dasharray="4 5" />
+          <!-- learner (right) -->
+          <path d="M290 220 C 292 172, 310 150, 340 146 C 370 150, 388 172, 390 220" fill="var(--color-sweater)" />
+          <circle cx="340" cy="100" r="30" fill="#fff" />
+          <circle cx="350" cy="64" r="10" fill="var(--color-ink)" />
+          <path d="M311 92 C 311 64, 369 64, 369 92 C 355 79, 325 79, 311 92 Z" fill="var(--color-ink)" />
+          <path d="M318 104 Q 325 98 332 104" />
+          <circle cx="326" cy="120" r="4" />
+          <text class="hand" x="370" y="150" fill="var(--color-ink)" stroke="none" font-size="20">like this?</text>
+          <!-- the dax between them, and the two routes meeting in the learner's head -->
+          <path d={dax} transform="translate(196 170)" fill="var(--color-cardigan)" />
+          <path class="route" d="M226 168 C 250 140, 280 124, 312 118" stroke-width="2" stroke-dasharray="3 5" />
+          <text class="mono normal-case" x="236" y="132" fill="var(--color-ink)" stroke="none" font-size="10" transform="rotate(-26 236 132)">bottom-up</text>
+          <path class="route" d="M250 22 C 300 20, 330 36, 338 62" stroke-width="2" stroke-dasharray="3 5" />
+          <text class="mono normal-case" x="252" y="16" fill="var(--color-ink)" stroke="none" font-size="10">top-down: "a dax"</text>
+          <path class="spark" d="M362 54 L 366 64 L 376 68 L 366 72 L 362 82 L 358 72 L 348 68 L 358 64 Z" fill="var(--color-cardigan)" stroke-width="2" />
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <p class="mt-4 max-w-[60ch] text-(--color-ink-soft)" aria-live="polite" data-caption>{learners.tabs[0].caption}</p>
+  <p class="mt-4 text-2xl font-semibold tracking-tight">{learners.answer}</p>
+  <p class="mt-2 text-sm text-(--color-ink-soft)">
+    {talk.credit}
+    {
+      talk.links.map((l) => (
+        <>
+          {" "}
+          <a href={l.url} class="font-semibold underline underline-offset-4 hover:text-(--color-accent)" rel="noopener" target="_blank">{l.label} ↗</a>
+        </>
+      ))
+    }
+  </p>
+
+  <div class="mt-8 grid gap-4 md:grid-cols-2">
+    {
+      ingredients.map((g, i) => (
+        <article class="sketch p-4">
+          <p class="mono text-(--color-accent)">Ingredient {i + 1}</p>
+          <h4 class="mt-1 font-semibold">
+            {g.title} <span class="font-normal text-(--color-ink-soft)" lang="zh">{g.zh}</span>
+          </h4>
+          <p class="mt-2 text-sm">{g.text}</p>
+        </article>
+      ))
+    }
+  </div>
+  <div class="mt-4 rounded-[12px] bg-(--color-cardigan) p-4">
+    <p class="font-semibold">{forProducts.title}</p>
+    <p class="mt-1 text-sm">{forProducts.text}</p>
+  </div>
+</div>
+
+<style>
+  .scene {
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  [data-mode="robot"] .scene-robot,
+  [data-mode="llm"] .scene-llm,
+  [data-mode="human"] .scene-human {
+    opacity: 1;
+  }
+  .sight {
+    animation: march 1s linear infinite;
+  }
+  .route {
+    animation: march 1.4s linear infinite;
+  }
+  @keyframes march {
+    to { stroke-dashoffset: -24; }
+  }
+  .again text {
+    animation: blink-in 2.4s ease-in-out infinite;
+  }
+  .again text:nth-child(2) { animation-delay: 0.4s; }
+  .again text:nth-child(3) { animation-delay: 0.8s; }
+  @keyframes blink-in {
+    0%, 100% { opacity: 0.25; }
+    40% { opacity: 1; }
+  }
+  .lens {
+    animation: scan 2.4s ease-in-out infinite;
+  }
+  @keyframes scan {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-6px); }
+  }
+  .spin {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spin 1.6s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .spark {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: twinkle 1.8s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { transform: scale(0.8) rotate(0deg); }
+    50% { transform: scale(1.15) rotate(20deg); }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-learners]").forEach((root) => {
+    const caption = root.querySelector<HTMLElement>("[data-caption]")!;
+    const buttons = root.querySelectorAll<HTMLButtonElement>("[data-set]");
+    const list: string[] = JSON.parse(root.dataset.captions || "[]");
+    const captions: Record<string, string> = {};
+    buttons.forEach((b, i) => (captions[b.dataset.set!] = list[i] ?? ""));
+    buttons.forEach((b) =>
+      b.addEventListener("click", () => {
+        root.dataset.mode = b.dataset.set!;
+        buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        caption.textContent = captions[b.dataset.set!] ?? caption.textContent;
+        root.dispatchEvent(new CustomEvent("learners:set", { bubbles: true, detail: { id: b.dataset.set } }));
+      }),
+    );
+  });
+</script>
