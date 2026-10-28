@@ -17,6 +17,12 @@ Branch: `claude/personal-portfolio-design-xfpe3p`. Everything below is decided u
 - My recommendation for her metaphor: speech science (a sound wave / spectrogram whose segments are the sections). Open: her personal second influence (handwriting, Chinese name, family, the supermarket story).
 
 ## Next feature: MSc learning timeline (replaces the Research window)
+DECIDED: build it with the "Messy Stacking Sections" pattern from ITomPoland/ui-components (MIT; keep his copyright notice
+in the file we adapt). Ziyue approved adding GSAP + Lenis as dependencies for this. Sheets of paper land tilted, straighten, pin.
+Needs a reduced-motion / phone fallback (plain stacked cards). Reference clone was only read, not run.
+Per-sheet content format (~40 words): course · lecturer · term / one idea (<=15 words) / what it changed in how I build or
+teach (<=20 words) / optional evidence (<=10 words). Ziyue writes it (Chinese notes OK); we only fix grammar and trim.
+Build the layout with TODO(Ziyue) placeholders first if her answers are not in yet.
 Zooms out four times: sound → people → brain → between people.
 1. Signals and Systems · Prof. Stuart Rosen (not "Steward") · line art: sound wave
 2. Multilingualism · speech bubbles in several scripts
