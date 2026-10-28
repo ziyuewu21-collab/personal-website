@@ -48,7 +48,7 @@ export const plan = {
   title: "Today's lesson plan",
   minutes: "2 min",
   rows: [
-    { id: "myturn", label: "What I've shipped" },
+    { id: "myturn", label: "What I'm building" },
     { id: "classroom", label: "How I teach" },
     { id: "lab", label: "Why it works" },
     { id: "resume", label: "My resume" },
@@ -68,8 +68,8 @@ export const tour = {
   steps: [
     {
       target: "myturn",
-      say: "Lesson one: what I've shipped. Open MyTurn.app.",
-      after: "MyTurn: speaking practice with the people in your life. Every design choice comes from my classroom.",
+      say: "Lesson one: what I'm building. Open MyTurn.app.",
+      after: "MyTurn is a prototype of a bigger idea: speaking practice with the people in your life. Every design choice comes from my classroom.",
     },
     {
       target: "classroom",

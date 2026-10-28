@@ -1,10 +1,10 @@
 ---
 // Interactive, redrawn walk-through of the AI story-based vocabulary product.
 // Six steps, one at a time, each with the reason it exists. Data: data/storyDemo.ts.
-import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/storyDemo";
+import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from "../data/storyDemo";
 ---
 
-<div class="story-demo sketch p-4 md:p-6" data-story-demo data-payload={JSON.stringify({ steps, words, stories, tags, retellStarters })}>
+<div class="story-demo sketch p-4 md:p-6" data-story-demo data-payload={JSON.stringify({ steps, words, stories, tags, tagsNote, retellStarters })}>
   <p class="mono text-(--color-ink-soft)">{demoIntro.label}</p>
   <p class="mt-1 text-xl font-semibold tracking-tight">{demoIntro.title}</p>
   <p class="mt-2 text-sm text-(--color-ink-soft)">{demoIntro.bet}</p>
@@ -142,12 +142,13 @@ import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/
 
 <script>
   type Word = { en: string; zh: string };
-  type Story = { title: string; titleZh: string; high: string; low: string; zh: string };
+  type Story = { title: string; titleZh: string; high: string; low: string; zh: string; zhLow: string };
   type Payload = {
     steps: { id: string; name: string; why: string }[];
     words: Word[];
     stories: Record<string, Story>;
     tags: { id: string; label: string; zh: string }[];
+    tagsNote: string;
     retellStarters: string[];
   };
 
@@ -218,7 +219,7 @@ import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/
         b.append(el("span", "zh", t.zh));
         row.append(b);
       });
-      $stage.append(row);
+      $stage.append(row, el("p", "mt-3 text-sm text-(--color-ink-soft)", data.tagsNote));
       $controls.replaceChildren();
     }
 
@@ -267,7 +268,7 @@ import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/
       const grid = el("div", zhOn ? "mt-3 grid gap-3 md:grid-cols-2" : "mt-3");
       grid.append(render(s[level], "hl"));
       if (zhOn) {
-        const zh = el("p", "panel", s.zh);
+        const zh = el("p", "panel", level === "low" ? s.zhLow : s.zh);
         zh.lang = "zh";
         grid.append(zh);
       }
@@ -284,7 +285,7 @@ import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/
       }
       const box = el("textarea");
       box.setAttribute("aria-label", "Your retelling");
-      box.placeholder = "Mia was...";
+      box.placeholder = "In the story, ...";
       box.className = "mt-3";
       $stage.append(box, el("p", "mt-2 text-sm text-(--color-ink-soft)", "In the real lesson, a human coach listens here and helps."));
       $controls.replaceChildren(next(3));

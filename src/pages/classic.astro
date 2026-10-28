@@ -13,7 +13,7 @@ import ChatContact from "../components/ChatContact.astro";
 import LearnersExplainer from "../components/LearnersExplainer.astro";
 import StoryDemo from "../components/StoryDemo.astro";
 import { site } from "../data/site";
-import { projects, research } from "../data/projects";
+import { projects, research, statusLabel } from "../data/projects";
 import { celta, principles } from "../data/teaching";
 
 const heroLines = [
@@ -69,8 +69,8 @@ const elsewhere = [
   <!-- Stage 02 · Context -->
   <section id="projects" class="scroll-mt-6 border-t border-(--color-line)">
     <div class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-20">
-      <SectionHead stage="projects" title="What I've shipped">
-        <p>Three products, from a government tender to my own app.</p>
+      <SectionHead stage="projects" title="What I've built">
+        <p>A prototype, a shipped product, open-source AI skills and a government tender.</p>
       </SectionHead>
       <ol class="mt-10">
         {
@@ -78,7 +78,7 @@ const elsewhere = [
             <li class="project grid gap-6 border-t border-(--color-line) py-10 md:grid-cols-[1fr_1.15fr] md:gap-12">
               <div>
                 <p class="mono text-(--color-ink-soft)">
-                  {String(i + 1).padStart(2, "0")} · {p.status === "building" ? "Building now" : "Shipped"}
+                  {String(i + 1).padStart(2, "0")} · {p.status && statusLabel[p.status]}
                 </p>
                 <h3 class="mt-3 text-2xl tracking-tight md:text-[28px]">{p.title}</h3>
                 <p class="mt-3 text-sm text-(--color-ink-soft)">{p.role}</p>

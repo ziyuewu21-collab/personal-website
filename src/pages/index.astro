@@ -19,7 +19,7 @@ import PairLearning from "../components/PairLearning.astro";
 import StoryDemo from "../components/StoryDemo.astro";
 import ChatContact from "../components/ChatContact.astro";
 import { site } from "../data/site";
-import { projects, research } from "../data/projects";
+import { projects, research, statusLabel } from "../data/projects";
 import { celta, principles } from "../data/teaching";
 import { items, plan, answerKey, trash, education, games } from "../data/desk";
 
@@ -98,7 +98,7 @@ const profiles = [
 
   <!-- Windows -->
   <Window id="myturn" width="min(620px, 92vw)">
-    <p class="mono text-(--color-ink-soft)">Shipped · {myturn.tags.join(" · ")}</p>
+    <p class="mono text-(--color-ink-soft)">{myturn.status && statusLabel[myturn.status]} · {myturn.tags.join(" · ")}</p>
     <h3 class="mt-2 text-2xl tracking-tight">{myturn.title}</h3>
     <p class="mt-2 text-sm text-(--color-ink-soft)">{myturn.role}</p>
     <p class="mt-4">{myturn.description}</p>
