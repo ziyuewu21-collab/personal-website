@@ -11,6 +11,9 @@ export const celta = {
   modes: "Face-to-face, online and blended teaching",
   grade: "Pass B",
   gradeNote: "the grade above a standard pass",
+  // Ziyue's own words (chat, 2026-10-28), lightly edited for grammar only.
+  shift:
+    "Before CELTA, I did most of the talking. CELTA made me realise the key to teaching is getting students engaged: take a step back, and let them think.",
 };
 
 export type Rating = "e" | "s" | "w";
