@@ -13,7 +13,6 @@ import GuessWord from "../components/desk/GuessWord.astro";
 import HeyDoodle from "../components/desk/HeyDoodle.astro";
 import LearnersExplainer from "../components/LearnersExplainer.astro";
 import { aboutMe } from "../data/learning";
-import Classroom from "../components/Classroom.astro";
 import ReportCard from "../components/ReportCard.astro";
 import PairLearning from "../components/PairLearning.astro";
 import StoryDemo from "../components/StoryDemo.astro";
@@ -152,7 +151,7 @@ const profiles = [
     <StoryDemo />
   </Window>
 
-  <Window id="classroom" width="min(920px, 94vw)">
+  <Window id="teaching" width="min(920px, 94vw)">
     <p class="text-(--color-ink-soft)">
       {celta.course} at {celta.centre}, {celta.dates}: {celta.hours}, with {celta.modes.toLowerCase()}.
       Overall grade <strong class="text-(--color-ink)">{celta.grade}</strong>, {celta.gradeNote}.
@@ -161,9 +160,6 @@ const profiles = [
       My best lessons run on <s class="text-(--color-ink-soft)">me talking</s> my students talking.
     </p>
     <p class="mt-3 text-(--color-ink-soft)">{celta.shift}</p>
-    <div class="mt-6">
-      <Classroom />
-    </div>
     <h3 class="mt-10 text-xl tracking-tight">Classroom habits I build products with</h3>
     <div class="mt-4 grid gap-4 md:grid-cols-2">
       {

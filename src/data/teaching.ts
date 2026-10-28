@@ -129,17 +129,3 @@ export const principles: Principle[] = [
     icon: "flag",
   },
 ];
-
-// Captions for the interactive classroom doodle (Classroom.astro).
-export const classroomModes = {
-  tl: {
-    label: "Teacher-led",
-    caption:
-      "I explain the rule; they copy it down. Neat and quiet, and the students barely say a word in English.",
-  },
-  sc: {
-    label: "Student-centred",
-    caption:
-      "They plan a day out together, in English. I set the task, monitor and take notes, and language feedback comes at the end.",
-  },
-};

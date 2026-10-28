@@ -14,7 +14,7 @@ export type DeskItem = {
 // Grid order, three per row on desktop.
 export const items: DeskItem[] = [
   { id: "myturn", label: "MyTurn.app", icon: "app" },
-  { id: "classroom", label: "Classroom.app", icon: "board" },
+  { id: "teaching", label: "Teaching", icon: "board" },
   { id: "resume", label: "Resume.pdf", icon: "pdf" },
   { id: "work", label: "Work", icon: "folder" },
   { id: "lab", label: "Lab notes", icon: "flask" },
@@ -30,7 +30,7 @@ export const titles: Record<string, string> = {
   myturn: "MyTurn.app",
   work: "Work",
   storydemo: "Story lesson (redrawn demo)",
-  classroom: "Classroom.app",
+  teaching: "Teaching",
   lab: "Lab notes",
   resume: "Resume.pdf",
   chat: "Say hi.chat",
@@ -49,7 +49,7 @@ export const plan = {
   minutes: "2 min",
   rows: [
     { id: "myturn", label: "What I'm building" },
-    { id: "classroom", label: "How I teach" },
+    { id: "teaching", label: "How I teach" },
     { id: "lab", label: "Why it works" },
     { id: "resume", label: "My resume" },
     { id: "chat", label: "Your turn to talk" },
@@ -72,10 +72,9 @@ export const tour = {
       after: "MyTurn is a prototype of a bigger idea: speaking practice with the people in your life. Every design choice comes from my classroom.",
     },
     {
-      target: "classroom",
-      say: "Now my classroom. Open it and flip the switch.",
-      after: "Go on, flip the switch from teacher-led to student-centred.",
-      task: "See? Now they're talking. That's how I teach, and how I build.",
+      target: "teaching",
+      say: "Now how I teach. Open Teaching.",
+      after: "Before CELTA I did most of the talking. Now I step back and let students think. That's how I build, too.",
     },
     {
       target: "lab",

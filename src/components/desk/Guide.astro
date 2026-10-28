@@ -135,7 +135,7 @@ import { tour } from "../../data/desk";
 </style>
 
 <script>
-  type Step = { target: string; say: string; after: string; task?: string };
+  type Step = { target: string; say: string; after: string };
   type Tour = {
     hello: string; welcomeBack: string; start: string; skip: string; next: string; later: string;
     steps: Step[]; tease: string; restart: string; pokes: string[];
@@ -255,13 +255,6 @@ import { tour } from "../../data/desk";
     window.addEventListener("desk:close", (e) => {
       const id = (e as CustomEvent).detail.id as string;
       if (typeof step === "number" && step >= 0 && step < n - 1 && phase === "after" && tour.steps[step].target === id) go(step + 1);
-    });
-    // The classroom step has a task inside it: flip to student-centred.
-    document.addEventListener("click", (e) => {
-      if (!(e.target as HTMLElement).closest('[data-classroom] [data-set="sc"]')) return;
-      if (typeof step !== "number" || step < 0 || step >= n) return;
-      const s = tour.steps[step];
-      if (s.task && phase === "after") render(s.task, [["next", `${tour.next} →`, "primary"]], `${step + 1} / ${n}`);
     });
 
     // Poking her: a fun line for a few seconds, then back to the instruction.
