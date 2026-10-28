@@ -26,7 +26,7 @@ Build the layout with TODO(Ziyue) placeholders first if her answers are not in y
 Zooms out four times: sound → people → brain → between people.
 1. Signals and Systems · Prof. Stuart Rosen (not "Steward") · line art: sound wave
 2. Multilingualism · speech bubbles in several scripts
-3. Neuroscience of language · Andrea (surname: open) · brain
+3. Neuroscience of Language (PALS0005) · Andrea Santi (from the W1 title slide; title Dr/Prof and term still to confirm) · brain
 4. Dissertation · Prof. Gabriella Vigliocco (multimodal communication lab, active vs passive roles in paired word learning) · two people talking with gestures
 Each stop: two lines from Ziyue: what I learned / what it changed in how I build. Waiting on her answers to: (1) the most surprising thing in the course, (2) what she now looks at differently when designing or teaching.
 
