@@ -12,14 +12,43 @@ export const demoIntro = {
   bet: "Word lists are fast but forgotten. Living abroad sticks but is slow. The bet: put the words in a story the learner cares about, then make them use the words.",
 };
 
-export const steps = [
-  { id: "tags", name: "Pick interests", why: "Interest tags drive the story. Motivation first: a story about your thing, not a word list." },
-  { id: "check", name: "Check words", why: "Sort known from new, so the lesson spends time on the words you actually need. (The real product ran a short level check first.)" },
-  { id: "story", name: "Story", why: "Every target word appears in context, not as a list to memorise. Chinese support at first, then hidden once you can read without it." },
-  { id: "retell", name: "Retell", why: "Output pushes input: the learner produces, not just receives. This is where the human coach mattered most, for confidence as much as accuracy." },
-  { id: "test", name: "Fill the gaps", why: "Retrieval, not re-reading. Feedback waits until every gap is filled." },
-  { id: "game", name: "Anti-forgetting game", why: "A quick second retrieval before the word counts as learned. Then a short report, the kind parents got after every lesson." },
-];
+// v1 is the product as shipped; v2 is how Ziyue would redesign the output steps after CELTA
+// (task-based learning: the task comes first with a real outcome, language focus after).
+// Steps 1-3 and 6 are shared; only the middle two change.
+// TODO(Ziyue): rewrite both `note` lines in your own words.
+const shared = {
+  tags: { id: "tags", name: "Pick interests", why: "Interest tags drive the story. Motivation first: a story about your thing, not a word list." },
+  check: { id: "check", name: "Check words", why: "Sort known from new, so the lesson spends time on the words you actually need. (The real product ran a short level check first.)" },
+  story: { id: "story", name: "Story", why: "Every target word appears in context, not as a list to memorise. Chinese support at first, then hidden once you can read without it." },
+  game: { id: "game", name: "Anti-forgetting game", why: "A quick second retrieval before the word counts as learned. Then a short report, the kind parents got after every lesson." },
+};
+
+export const versions = {
+  v1: {
+    label: "v1 · as shipped",
+    note: "Retelling with no clues was too hard, and the goal was the words, so I added a gap-fill to carry the retell.",
+    steps: [
+      shared.tags,
+      shared.check,
+      shared.story,
+      { id: "retell", name: "Retell", why: "Output pushes input: the learner produces, not just receives. This is where the human coach mattered most, for confidence as much as accuracy." },
+      { id: "test", name: "Fill the gaps", why: "Retrieval, not re-reading. Feedback waits until every gap is filled." },
+      shared.game,
+    ],
+  },
+  v2: {
+    label: "v2 · after CELTA",
+    note: "CELTA showed me the gap-fill was doing the task's job. Now a task with a real outcome comes first, and the gap-fill moves to the end.",
+    steps: [
+      shared.tags,
+      shared.check,
+      shared.story,
+      { id: "task", name: "Task: make a plan", why: "A task, not a retell: there is an outcome, and success is a plan that works, not perfect English. The word bank stays as support, which was v1's real lesson." },
+      { id: "focus", name: "Language focus", why: "Form comes after meaning, and only on the words the task showed were missing. No Chinese under the gaps, so the sentence has to be read." },
+      shared.game,
+    ],
+  },
+};
 
 export const words = [
   { en: "volunteer", zh: "志愿者" },
@@ -29,7 +58,7 @@ export const words = [
   { en: "peace", zh: "和平" },
 ];
 
-type Story = { title: string; titleZh: string; high: string; low: string; zh: string; zhLow: string };
+type Story = { title: string; titleZh: string; high: string; low: string; zh: string; zhLow: string; task: string };
 
 // Target words are wrapped in [brackets] so the component can highlight or blank them.
 export const stories: Record<string, Story> = {
@@ -40,6 +69,7 @@ export const stories: Record<string, Story> = {
     low: "Mia is a [volunteer] at the club. She is [rapid]. Being fast is her [advantage]. She wins a [medal]. The two teams make [peace].",
     zh: "米娅是训练后唯一留下来的志愿者。教练说,她迅速的传球是球队最大的优势。决赛中她进了球,全校欢呼着看她举起奖章。那天晚上,两支对手球队握手言和,恢复了和平。",
     zhLow: "米娅是俱乐部的志愿者。她跑得很迅速。速度快是她的优势。她赢得了一枚奖章。两支球队和好了,恢复了和平。",
+    task: "Next week Mia's team plays the same rivals again. The coach asks you: how can the team win and still keep the peace? Write a plan of two or three sentences.",
   },
   harrypotter: {
     title: "The Smallest Seeker",
@@ -48,6 +78,7 @@ export const stories: Record<string, Story> = {
     low: "Ivy is at Hogwarts. She is a [volunteer] for Quidditch. The Snitch is [rapid]. Ivy is small. That is her [advantage]. She catches it and gets a [medal]. The two houses are at [peace].",
     zh: "在霍格沃茨,艾薇是唯一一个自愿当找球手的一年级新生。金色飞贼飞得很迅速,但个子小反而成了优势:她在扫帚上转身比谁都快。她抓住飞贼的那一刻,校长把一枚奖章别在她的长袍上。那一晚,格兰芬多和斯莱特林坐在一起,和平相处。",
     zhLow: "艾薇在霍格沃茨。她自愿参加魁地奇。金色飞贼很迅速。艾薇个子小,这是她的优势。她抓住了飞贼,得到一枚奖章。两个学院和平相处。",
+    task: "Next match, the other team picks a small Seeker too. What should Ivy do to stay ahead? Write her a plan of two or three sentences.",
   },
   minecraft: {
     title: "The Night Guard",
@@ -56,6 +87,7 @@ export const stories: Record<string, Story> = {
     low: "Rosa plays Minecraft. She is a [volunteer] guard. A creeper comes. It is [rapid]. Rosa has a wall. That is her [advantage]. She gets a [medal]. The village is at [peace].",
     zh: "在《我的世界》的村庄里,罗莎自愿当第一晚的守卫。一只苦力怕迅速地从黑暗中冲了出来,但她有一个优势:那天下午她刚筑好一道墙。第二天早上,村民们送给她一枚绿宝石奖章,村庄一直很和平,直到下一次日落。",
     zhLow: "罗莎在玩《我的世界》。她自愿当守卫。一只苦力怕来了,它很迅速。罗莎有一道墙,这是她的优势。她得到一枚奖章。村庄很和平。",
+    task: "Tonight the creepers come from both sides. What should Rosa do to keep the village safe? Write her a plan of two or three sentences.",
   },
 };
 

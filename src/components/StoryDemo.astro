@@ -1,24 +1,26 @@
 ---
 // Interactive, redrawn walk-through of the AI story-based vocabulary product.
-// Six steps, one at a time, each with the reason it exists. Data: data/storyDemo.ts.
-import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from "../data/storyDemo";
+// Six steps, one at a time, each with the reason it exists. A v1/v2 switch shows the
+// product as shipped next to the post-CELTA redesign. Data: data/storyDemo.ts.
+import { demoIntro, versions, words, stories, tags, tagsNote, retellStarters } from "../data/storyDemo";
 ---
 
-<div class="story-demo sketch p-4 md:p-6" data-story-demo data-payload={JSON.stringify({ steps, words, stories, tags, tagsNote, retellStarters })}>
+<div class="story-demo sketch p-4 md:p-6" data-story-demo data-payload={JSON.stringify({ versions, words, stories, tags, tagsNote, retellStarters })}>
   <p class="mono text-(--color-ink-soft)">{demoIntro.label}</p>
   <p class="mt-1 text-xl font-semibold tracking-tight">{demoIntro.title}</p>
   <p class="mt-2 text-sm text-(--color-ink-soft)">{demoIntro.bet}</p>
 
-  <ol class="stepper mt-4" data-stepper>
+  <div class="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Version" data-versions>
     {
-      steps.map((s, i) => (
-        <li data-step={s.id}>
-          <span class="mono">{String(i + 1).padStart(2, "0")}</span> {s.name}
-        </li>
+      Object.entries(versions).map(([id, v]) => (
+        <button type="button" data-version={id} aria-pressed={String(id === "v1")}>{v.label}</button>
       ))
     }
-  </ol>
-  <p class="why mt-3 text-sm" data-why><span class="mono">Why this step · </span><span data-why-text>{steps[0].why}</span></p>
+  </div>
+  <p class="mt-2 text-sm" data-version-note>{versions.v1.note}</p>
+
+  <ol class="stepper mt-4" data-stepper></ol>
+  <p class="why mt-3 text-sm" data-why><span class="mono">Why this step · </span><span data-why-text>{versions.v1.steps[0].why}</span></p>
 
   <div class="mt-5" aria-live="polite" data-stage></div>
   <div class="mt-5 flex flex-wrap items-center gap-3" data-controls></div>
@@ -30,20 +32,20 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
     flex-wrap: wrap;
     gap: 0.4rem;
   }
-  .stepper li {
+  .stepper :global(li) {
     padding: 0.25rem 0.65rem;
     border: 1.5px solid var(--color-line);
     border-radius: 999px;
     font-size: 0.8rem;
     color: var(--color-ink-soft);
   }
-  .stepper li.is-current {
+  .stepper :global(li.is-current) {
     border-color: var(--color-ink);
     background: var(--color-cardigan);
     color: var(--color-ink);
     font-weight: 600;
   }
-  .stepper li.is-done {
+  .stepper :global(li.is-done) {
     border-color: var(--color-ink);
     color: var(--color-ink);
   }
@@ -142,9 +144,10 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
 
 <script>
   type Word = { en: string; zh: string };
-  type Story = { title: string; titleZh: string; high: string; low: string; zh: string; zhLow: string };
+  type Story = { title: string; titleZh: string; high: string; low: string; zh: string; zhLow: string; task: string };
+  type Step = { id: string; name: string; why: string };
   type Payload = {
-    steps: { id: string; name: string; why: string }[];
+    versions: Record<"v1" | "v2", { label: string; note: string; steps: Step[] }>;
     words: Word[];
     stories: Record<string, Story>;
     tags: { id: string; label: string; zh: string }[];
@@ -157,9 +160,13 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
     const $stage = root.querySelector<HTMLElement>("[data-stage]")!;
     const $controls = root.querySelector<HTMLElement>("[data-controls]")!;
     const $why = root.querySelector<HTMLElement>("[data-why-text]")!;
-    const $steps = root.querySelectorAll<HTMLElement>("[data-step]");
+    const $stepper = root.querySelector<HTMLElement>("[data-stepper]")!;
+    const $note = root.querySelector<HTMLElement>("[data-version-note]")!;
+    const $versionBtns = root.querySelectorAll<HTMLButtonElement>("[data-version]");
     const gloss = Object.fromEntries(data.words.map((w) => [w.en, w.zh]));
 
+    let version: "v1" | "v2" = "v1";
+    let current = 0;
     let tag = "football";
     let level: "high" | "low" = "high";
     let zhOn = true;
@@ -179,20 +186,50 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
       return b;
     };
     const shuffle = <T,>(a: T[]) => a.map((v) => [Math.random(), v] as const).sort((x, y) => x[0] - y[0]).map(([, v]) => v);
+    const steps = () => data.versions[version].steps;
+    const drawStepper = () =>
+      $stepper.replaceChildren(
+        ...steps().map((s, i) => {
+          const li = el("li");
+          li.dataset.step = s.id;
+          li.append(el("span", "mono", String(i + 1).padStart(2, "0")), ` ${s.name}`);
+          return li;
+        }),
+      );
     const go = (i: number) => {
-      $steps.forEach((s, k) => {
+      current = i;
+      $stepper.querySelectorAll("li").forEach((s, k) => {
         s.classList.toggle("is-current", k === i);
         s.classList.toggle("is-done", k < i);
       });
-      $why.textContent = data.steps[i].why;
-      [pickTags, check, story, retell, test, game][i]();
+      $why.textContent = steps()[i].why;
+      ({ tags: pickTags, check, story, retell, test, task, focus, game })[steps()[i].id as "tags"]();
     };
+    // Switching keeps the learner's story and jumps to the first step that differs (04),
+    // so the two designs can be compared side by side.
+    const setVersion = (v: "v1" | "v2") => {
+      version = v;
+      $versionBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.version === v)));
+      $note.textContent = data.versions[v].note;
+      drawStepper();
+      go(Math.min(current, 3));
+    };
+    $versionBtns.forEach((b) => b.addEventListener("click", () => setVersion(b.dataset.version as "v1" | "v2")));
+    const nudge = () =>
+      button("How I'd change this after CELTA → v2", () => setVersion("v2"), "btn btn-ghost");
     const next = (i: number) => button("Next →", () => go(i + 1));
-    // Story text → nodes. mode "hl" highlights targets with a Chinese gloss; "gap" blanks them.
-    const render = (text: string, mode: "hl" | "gap", onGap?: (gap: HTMLButtonElement, word: string) => void) => {
+    // Story text → nodes. mode "hl" highlights targets with a Chinese gloss; "gap" blanks them
+    // (only the words in `only`, if given; v2 also drops the Chinese under each gap).
+    const render = (
+      text: string,
+      mode: "hl" | "gap",
+      onGap?: (gap: HTMLButtonElement, word: string) => void,
+      only?: Set<string>,
+    ) => {
       const p = el("p", "panel");
       text.split(/\[(\w+)\]/).forEach((part, k) => {
         if (k % 2 === 0) return p.append(part);
+        if (only && !only.has(part)) return p.append(part);
         if (mode === "hl") {
           p.append(el("span", "hl", part));
           if (zhOn) p.append(el("span", "gloss", ` (${gloss[part]})`));
@@ -200,8 +237,9 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
           const gap = el("button", "gap");
           gap.type = "button";
           gap.dataset.answer = part;
-          gap.setAttribute("aria-label", `Gap: ${gloss[part]}`);
-          p.append(gap, el("span", "gloss", ` (${gloss[part]})`));
+          gap.setAttribute("aria-label", version === "v1" ? `Gap: ${gloss[part]}` : "Gap");
+          p.append(gap);
+          if (version === "v1") p.append(el("span", "gloss", ` (${gloss[part]})`));
           onGap?.(gap, part);
         }
       });
@@ -288,10 +326,46 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
       box.placeholder = "In the story, ...";
       box.className = "mt-3";
       $stage.append(box, el("p", "mt-2 text-sm text-(--color-ink-soft)", "In the real lesson, a human coach listens here and helps."));
-      $controls.replaceChildren(next(3));
+      $controls.replaceChildren(next(3), nudge());
     }
 
-    function test() {
+    // v2: a problem-solving task (Willis). The word bank is pre-task support; the outcome
+    // is the plan, and the words the learner didn't reach for become the language focus.
+    let focusWords = new Set<string>();
+    function task() {
+      const s = data.stories[tag];
+      $stage.replaceChildren(el("p", "font-semibold", s.task));
+      const row = el("div", "mt-3 flex flex-wrap gap-2");
+      data.words.forEach((w) => row.append(el("span", "chip", w.en)));
+      $stage.append(el("p", "mt-3 text-sm text-(--color-ink-soft)", "Words you might need:"), row);
+      const box = el("textarea");
+      box.setAttribute("aria-label", "Your plan");
+      box.placeholder = "First, ...";
+      box.className = "mt-3";
+      $stage.append(box);
+      const done = button("Done: send the plan", () => {
+        const used = data.words.map((w) => w.en).filter((w) => new RegExp(`\\b${w}`, "i").test(box.value));
+        focusWords = new Set(data.words.map((w) => w.en).filter((w) => !used.includes(w)));
+        if (!focusWords.size) focusWords = new Set(data.words.map((w) => w.en));
+        box.disabled = true;
+        done.remove();
+        $stage.append(
+          el("p", "mt-3 font-semibold", "Plan received. The coach answers the plan first: would it work?"),
+          el("p", "mt-1 text-sm", `You reached for: ${used.length ? used.join(", ") : "none of the words yet"}. Next, a short language focus on the rest.`),
+        );
+        $controls.replaceChildren(next(3));
+      });
+      const ready = () => (done.disabled = box.value.trim().split(/\s+/).length < 5);
+      box.addEventListener("input", ready);
+      ready();
+      $controls.replaceChildren(done);
+    }
+
+    function focus() {
+      test(focusWords);
+    }
+
+    function test(only?: Set<string>) {
       missed.clear();
       const gaps: HTMLButtonElement[] = [];
       const text = data.stories[tag][level];
@@ -308,8 +382,8 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
           chips.get(w)!.disabled = false;
           ready();
         });
-      });
-      shuffle(data.words).forEach((w) => {
+      }, only);
+      shuffle(data.words.filter((w) => !only || only.has(w.en))).forEach((w) => {
         const c = button(w.en, () => {
           const gap = gaps.find((g) => !g.dataset.filled);
           if (!gap) return;
@@ -335,11 +409,15 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
         chips.forEach((c) => (c.disabled = true));
         if (right === gaps.length) window.dispatchEvent(new CustomEvent("avatar:laugh"));
         $stage.append(el("p", "mt-3 font-semibold", `${right} of ${gaps.length} right.`));
-        $controls.replaceChildren(next(4));
+        $controls.replaceChildren(next(4), ...(version === "v1" ? [nudge()] : []));
       });
       const ready = () => (checkBtn.disabled = gaps.some((g) => !g.dataset.filled));
       ready();
-      $stage.replaceChildren(el("p", "", "Fill the gaps. The Chinese tells you which word."), panel, bank);
+      $stage.replaceChildren(
+        el("p", "", version === "v1" ? "Fill the gaps. The Chinese tells you which word." : "Fill the gaps from the story. Read the sentence: no Chinese this time."),
+        panel,
+        bank,
+      );
       $controls.replaceChildren(checkBtn);
     }
 
@@ -412,6 +490,7 @@ import { demoIntro, steps, words, stories, tags, tagsNote, retellStarters } from
       $controls.replaceChildren(button("Try another story", () => go(0), "btn btn-ghost"));
     }
 
+    drawStepper();
     go(0);
   });
 </script>
