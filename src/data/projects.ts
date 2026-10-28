@@ -12,6 +12,8 @@ export type Project = {
   // Optional outbound links (live product, demo video, repo). Same rule as site.ts:
   // omit the array or leave it empty and the card renders no link row.
   links?: { label: string; url: string }[];
+  // Optional interactive demo (a desk window id). The vocab product's is a redraw, not the real UI.
+  demo?: { id: string; label: string };
 };
 
 export const projects: Project[] = [
@@ -38,6 +40,7 @@ export const projects: Project[] = [
       "81% trial-to-paid conversion in the first (small, warm-lead) cohort — the key evidence for the consumer business model. Shipped four iterations, including parent feedback reports and free-form interest tags.",
     tags: ["0 → 1", "User research", "AI product"],
     status: "shipped",
+    demo: { id: "storydemo", label: "Try the core flow (redrawn)" },
   },
   {
     title: "B2G medical records system",

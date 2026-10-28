@@ -29,6 +29,7 @@ export const items: DeskItem[] = [
 export const titles: Record<string, string> = {
   myturn: "MyTurn.app",
   work: "Work",
+  storydemo: "Story lesson (redrawn demo)",
   classroom: "Classroom.app",
   lab: "Lab notes",
   resume: "Resume.pdf",

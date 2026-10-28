@@ -11,6 +11,7 @@ import ReportCard from "../components/ReportCard.astro";
 import PairLearning from "../components/PairLearning.astro";
 import ChatContact from "../components/ChatContact.astro";
 import LearnersExplainer from "../components/LearnersExplainer.astro";
+import StoryDemo from "../components/StoryDemo.astro";
 import { site } from "../data/site";
 import { projects, research } from "../data/projects";
 import { celta, principles } from "../data/teaching";
@@ -86,6 +87,14 @@ const elsewhere = [
               <div>
                 <p>{p.description}</p>
                 <p class="mt-4 font-semibold">{p.result}</p>
+                {p.demo && (
+                  <details class="mt-6">
+                    <summary class="btn btn-primary cursor-pointer list-none">{p.demo.label} →</summary>
+                    <div class="mt-4">
+                      <StoryDemo />
+                    </div>
+                  </details>
+                )}
                 {p.links && p.links.length > 0 && (
                   <ul class="mt-6 flex flex-wrap gap-3">
                     {p.links.map((l, k) => (

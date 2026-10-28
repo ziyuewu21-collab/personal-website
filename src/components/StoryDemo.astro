@@ -1,0 +1,416 @@
+---
+// Interactive, redrawn walk-through of the AI story-based vocabulary product.
+// Six steps, one at a time, each with the reason it exists. Data: data/storyDemo.ts.
+import { demoIntro, steps, words, stories, tags, retellStarters } from "../data/storyDemo";
+---
+
+<div class="story-demo sketch p-4 md:p-6" data-story-demo data-payload={JSON.stringify({ steps, words, stories, tags, retellStarters })}>
+  <p class="mono text-(--color-ink-soft)">{demoIntro.label}</p>
+  <p class="mt-1 text-xl font-semibold tracking-tight">{demoIntro.title}</p>
+  <p class="mt-2 text-sm text-(--color-ink-soft)">{demoIntro.bet}</p>
+
+  <ol class="stepper mt-4" data-stepper>
+    {
+      steps.map((s, i) => (
+        <li data-step={s.id}>
+          <span class="mono">{String(i + 1).padStart(2, "0")}</span> {s.name}
+        </li>
+      ))
+    }
+  </ol>
+  <p class="why mt-3 text-sm" data-why><span class="mono">Why this step · </span><span data-why-text>{steps[0].why}</span></p>
+
+  <div class="mt-5" aria-live="polite" data-stage></div>
+  <div class="mt-5 flex flex-wrap items-center gap-3" data-controls></div>
+</div>
+
+<style>
+  .stepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .stepper li {
+    padding: 0.25rem 0.65rem;
+    border: 1.5px solid var(--color-line);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--color-ink-soft);
+  }
+  .stepper li.is-current {
+    border-color: var(--color-ink);
+    background: var(--color-cardigan);
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .stepper li.is-done {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+  .why {
+    padding: 0.6rem 0.8rem;
+    border-left: 2px solid var(--color-cardigan-dark);
+    background: var(--color-paper-alt);
+  }
+  .story-demo :global(.chip) {
+    min-height: 44px;
+    padding: 0.45rem 0.9rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: #fff;
+    font-weight: 600;
+  }
+  .story-demo :global(.chip .zh) {
+    margin-left: 0.35rem;
+    font-weight: 400;
+    color: var(--color-ink-soft);
+  }
+  .story-demo :global(.chip.is-on),
+  .story-demo :global(.chip.is-right) {
+    background: var(--color-cardigan);
+  }
+  .story-demo :global(.chip:disabled:not(.is-right)) {
+    opacity: 0.4;
+  }
+  .story-demo :global(.chip.is-wrong) {
+    animation: shake 0.3s;
+  }
+  @keyframes shake {
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .story-demo :global(.panel) {
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    background: var(--color-paper-alt);
+    line-height: 1.85;
+  }
+  .story-demo :global(.hl) {
+    font-weight: 700;
+    color: #c56a00;
+  }
+  .story-demo :global(.gloss) {
+    color: var(--color-ink-soft);
+    font-size: 0.85em;
+  }
+  .story-demo :global(.gap) {
+    display: inline-block;
+    min-width: 6.5rem;
+    min-height: 1.9em;
+    margin: 0 0.15rem;
+    padding: 0 0.4rem;
+    border: 1.5px dashed var(--color-ink);
+    border-radius: 6px;
+    background: #fff;
+    vertical-align: baseline;
+    font-weight: 600;
+  }
+  .story-demo :global(.gap.is-right) {
+    border-style: solid;
+    background: var(--color-cardigan);
+  }
+  .story-demo :global(.gap.is-wrong) {
+    border-color: #c8362b;
+    color: #c8362b;
+  }
+  .story-demo :global(.report) {
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 12px;
+    background: #fff;
+  }
+  .story-demo :global([role="group"] button) {
+    min-height: 40px;
+    padding: 0.3rem 0.75rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.85rem;
+  }
+  .story-demo :global([role="group"] button[aria-pressed="true"]) {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .story-demo :global(textarea) {
+    width: 100%;
+    min-height: 7rem;
+    padding: 0.7rem 0.8rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 10px;
+    background: #fff;
+  }
+</style>
+
+<script>
+  type Word = { en: string; zh: string };
+  type Story = { title: string; titleZh: string; high: string; low: string; zh: string };
+  type Payload = {
+    steps: { id: string; name: string; why: string }[];
+    words: Word[];
+    stories: Record<string, Story>;
+    tags: { id: string; label: string; zh: string }[];
+    retellStarters: string[];
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-story-demo]").forEach((root) => {
+    const data: Payload = JSON.parse(root.dataset.payload || "{}");
+    const $stage = root.querySelector<HTMLElement>("[data-stage]")!;
+    const $controls = root.querySelector<HTMLElement>("[data-controls]")!;
+    const $why = root.querySelector<HTMLElement>("[data-why-text]")!;
+    const $steps = root.querySelectorAll<HTMLElement>("[data-step]");
+    const gloss = Object.fromEntries(data.words.map((w) => [w.en, w.zh]));
+
+    let tag = "football";
+    let level: "high" | "low" = "high";
+    let zhOn = true;
+    const known = new Set<string>();
+    const missed = new Set<string>();
+
+    const el = <K extends keyof HTMLElementTagNameMap>(tagName: K, cls = "", text = "") => {
+      const e = document.createElement(tagName);
+      if (cls) e.className = cls;
+      if (text) e.textContent = text;
+      return e;
+    };
+    const button = (label: string, act: () => void, cls = "btn btn-primary") => {
+      const b = el("button", cls, label);
+      b.type = "button";
+      b.addEventListener("click", act);
+      return b;
+    };
+    const shuffle = <T,>(a: T[]) => a.map((v) => [Math.random(), v] as const).sort((x, y) => x[0] - y[0]).map(([, v]) => v);
+    const go = (i: number) => {
+      $steps.forEach((s, k) => {
+        s.classList.toggle("is-current", k === i);
+        s.classList.toggle("is-done", k < i);
+      });
+      $why.textContent = data.steps[i].why;
+      [pickTags, check, story, retell, test, game][i]();
+    };
+    const next = (i: number) => button("Next →", () => go(i + 1));
+    // Story text → nodes. mode "hl" highlights targets with a Chinese gloss; "gap" blanks them.
+    const render = (text: string, mode: "hl" | "gap", onGap?: (gap: HTMLButtonElement, word: string) => void) => {
+      const p = el("p", "panel");
+      text.split(/\[(\w+)\]/).forEach((part, k) => {
+        if (k % 2 === 0) return p.append(part);
+        if (mode === "hl") {
+          p.append(el("span", "hl", part));
+          if (zhOn) p.append(el("span", "gloss", ` (${gloss[part]})`));
+        } else {
+          const gap = el("button", "gap");
+          gap.type = "button";
+          gap.dataset.answer = part;
+          gap.setAttribute("aria-label", `Gap: ${gloss[part]}`);
+          p.append(gap, el("span", "gloss", ` (${gloss[part]})`));
+          onGap?.(gap, part);
+        }
+      });
+      return p;
+    };
+
+    function pickTags() {
+      $stage.replaceChildren(el("p", "", "What are you into? Pick one. 你喜欢什么?"));
+      const row = el("div", "mt-3 flex flex-wrap gap-2");
+      data.tags.forEach((t) => {
+        const b = button(t.label, () => {
+          tag = t.id;
+          go(1);
+        }, "chip");
+        b.append(el("span", "zh", t.zh));
+        row.append(b);
+      });
+      $stage.append(row);
+      $controls.replaceChildren();
+    }
+
+    function check() {
+      known.clear();
+      $stage.replaceChildren(el("p", "", "Tap any word you already know. The rest go into today's lesson."));
+      const row = el("div", "mt-3 flex flex-wrap gap-2");
+      data.words.forEach((w) => {
+        const b = button(w.en, () => {
+          known.has(w.en) ? known.delete(w.en) : known.add(w.en);
+          b.classList.toggle("is-on", known.has(w.en));
+        }, "chip");
+        b.append(el("span", "zh", w.zh));
+        row.append(b);
+      });
+      $stage.append(row);
+      $controls.replaceChildren(next(1));
+    }
+
+    function story() {
+      const s = data.stories[tag];
+      const head = el("div", "flex flex-wrap items-center justify-between gap-3");
+      const title = el("p", "font-semibold", `${s.title} · ${s.titleZh}`);
+      const toggle = el("div", "toggle");
+      toggle.setAttribute("role", "group");
+      toggle.setAttribute("aria-label", "Difficulty");
+      const draw = () => {
+        toggle.replaceChildren(
+          ...(["low", "high"] as const).map((l) => {
+            const b = button(l === "low" ? "Easier" : "Harder", () => {
+              level = l;
+              story();
+            }, "");
+            b.setAttribute("aria-pressed", String(level === l));
+            return b;
+          }),
+        );
+      };
+      draw();
+      const zhBtn = button(zhOn ? "Hide 中文" : "Show 中文", () => {
+        zhOn = !zhOn;
+        story();
+      }, "");
+      toggle.append(zhBtn);
+      head.append(title, toggle);
+      const grid = el("div", zhOn ? "mt-3 grid gap-3 md:grid-cols-2" : "mt-3");
+      grid.append(render(s[level], "hl"));
+      if (zhOn) {
+        const zh = el("p", "panel", s.zh);
+        zh.lang = "zh";
+        grid.append(zh);
+      }
+      $stage.replaceChildren(head, grid);
+      $controls.replaceChildren(next(2));
+    }
+
+    function retell() {
+      $stage.replaceChildren(el("p", "", "Now tell the story back in your own words. 用自己的话复述。"));
+      if (level === "low") {
+        const row = el("div", "mt-3 flex flex-wrap gap-2");
+        data.retellStarters.forEach((st) => row.append(el("span", "chip", st)));
+        $stage.append(el("p", "mt-3 text-sm text-(--color-ink-soft)", "Sentence starters from the coach:"), row);
+      }
+      const box = el("textarea");
+      box.setAttribute("aria-label", "Your retelling");
+      box.placeholder = "Mia was...";
+      box.className = "mt-3";
+      $stage.append(box, el("p", "mt-2 text-sm text-(--color-ink-soft)", "In the real lesson, a human coach listens here and helps."));
+      $controls.replaceChildren(next(3));
+    }
+
+    function test() {
+      missed.clear();
+      const gaps: HTMLButtonElement[] = [];
+      const text = data.stories[tag][level];
+      const bank = el("div", "mt-3 flex flex-wrap gap-2");
+      const chips = new Map<string, HTMLButtonElement>();
+      const panel = render(text, "gap", (gap) => {
+        gaps.push(gap);
+        gap.addEventListener("click", () => {
+          // tap a filled gap to empty it again
+          const w = gap.dataset.filled;
+          if (!w) return;
+          gap.textContent = "";
+          delete gap.dataset.filled;
+          chips.get(w)!.disabled = false;
+          ready();
+        });
+      });
+      shuffle(data.words).forEach((w) => {
+        const c = button(w.en, () => {
+          const gap = gaps.find((g) => !g.dataset.filled);
+          if (!gap) return;
+          gap.textContent = w.en;
+          gap.dataset.filled = w.en;
+          c.disabled = true;
+          ready();
+        }, "chip");
+        chips.set(w.en, c);
+        bank.append(c);
+      });
+      const checkBtn = button("Check", () => {
+        // Feedback only once every gap is filled.
+        let right = 0;
+        gaps.forEach((g) => {
+          const ok = g.dataset.filled === g.dataset.answer;
+          if (ok) right++;
+          else missed.add(g.dataset.answer!);
+          g.classList.add(ok ? "is-right" : "is-wrong");
+          if (!ok) g.textContent = `${g.dataset.filled} → ${g.dataset.answer}`;
+          g.disabled = true;
+        });
+        chips.forEach((c) => (c.disabled = true));
+        if (right === gaps.length) window.dispatchEvent(new CustomEvent("avatar:laugh"));
+        $stage.append(el("p", "mt-3 font-semibold", `${right} of ${gaps.length} right.`));
+        $controls.replaceChildren(next(4));
+      });
+      const ready = () => (checkBtn.disabled = gaps.some((g) => !g.dataset.filled));
+      ready();
+      $stage.replaceChildren(el("p", "", "Fill the gaps. The Chinese tells you which word."), panel, bank);
+      $controls.replaceChildren(checkBtn);
+    }
+
+    function game() {
+      $stage.replaceChildren(el("p", "", "Match each word to its meaning. 配对。"));
+      const grid = el("div", "mt-3 grid grid-cols-2 gap-2");
+      const left = el("div", "grid gap-2");
+      const right = el("div", "grid gap-2");
+      let picked: HTMLButtonElement | null = null;
+      let done = 0;
+      const tryMatch = (zhBtn: HTMLButtonElement) => {
+        if (!picked) return;
+        if (picked.dataset.en === zhBtn.dataset.en) {
+          [picked, zhBtn].forEach((b) => {
+            b.classList.remove("is-on");
+            b.classList.add("is-right");
+            b.disabled = true;
+          });
+          picked = null;
+          if (++done === data.words.length) finish();
+        } else {
+          zhBtn.classList.add("is-wrong");
+          setTimeout(() => zhBtn.classList.remove("is-wrong"), 320);
+        }
+      };
+      shuffle(data.words).forEach((w) => {
+        const b = button(w.en, () => {
+          picked?.classList.remove("is-on");
+          picked = b;
+          b.classList.add("is-on");
+        }, "chip");
+        b.dataset.en = w.en;
+        left.append(b);
+      });
+      shuffle(data.words).forEach((w) => {
+        const b = button(w.zh, () => tryMatch(b), "chip");
+        b.dataset.en = w.en;
+        b.lang = "zh";
+        right.append(b);
+      });
+      grid.append(left, right);
+      $stage.append(grid);
+      $controls.replaceChildren();
+    }
+
+    function finish() {
+      $steps.forEach((s) => {
+        s.classList.remove("is-current");
+        s.classList.add("is-done");
+      });
+      window.dispatchEvent(new CustomEvent("avatar:laugh"));
+      // A small version of the after-lesson report parents received.
+      const all = data.words.map((w) => w.en);
+      const rows: [string, string[]][] = [
+        ["New today", all.filter((w) => !known.has(w))],
+        ["Already knew", all.filter((w) => known.has(w))],
+        ["Review next lesson", all.filter((w) => missed.has(w))],
+      ];
+      const report = el("div", "report mt-4");
+      report.append(el("p", "mono", "Lesson report"));
+      rows.forEach(([label, list]) => {
+        const r = el("p", "mt-2 text-sm");
+        r.append(el("strong", "", `${label}: `), list.length ? list.join(", ") : "none");
+        report.append(r);
+      });
+      $stage.append(
+        report,
+        el("p", "mt-3 text-sm text-(--color-ink-soft)", "In the real product a new story was written for every learner, from their own interest tags, and the coach's notes went into this report."),
+      );
+      $controls.replaceChildren(button("Try another story", () => go(0), "btn btn-ghost"));
+    }
+
+    go(0);
+  });
+</script>
