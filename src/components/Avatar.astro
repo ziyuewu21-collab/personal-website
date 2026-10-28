@@ -1,12 +1,11 @@
 ---
-// Doodle self-portrait. Eyes follow the pointer, she blinks on her own, and a click
-// (or Enter/Space) makes her wave and say the next line. All instances on a page share
-// one script. To change how she looks, edit the paths below; to change what she
-// says, pass different `lines`.
-// inline: sits inside a sentence (hero). Her speech bubble pops above her and fades
-// out again instead of staying on screen.
+// Ziyue's avatar: her own illustration (the yellow-cardigan wink), with the laughing
+// one swapped in for reactions. She leans toward the pointer (a soft 3D tilt), bounces
+// hello, and a click makes her laugh and say the next line. All instances share one
+// script. Images: public/avatar/{wink,laugh}-{160,512}.webp.
+// inline: sits inside a sentence (hero); her bubble pops above her and fades out.
 // quiet: no bubble of her own (the desk guide does the talking); a click fires an
-// "avatar:poke" event the guide listens for.
+// "avatar:poke" event the guide listens for. Any script can fire "avatar:laugh" on window.
 interface Props {
   lines?: string[];
   class?: string;
@@ -15,6 +14,10 @@ interface Props {
   quiet?: boolean;
 }
 const { lines = [], class: className = "", bubble = "left", inline = false, quiet = false } = Astro.props;
+const src = (mood: "wink" | "laugh") => ({
+  src: `/avatar/${mood}-512.webp`,
+  srcset: `/avatar/${mood}-160.webp 160w, /avatar/${mood}-512.webp 512w`,
+});
 ---
 
 <span
@@ -37,119 +40,11 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
       </span>
     )
   }
-  <button type="button" class="block w-full cursor-pointer rounded-[24px]" aria-label="Say hi to Ziyue. Each click, she says something new.">
-    <svg viewBox="0 0 300 340" class="block h-auto w-full overflow-visible" aria-hidden="true">
-      <g class="boil"><g class="av-figure" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round">
-        <!-- hair, back layer -->
-        <path
-          d="M150 58 C 96 56, 66 96, 68 152 C 70 196, 60 232, 52 262 C 70 270, 96 268, 110 262 L 190 262 C 204 268, 230 270, 248 262 C 240 232, 230 196, 232 152 C 234 96, 204 60, 150 58 Z"
-          fill="var(--color-hair)"
-          stroke-width="3"
-        />
-        <!-- neck + gold necklace -->
-        <path d="M136 196 L135 250 L165 250 L164 196 Z" fill="var(--color-skin)" stroke="none" />
-        <path d="M136 198 L135 246 M164 198 L165 246" fill="none" stroke-width="3" />
-        <path d="M139 220 Q150 233 161 220" fill="none" stroke="var(--color-gold)" stroke-width="1.6" />
-        <circle cx="150" cy="230" r="2.4" fill="none" stroke="var(--color-gold)" stroke-width="1.5" />
-        <!-- white tee -->
-        <path d="M108 340 L110 254 C 126 246, 174 246, 190 254 L192 340 Z" fill="#fff" stroke-width="3" />
-        <path d="M128 249 C 136 260, 164 260, 172 249" fill="none" stroke-width="2.5" />
-        <!-- yellow cardigan, open over the tee -->
-        <path d="M60 340 C 62 284, 90 252, 126 243 L 134 252 C 128 280, 124 310, 122 340 Z" fill="var(--color-cardigan)" stroke-width="3" />
-        <path d="M240 340 C 238 284, 210 252, 174 243 L 166 252 C 172 280, 176 310, 178 340 Z" fill="var(--color-cardigan)" stroke-width="3" />
-        <g fill="none" stroke="var(--color-cardigan-dark)" stroke-width="2">
-          <path d="M130 256 C 126 284, 123 312, 121 340" />
-          <path d="M170 256 C 174 284, 177 312, 179 340" />
-          <path d="M96 300 C 94 316, 94 328, 95 340" />
-        </g>
-        <circle cx="173" cy="300" r="4.5" fill="var(--color-cardigan-dark)" stroke-width="2" />
-        <circle cx="175" cy="326" r="4.5" fill="var(--color-cardigan-dark)" stroke-width="2" />
-        <!-- waving arm: ink tube under a cardigan-coloured tube = outlined sleeve -->
-        <g class="av-arm">
-          <path d="M214 256 C 228 246, 238 230, 246 210" fill="none" stroke-width="22" />
-          <path d="M214 256 C 228 246, 238 230, 246 210" fill="none" stroke="var(--color-cardigan)" stroke-width="16" />
-          <circle cx="248" cy="196" r="13" fill="var(--color-skin)" stroke-width="3" />
-          <path d="M238 190 C 236 184, 238 179, 242 178" fill="none" stroke-width="2.5" />
-        </g>
-        <!-- ear (hair tucked behind it on this side) -->
-        <path d="M93 136 C 78 130, 71 145, 75 158 C 78 168, 88 172, 95 166" fill="var(--color-skin)" stroke-width="3" />
-        <path d="M87 146 C 82 148, 82 156, 88 159" fill="none" stroke-width="2" />
-        <!-- face -->
-        <path
-          d="M150 78 C 188 77, 212 106, 211 144 C 210 184, 184 210, 150 210 C 116 210, 89 184, 89 144 C 89 106, 112 79, 150 78 Z"
-          fill="var(--color-skin)"
-          stroke-width="3"
-        />
-        <!-- layered side hair with flicked-out ends -->
-        <path
-          d="M80 166 C 72 200, 66 236, 54 266 C 62 276, 72 268, 80 280 C 86 270, 96 278, 104 270 C 108 244, 106 214, 98 192 C 94 182, 88 174, 86 166 Z"
-          fill="var(--color-hair)"
-          stroke-width="3"
-        />
-        <path
-          d="M212 120 C 226 166, 230 222, 246 264 C 236 276, 226 266, 216 278 C 208 268, 198 276, 192 266 C 194 240, 192 214, 198 196 C 205 178, 210 160, 209 144 Z"
-          fill="var(--color-hair)"
-          stroke-width="3"
-        />
-        <!-- top of the head: side part, swept across one side of the forehead -->
-        <path
-          d="M84 152 C 80 100, 106 60, 150 58 C 196 58, 222 98, 214 158 C 207 132, 197 113, 184 103 C 168 92, 150 87, 140 76 C 133 92, 118 104, 103 115 C 95 123, 89 136, 84 152 Z"
-          fill="var(--color-hair)"
-          stroke-width="3"
-        />
-        <g fill="none" stroke="var(--color-hair-light)" stroke-width="2" opacity="0.8">
-          <path d="M146 66 C 168 70, 188 82, 200 104" />
-          <path d="M136 68 C 122 76, 106 88, 96 104" />
-          <path d="M222 196 C 226 224, 232 246, 238 262" />
-          <path d="M78 206 C 76 232, 70 250, 64 264" />
-        </g>
-        <!-- brows -->
-        <g class="av-brows" fill="none" stroke="var(--color-hair)" stroke-width="4.5">
-          <path d="M112 131 Q126 122 141 127" />
-          <path d="M159 127 Q174 122 188 131" />
-        </g>
-        <!-- eyes: socket is a fixed reference point, pupil moves inside it -->
-        {
-          [127, 173].map((cx, k) => (
-            <g class:list={["av-eye", k === 1 && "av-eye-r"]}>
-              <circle class="av-socket" cx={cx} cy="154" r="6" fill="none" stroke="none" />
-              <g class="av-pupil">
-                <circle cx={cx} cy="154" r="6.5" fill="var(--color-ink)" stroke="none" />
-                <circle cx={cx - 2} cy="151.5" r="2" fill="#fff" stroke="none" />
-              </g>
-            </g>
-          ))
-        }
-        <!-- the wink: a happy closed eye that replaces the right pupil -->
-        <path class="av-wink" d="M162 157 Q173 145 184 157 M184 157 L188 153" fill="none" stroke-width="3" />
-        <!-- the laugh: both eyes squeezed into happy arcs -->
-        <path class="av-laugh-eyes" d="M116 158 Q127 145 138 158 M162 158 Q173 145 184 158" fill="none" stroke-width="3.2" />
-        <!-- clear square glasses: thicker top bar, thin rims -->
-        <g class="av-glasses" fill="none" stroke="var(--color-frame)">
-          <path d="M106 140 L148 140 L146 162 C 145 167, 141 170, 136 170 L 116 170 C 111 170, 108 167, 107 162 Z" fill="#fff" fill-opacity="0.18" stroke-width="2.2" />
-          <path d="M152 140 L194 140 L193 162 C 192 167, 189 170, 184 170 L 164 170 C 159 170, 155 167, 154 162 Z" fill="#fff" fill-opacity="0.18" stroke-width="2.2" />
-          <path d="M104 140 L148 139 M152 139 L196 140" stroke-width="4" />
-          <path d="M148 143 Q150 140 152 143" stroke-width="2.2" />
-          <path d="M104 141 L91 138 M196 141 L209 138" stroke-width="2.2" />
-          <path d="M136 146 L142 152 M182 146 L188 152" stroke="#fff" stroke-width="2" opacity="0.9" />
-        </g>
-        <!-- mole, cheeks, nose, mouth -->
-        <circle cx="117" cy="184" r="2.3" fill="var(--color-mole)" stroke="none" />
-        <ellipse cx="106" cy="190" rx="9" ry="5" fill="var(--color-blush)" stroke="none" opacity="0.45" />
-        <ellipse cx="194" cy="190" rx="9" ry="5" fill="var(--color-blush)" stroke="none" opacity="0.45" />
-        <path d="M151 164 Q147 172 153 173" fill="none" stroke-width="2.5" />
-        <g class="av-smile">
-          <path d="M138 190 Q151 198 165 188 Q152 196 138 190 Z" fill="var(--color-lip)" stroke="none" />
-          <path d="M132 187 Q150 201 170 185" fill="none" stroke-width="3" />
-        </g>
-        <ellipse class="av-talk" cx="151" cy="191" rx="8.5" ry="7.5" fill="#b8433d" stroke-width="2.5" />
-        <g class="av-laugh-mouth">
-          <path d="M131 183 Q150 214 170 183 Z" fill="#c8463f" stroke-width="3" />
-          <path d="M133.5 184.5 Q150.5 192 167.5 184.5 L 166 188.5 Q150.5 195 135 188.5 Z" fill="#fff" stroke="none" />
-          <path d="M141 201 Q150 196 159 201 Q150 206 141 201 Z" fill="#ec8f8a" stroke="none" />
-        </g>
-      </g></g>
-    </svg>
+  <button type="button" class="av-btn block w-full cursor-pointer rounded-full" aria-label="Say hi to Ziyue. Each click, she says something new.">
+    <span class="av-tilt block">
+      <img class="av-img av-wink" {...src("wink")} sizes="(max-width: 767px) 120px, 260px" width="512" height="512" alt="" decoding="async" />
+      <img class="av-img av-laugh" {...src("laugh")} sizes="(max-width: 767px) 120px, 260px" width="512" height="512" alt="" decoding="async" />
+    </span>
   </button>
 </span>
 
@@ -160,14 +55,14 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
     transform-origin: bottom center;
   }
   .bubble-left {
-    top: -2%;
-    left: -4%;
+    top: -14%;
+    left: -10%;
   }
   .bubble-right {
-    top: -2%;
-    right: -4%;
+    top: -14%;
+    right: -10%;
   }
-  /* little tail pointing down at her head */
+  /* little tail pointing down at her */
   .bubble::after {
     content: "";
     position: absolute;
@@ -186,9 +81,9 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
     left: 28%;
   }
   .bubble-top {
-    bottom: 96%;
+    bottom: 100%;
     left: 50%;
-    translate: -50% 0;
+    translate: -50% -6px;
     opacity: 0;
     scale: 0.6;
     transition: opacity 180ms ease, scale 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -209,89 +104,53 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
     to { transform: scale(1) rotate(0); opacity: 1; }
   }
 
-  .av-figure {
+  .av-tilt {
+    position: relative;
+    aspect-ratio: 1;
+    transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate(var(--tx, 0px), var(--ty, 0px));
+    transition: transform 220ms ease-out, scale 200ms ease;
     animation: breathe 4.5s ease-in-out infinite;
   }
   @keyframes breathe {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(2px); }
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -3px; }
   }
-
-  .av-eye {
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: transform 70ms ease;
+  .av-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    filter: drop-shadow(0 8px 14px rgb(31 29 26 / 0.14));
+    transition: opacity 140ms ease;
   }
-  .is-blinking .av-eye {
-    transform: scaleY(0.12);
-  }
-  .av-wink,
-  .av-laugh-eyes,
-  .av-laugh-mouth {
+  .av-laugh {
     opacity: 0;
   }
-  .is-laughing .av-eye,
-  .is-laughing .av-wink,
-  .is-laughing .av-smile,
-  .is-laughing .av-talk {
-    opacity: 0 !important;
-  }
-  .is-laughing .av-laugh-eyes,
-  .is-laughing .av-laugh-mouth {
+  .is-laughing .av-laugh {
     opacity: 1;
   }
-  .is-laughing .av-figure {
-    animation: giggle 0.32s ease-in-out 4;
+  .is-laughing .av-wink {
+    opacity: 0;
+  }
+  .av-btn:hover .av-tilt {
+    scale: 1.04;
+  }
+  .is-bouncing .av-btn {
+    animation: bounce 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  @keyframes bounce {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-10px) scale(1.04, 0.97); }
+    60% { transform: translateY(0) scale(0.98, 1.03); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  .is-laughing .av-btn {
+    animation: giggle 0.3s ease-in-out 4;
   }
   @keyframes giggle {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-2px) rotate(-1deg); }
-  }
-  .is-winking .av-eye-r {
-    opacity: 0;
-  }
-  .is-winking .av-wink {
-    opacity: 1;
-  }
-  .av-pupil {
-    transition: transform 120ms ease-out;
-  }
-
-  .av-brows {
-    transition: transform 180ms ease;
-  }
-  .avatar:hover .av-brows,
-  .is-talking .av-brows {
-    transform: translateY(-3px);
-  }
-
-  .av-talk {
-    opacity: 0;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  .is-talking .av-smile {
-    opacity: 0;
-  }
-  .is-talking .av-talk {
-    opacity: 1;
-    animation: talk 0.22s steps(2) infinite;
-  }
-  @keyframes talk {
-    0% { transform: scaleY(1); }
-    50% { transform: scaleY(0.45); }
-  }
-
-  .av-arm {
-    transform-origin: 214px 256px;
-  }
-  .is-waving .av-arm {
-    animation: wave 0.55s ease-in-out 3;
-  }
-  @keyframes wave {
     0%, 100% { transform: rotate(0deg); }
-    30% { transform: rotate(-16deg); }
-    70% { transform: rotate(10deg); }
+    50% { transform: rotate(-3deg) translateY(-2px); }
   }
 </style>
 
@@ -299,90 +158,55 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
   const avatars = [...document.querySelectorAll<HTMLElement>("[data-avatar]")];
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // --- eyes follow the pointer ---
+  // --- lean toward the pointer ---
   let frame = 0;
-  let lastMove = 0;
-  function lookAt(x: number, y: number) {
+  const lean = (x: number, y: number) => {
     for (const a of avatars) {
-      a.querySelectorAll<SVGGElement>(".av-eye").forEach((eye) => {
-        const socket = eye.querySelector(".av-socket")!.getBoundingClientRect();
-        const dx = x - (socket.left + socket.width / 2);
-        const dy = y - (socket.top + socket.height / 2);
-        const dist = Math.hypot(dx, dy) || 1;
-        const reach = Math.min(1, dist / 180) * 4.5; // SVG units the pupil may travel
-        eye
-          .querySelector(".av-pupil")!
-          .setAttribute("style", `transform: translate(${((dx / dist) * reach).toFixed(2)}px, ${((dy / dist) * reach).toFixed(2)}px)`);
-      });
+      const tilt = a.querySelector<HTMLElement>(".av-tilt")!;
+      const r = tilt.getBoundingClientRect();
+      const dx = x - (r.left + r.width / 2);
+      const dy = y - (r.top + r.height / 2);
+      const reach = Math.max(innerWidth, innerHeight) / 2;
+      const nx = Math.max(-1, Math.min(1, dx / reach));
+      const ny = Math.max(-1, Math.min(1, dy / reach));
+      tilt.style.setProperty("--ry", `${(nx * 14).toFixed(2)}deg`);
+      tilt.style.setProperty("--rx", `${(-ny * 10).toFixed(2)}deg`);
+      tilt.style.setProperty("--tx", `${(nx * 5).toFixed(1)}px`);
+      tilt.style.setProperty("--ty", `${(ny * 4).toFixed(1)}px`);
     }
-  }
-  function onPointer(e: PointerEvent) {
-    lastMove = performance.now();
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => lookAt(e.clientX, e.clientY));
-  }
-  window.addEventListener("pointermove", onPointer, { passive: true });
-  window.addEventListener("pointerdown", onPointer, { passive: true });
-
-  // No pointer for a while (or a phone): glance around on her own.
-  setInterval(() => {
-    if (performance.now() - lastMove < 3000) return;
-    const a = avatars[Math.floor(Math.random() * avatars.length)];
-    if (!a) return;
-    const r = a.getBoundingClientRect();
-    lookAt(r.left + Math.random() * r.width * 1.6 - r.width * 0.3, r.top + Math.random() * r.height * 0.8);
-  }, 2600);
-
-  // --- blinking ---
-  for (const a of avatars) {
-    const blink = () => {
-      if (Math.random() < 0.15) return wink(a); // now and then she winks instead
-      a.classList.add("is-blinking");
-      setTimeout(() => a.classList.remove("is-blinking"), 130);
-      if (Math.random() < 0.2) setTimeout(blink, 260); // sometimes a double blink
-    };
-    const loop = () => {
-      setTimeout(() => {
-        blink();
-        loop();
-      }, 2200 + Math.random() * 3200);
-    };
-    loop();
+  };
+  if (!reduceMotion) {
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => lean(e.clientX, e.clientY));
+      },
+      { passive: true },
+    );
   }
 
-  // --- the laugh: for wins, finished tasks, and three quick taps ---
+  // --- reactions ---
+  function bounce(a: HTMLElement) {
+    if (reduceMotion) return;
+    a.classList.remove("is-bouncing");
+    void a.offsetWidth; // restart the animation
+    a.classList.add("is-bouncing");
+    setTimeout(() => a.classList.remove("is-bouncing"), 650);
+  }
   function laugh(a: HTMLElement, ms = 1500) {
-    a.classList.remove("is-winking");
     a.classList.add("is-laughing");
     clearTimeout(Number(a.dataset.laughTimer));
     a.dataset.laughTimer = String(setTimeout(() => a.classList.remove("is-laughing"), ms));
   }
-  // Anything on the page can make her laugh: dispatch "avatar:laugh" on window.
   window.addEventListener("avatar:laugh", () => avatars.forEach((a) => laugh(a)));
 
-  // --- the wink: her signature expression ---
-  function wink(a: HTMLElement, ms = 900) {
-    if (a.classList.contains("is-laughing")) return;
-    a.classList.add("is-winking");
-    clearTimeout(Number(a.dataset.winkTimer));
-    a.dataset.winkTimer = String(setTimeout(() => a.classList.remove("is-winking"), ms));
-  }
-
-  // --- click: wave + next line ---
-  function wave(a: HTMLElement) {
-    if (reduceMotion) return;
-    a.classList.remove("is-waving");
-    void a.offsetWidth; // restart the animation
-    a.classList.add("is-waving");
-    setTimeout(() => a.classList.remove("is-waving"), 1700);
-  }
   const say = new Map<HTMLElement, (i: number) => void>();
   for (const a of avatars) {
     const lines: string[] = JSON.parse(a.dataset.lines || "[]");
     const bubble = a.querySelector<HTMLElement>("[data-bubble]");
     const autohide = a.dataset.autohide !== undefined;
     let i = 0;
-    let talkTimer = 0;
     let hideTimer = 0;
     const speak = (n: number) => {
       if (!bubble || !lines.length) return;
@@ -390,35 +214,21 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
       bubble.classList.remove("pop");
       void bubble.offsetWidth;
       bubble.classList.add("pop", "show");
-      a.classList.add("is-talking");
-      clearTimeout(talkTimer);
-      talkTimer = window.setTimeout(() => a.classList.remove("is-talking"), Math.min(2200, 600 + lines[n].length * 35));
       if (autohide) {
         clearTimeout(hideTimer);
         hideTimer = window.setTimeout(() => bubble.classList.remove("show"), 4000);
       }
     };
     say.set(a, speak);
-    const button = a.querySelector("button")!;
-    let taps: number[] = [];
-    button.addEventListener("click", () => {
+    a.querySelector("button")!.addEventListener("click", () => {
       if (lines.length) i = (i + 1) % lines.length;
       speak(i);
-      wave(a);
-      const now = performance.now();
-      taps = [...taps.filter((t) => now - t < 1500), now];
-      if (taps.length >= 3) {
-        taps = [];
-        laugh(a);
-      } else wink(a);
+      laugh(a, 1100);
       a.dispatchEvent(new CustomEvent("avatar:poke", { bubbles: true }));
-    });
-    button.addEventListener("pointerenter", (e) => {
-      if (e.pointerType === "mouse") wink(a, 700);
     });
   }
 
-  // Wave hello once when each avatar first comes into view; inline ones say line one.
+  // Bounce hello once when each avatar first comes into view; inline ones say line one.
   const hello = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
@@ -426,8 +236,7 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
         const a = e.target as HTMLElement;
         hello.unobserve(a);
         setTimeout(() => {
-          wave(a);
-          wink(a, 1200);
+          bounce(a);
           if (a.dataset.autohide !== undefined) say.get(a)?.(0);
         }, 400);
       }

@@ -1,63 +1,10 @@
 ---
-// Her portrait for the chat: head and shoulders from Avatar.astro, winking, on a lilac
-// circle (the look Ziyue picked). Static. Keep paths in step with Avatar.astro.
-// mood: "wink" (default) or "laugh" (both eyes happy-closed, open smile).
+// Ziyue's portrait for the chat: her winking illustration, or the laughing one.
 interface Props {
   class?: string;
   mood?: "wink" | "laugh";
 }
 const { class: className = "", mood = "wink" } = Astro.props;
-const clip = `head-circle-${mood}`;
 ---
 
-<svg viewBox="40 40 220 220" class={className} aria-hidden="true">
-  <defs>
-    <clipPath id={clip}><circle cx="150" cy="150" r="108" /></clipPath>
-  </defs>
-  <circle cx="150" cy="150" r="108" fill="var(--color-lilac)" />
-  <g clip-path={`url(#${clip})`} stroke="var(--color-ink)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M150 58 C 96 56, 66 96, 68 152 C 70 196, 60 232, 52 262 L 248 262 C 240 232, 230 196, 232 152 C 234 96, 204 60, 150 58 Z" fill="var(--color-hair)" />
-    <path d="M136 196 L135 262 L165 262 L164 196 Z" fill="var(--color-skin)" />
-    <path d="M108 300 L110 254 C 126 246, 174 246, 190 254 L192 300 Z" fill="#fff" />
-    <path d="M60 300 C 62 284, 90 252, 126 243 L 134 252 C 130 268, 128 284, 126 300 Z" fill="var(--color-cardigan)" />
-    <path d="M240 300 C 238 284, 210 252, 174 243 L 166 252 C 170 268, 172 284, 174 300 Z" fill="var(--color-cardigan)" />
-    <path d="M93 136 C 78 130, 71 145, 75 158 C 78 168, 88 172, 95 166" fill="var(--color-skin)" />
-    <path d="M150 78 C 188 77, 212 106, 211 144 C 210 184, 184 210, 150 210 C 116 210, 89 184, 89 144 C 89 106, 112 79, 150 78 Z" fill="var(--color-skin)" />
-    <path d="M80 166 C 72 200, 66 236, 54 266 L 104 270 C 108 244, 106 214, 98 192 C 94 182, 88 174, 86 166 Z" fill="var(--color-hair)" />
-    <path d="M212 120 C 226 166, 230 222, 246 264 L 192 266 C 194 240, 192 214, 198 196 C 205 178, 210 160, 209 144 Z" fill="var(--color-hair)" />
-    <path d="M84 152 C 80 100, 106 60, 150 58 C 196 58, 222 98, 214 158 C 207 132, 197 113, 184 103 C 168 92, 150 87, 140 76 C 133 92, 118 104, 103 115 C 95 123, 89 136, 84 152 Z" fill="var(--color-hair)" />
-    <g fill="none" stroke="var(--color-hair)" stroke-width="5">
-      <path d="M112 131 Q126 122 141 127" />
-      <path d="M159 127 Q174 122 188 131" />
-    </g>
-    {
-      mood === "wink" ? (
-        <>
-          <circle cx="127" cy="154" r="7" fill="var(--color-ink)" stroke="none" />
-          <path d="M162 157 Q173 145 184 157" fill="none" />
-        </>
-      ) : (
-        <path d="M116 158 Q127 145 138 158 M162 158 Q173 145 184 158" fill="none" />
-      )
-    }
-    <g fill="none" stroke="var(--color-frame)" stroke-width="4">
-      <path d="M106 140 L148 140 L146 162 C 145 167, 141 170, 136 170 L 116 170 C 111 170, 108 167, 107 162 Z" />
-      <path d="M152 140 L194 140 L193 162 C 192 167, 189 170, 184 170 L 164 170 C 159 170, 155 167, 154 162 Z" />
-      <path d="M148 143 Q150 140 152 143" />
-    </g>
-    <circle cx="117" cy="184" r="3" fill="var(--color-mole)" stroke="none" />
-    {
-      mood === "wink" ? (
-        <>
-          <path d="M138 190 Q151 198 165 188 Q152 196 138 190 Z" fill="var(--color-lip)" stroke="none" />
-          <path d="M132 187 Q150 201 170 185" fill="none" />
-        </>
-      ) : (
-        <>
-          <path d="M131 183 Q150 214 170 183 Z" fill="#c8463f" />
-          <path d="M134 185 Q150.5 192 167 185 L 165.5 189 Q150.5 195 135.5 189 Z" fill="#fff" stroke="none" />
-        </>
-      )
-    }
-  </g>
-</svg>
+<img src={`/avatar/${mood}-160.webp`} class:list={["rounded-full", className]} width="160" height="160" alt="" decoding="async" loading="lazy" />
