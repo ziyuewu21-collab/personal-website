@@ -122,6 +122,8 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
         }
         <!-- the wink: a happy closed eye that replaces the right pupil -->
         <path class="av-wink" d="M162 157 Q173 145 184 157 M184 157 L188 153" fill="none" stroke-width="3" />
+        <!-- the laugh: both eyes squeezed into happy arcs -->
+        <path class="av-laugh-eyes" d="M116 158 Q127 145 138 158 M162 158 Q173 145 184 158" fill="none" stroke-width="3.2" />
         <!-- clear square glasses: thicker top bar, thin rims -->
         <g class="av-glasses" fill="none" stroke="var(--color-frame)">
           <path d="M106 140 L148 140 L146 162 C 145 167, 141 170, 136 170 L 116 170 C 111 170, 108 167, 107 162 Z" fill="#fff" fill-opacity="0.18" stroke-width="2.2" />
@@ -141,6 +143,11 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
           <path d="M132 187 Q150 201 170 185" fill="none" stroke-width="3" />
         </g>
         <ellipse class="av-talk" cx="151" cy="191" rx="8.5" ry="7.5" fill="#b8433d" stroke-width="2.5" />
+        <g class="av-laugh-mouth">
+          <path d="M131 183 Q150 214 170 183 Z" fill="#c8463f" stroke-width="3" />
+          <path d="M133.5 184.5 Q150.5 192 167.5 184.5 L 166 188.5 Q150.5 195 135 188.5 Z" fill="#fff" stroke="none" />
+          <path d="M141 201 Q150 196 159 201 Q150 206 141 201 Z" fill="#ec8f8a" stroke="none" />
+        </g>
       </g></g>
     </svg>
   </button>
@@ -218,8 +225,27 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
   .is-blinking .av-eye {
     transform: scaleY(0.12);
   }
-  .av-wink {
+  .av-wink,
+  .av-laugh-eyes,
+  .av-laugh-mouth {
     opacity: 0;
+  }
+  .is-laughing .av-eye,
+  .is-laughing .av-wink,
+  .is-laughing .av-smile,
+  .is-laughing .av-talk {
+    opacity: 0 !important;
+  }
+  .is-laughing .av-laugh-eyes,
+  .is-laughing .av-laugh-mouth {
+    opacity: 1;
+  }
+  .is-laughing .av-figure {
+    animation: giggle 0.32s ease-in-out 4;
+  }
+  @keyframes giggle {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-2px) rotate(-1deg); }
   }
   .is-winking .av-eye-r {
     opacity: 0;
@@ -324,8 +350,19 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
     loop();
   }
 
+  // --- the laugh: for wins, finished tasks, and three quick taps ---
+  function laugh(a: HTMLElement, ms = 1500) {
+    a.classList.remove("is-winking");
+    a.classList.add("is-laughing");
+    clearTimeout(Number(a.dataset.laughTimer));
+    a.dataset.laughTimer = String(setTimeout(() => a.classList.remove("is-laughing"), ms));
+  }
+  // Anything on the page can make her laugh: dispatch "avatar:laugh" on window.
+  window.addEventListener("avatar:laugh", () => avatars.forEach((a) => laugh(a)));
+
   // --- the wink: her signature expression ---
   function wink(a: HTMLElement, ms = 900) {
+    if (a.classList.contains("is-laughing")) return;
     a.classList.add("is-winking");
     clearTimeout(Number(a.dataset.winkTimer));
     a.dataset.winkTimer = String(setTimeout(() => a.classList.remove("is-winking"), ms));
@@ -363,11 +400,17 @@ const { lines = [], class: className = "", bubble = "left", inline = false, quie
     };
     say.set(a, speak);
     const button = a.querySelector("button")!;
+    let taps: number[] = [];
     button.addEventListener("click", () => {
       if (lines.length) i = (i + 1) % lines.length;
       speak(i);
       wave(a);
-      wink(a);
+      const now = performance.now();
+      taps = [...taps.filter((t) => now - t < 1500), now];
+      if (taps.length >= 3) {
+        taps = [];
+        laugh(a);
+      } else wink(a);
       a.dispatchEvent(new CustomEvent("avatar:poke", { bubbles: true }));
     });
     button.addEventListener("pointerenter", (e) => {

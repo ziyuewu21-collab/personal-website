@@ -35,6 +35,7 @@ import AvatarHead from "./AvatarHead.astro";
 </div>
 
 <template data-head-tpl><AvatarHead class="h-10 w-10 shrink-0" /></template>
+<template data-head-laugh-tpl><AvatarHead mood="laugh" class="h-10 w-10 shrink-0" /></template>
 
 <style>
   /* Messages are added by the script, so these selectors are :global (no scope attribute). */
@@ -99,16 +100,17 @@ import AvatarHead from "./AvatarHead.astro";
     const send = root.querySelector<HTMLAnchorElement>("[data-send]")!;
     const restart = root.querySelector<HTMLButtonElement>("[data-restart]")!;
     const headTpl = document.querySelector<HTMLTemplateElement>("[data-head-tpl]")!;
+    const laughTpl = document.querySelector<HTMLTemplateElement>("[data-head-laugh-tpl]")!;
     const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const firstMessage = log.firstElementChild!.cloneNode(true);
 
     let step: "name" | "message" | "done" = "name";
     let name = "";
 
-    const add = (who: "me" | "them", text: string) => {
+    const add = (who: "me" | "them", text: string, mood: "wink" | "laugh" = "wink") => {
       const li = document.createElement("li");
       li.className = `msg ${who}`;
-      if (who === "them") li.append(headTpl.content.cloneNode(true));
+      if (who === "them") li.append((mood === "laugh" ? laughTpl : headTpl).content.cloneNode(true));
       const p = document.createElement("p");
       p.className = "bubble";
       p.textContent = text; // visitor text is never parsed as HTML
@@ -116,13 +118,14 @@ import AvatarHead from "./AvatarHead.astro";
       log.append(li);
       return li;
     };
-    const reply = (text: string, then?: () => void) => {
+    const reply = (text: string, then?: () => void, mood: "wink" | "laugh" = "wink") => {
       const typing = add("them", "•••");
       typing.classList.add("typing");
       typing.setAttribute("aria-hidden", "true");
       setTimeout(() => {
         typing.remove();
-        add("them", text);
+        add("them", text, mood);
+        if (mood === "laugh") window.dispatchEvent(new CustomEvent("avatar:laugh"));
         then?.();
       }, reduceMotion ? 0 : 700);
     };
@@ -150,10 +153,14 @@ import AvatarHead from "./AvatarHead.astro";
         const subject = encodeURIComponent(`Hi from ${name}`);
         const body = encodeURIComponent(`${text}\n\n${name}`);
         send.href = `mailto:${email}?subject=${subject}&body=${body}`;
-        reply(copy.done.replace("{name}", name), () => {
-          send.hidden = false;
-          restart.hidden = false;
-        });
+        reply(
+          copy.done.replace("{name}", name),
+          () => {
+            send.hidden = false;
+            restart.hidden = false;
+          },
+          "laugh",
+        );
       }
     });
 

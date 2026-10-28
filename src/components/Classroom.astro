@@ -262,6 +262,7 @@ const students = [
         root.dataset.touched = "";
         buttons.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
         caption.textContent = caption.dataset[mode] ?? "";
+        if (mode === "sc") window.dispatchEvent(new CustomEvent("avatar:laugh"));
       }),
     );
   });

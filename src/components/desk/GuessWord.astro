@@ -130,7 +130,10 @@ import { guess } from "../../data/desk";
           b.disabled = true;
           if (b.dataset.en === w.answer) b.classList.add("is-right");
         });
-        if (won) stars += w.clues.length + 1 - shown;
+        if (won) {
+          stars += w.clues.length + 1 - shown;
+          window.dispatchEvent(new CustomEvent("avatar:laugh"));
+        }
         showStars();
         $say.textContent = fill(won ? copy.right : copy.reveal, answer);
         $controls.replaceChildren(btn(`${i + 1 < words.length ? copy.next : "See my stars"} →`, () => play(i + 1)));

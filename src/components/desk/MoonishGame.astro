@@ -176,7 +176,9 @@ const objects = {
           tag.className = "obj-word";
           tag.textContent = w.word;
           right.append(tag);
-          $say.textContent = o.dataset.object === w.object ? `Yes! That's a ${w.word}.` : `Close! This one's the ${w.word}. See how it moves like my hand?`;
+          const hit = o.dataset.object === w.object;
+          if (hit) window.dispatchEvent(new CustomEvent("avatar:laugh"));
+          $say.textContent = hit ? `Yes! That's a ${w.word}.` : `Close! This one's the ${w.word}. See how it moves like my hand?`;
           gesture();
           $controls.replaceChildren(button(`${copy.gotIt} →`, () => next(i)));
         }),

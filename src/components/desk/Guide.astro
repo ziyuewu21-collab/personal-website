@@ -33,7 +33,8 @@ import { tour } from "../../data/desk";
     gap: 6px;
     pointer-events: none;
   }
-  .guide > * {
+  /* :global so it also reaches the Avatar component's root (a different scope) */
+  .guide > :global(*) {
     pointer-events: auto;
   }
   .guide :global(.guide-avatar) {
@@ -216,6 +217,7 @@ import { tour } from "../../data/desk";
       step = n;
       highlight(null);
       save({ tourDone: true });
+      window.dispatchEvent(new CustomEvent("avatar:laugh"));
       window.setTimeout(() => {
         if (step !== n) return;
         highlight("answers");
