@@ -1,0 +1,229 @@
+---
+// Grammar Auction: a CELTA controlled-practice game. The first sentence is done together
+// as the example; then each round asks one thing at a time (correct or wrong? how sure?).
+// Corrections wait for the end and arrive in red pen; a freer-practice line closes it.
+import { site } from "../../data/site";
+import { auction } from "../../data/desk";
+---
+
+<div class="auction" data-auction data-copy={JSON.stringify(auction)} data-email={site.email}>
+  <div class="flex items-center justify-between gap-4">
+    <p class="mono text-(--color-ink-soft)" data-label>Grammar Auction</p>
+    <p class="mono coins" data-coins hidden></p>
+  </div>
+  <p class="mt-2 text-lg font-semibold tracking-tight" aria-live="polite" data-say>{auction.intro}</p>
+  <div class="mt-4" data-stage></div>
+  <div class="mt-5 flex flex-wrap items-center gap-3" data-controls>
+    <button type="button" class="btn btn-primary" data-act="start">{auction.start} →</button>
+  </div>
+</div>
+
+<style>
+  .auction :global(.sentence) {
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 1.05rem;
+  }
+  .auction :global(.red) {
+    color: #c8362b;
+  }
+  .auction :global(.red-hand) {
+    font-family: var(--font-hand);
+    font-size: 1.35rem;
+    color: #c8362b;
+    margin-left: 0.25rem;
+  }
+  .auction :global(.check-row) {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr auto;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.95rem;
+  }
+  .coins {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-cardigan);
+    color: var(--color-ink);
+  }
+  .auction :global(.freer) {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+  .auction :global(.freer input) {
+    flex: 1;
+    min-width: 12rem;
+    min-height: 44px;
+    padding: 0.5rem 0.8rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 8px;
+    background: var(--color-paper-alt);
+    font-weight: 400;
+  }
+</style>
+
+<script>
+  type Item = { text: string; correct: boolean; wrong?: string; right?: string };
+
+  document.querySelectorAll<HTMLElement>("[data-auction]").forEach((root) => {
+    const copy = JSON.parse(root.dataset.copy || "{}");
+    const email = root.dataset.email || "";
+    const items: Item[] = copy.items;
+    const $say = root.querySelector<HTMLElement>("[data-say]")!;
+    const $stage = root.querySelector<HTMLElement>("[data-stage]")!;
+    const $controls = root.querySelector<HTMLElement>("[data-controls]")!;
+    const $coins = root.querySelector<HTMLElement>("[data-coins]")!;
+    const $label = root.querySelector<HTMLElement>("[data-label]")!;
+
+    let coins = copy.coins as number;
+    let picks: { saidCorrect: boolean; bet: number }[] = [];
+
+    const btn = (label: string, act: () => void, style = "primary") => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = `btn btn-${style}`;
+      b.textContent = label;
+      b.addEventListener("click", act);
+      return b;
+    };
+    const sentence = (text: string) => {
+      const p = document.createElement("p");
+      p.className = "sentence";
+      p.textContent = text;
+      return p;
+    };
+    // The red-pen version: the wrong words struck through, the fix written in.
+    const redPen = (it: Item) => {
+      const span = document.createElement("span");
+      if (!it.wrong || !it.right) {
+        span.textContent = it.text;
+        return span;
+      }
+      const [before, after] = it.text.split(it.wrong);
+      const s = document.createElement("s");
+      s.className = "red";
+      s.textContent = it.wrong;
+      const fix = document.createElement("span");
+      fix.className = "red-hand";
+      fix.textContent = it.right;
+      span.append(before, s, fix, after);
+      return span;
+    };
+    const showCoins = () => {
+      $coins.hidden = false;
+      $coins.textContent = `${coins} coins`;
+    };
+
+    const example = () => {
+      $label.textContent = "Grammar Auction · example";
+      $say.textContent = copy.example.say;
+      $stage.replaceChildren(sentence(copy.example.text));
+      showCoins();
+      $controls.replaceChildren(btn(`${copy.yourTurn} →`, () => round(0)));
+    };
+
+    const round = (i: number) => {
+      if (i >= items.length) return check();
+      $label.textContent = `Grammar Auction · ${i + 1} of ${items.length}`;
+      $say.textContent = copy.ask;
+      $stage.replaceChildren(sentence(items[i].text));
+      $controls.replaceChildren(
+        btn("✓ Correct", () => bet(i, true), "ghost"),
+        btn("✗ Wrong", () => bet(i, false), "ghost"),
+      );
+    };
+    const bet = (i: number, saidCorrect: boolean) => {
+      $say.textContent = copy.bet;
+      $controls.replaceChildren(
+        ...(copy.bets as string[]).map((label, k) =>
+          btn(label, () => {
+            picks[i] = { saidCorrect, bet: k + 1 };
+            round(i + 1);
+          }, "ghost"),
+        ),
+      );
+    };
+
+    // Feedback waits until every bet is in.
+    const check = () => {
+      $label.textContent = "Grammar Auction · feedback";
+      $say.textContent = copy.check;
+      const list = document.createElement("div");
+      items.forEach((it, i) => {
+        const pick = picks[i];
+        const won = pick.saidCorrect === it.correct;
+        coins += won ? pick.bet : -pick.bet;
+        const row = document.createElement("div");
+        row.className = "check-row";
+        const mark = document.createElement("span");
+        mark.textContent = won ? "✓" : "✗";
+        const text = document.createElement("span");
+        text.append(redPen(it));
+        const delta = document.createElement("span");
+        delta.className = "mono";
+        delta.textContent = `${won ? "+" : "−"}${pick.bet}`;
+        row.append(mark, text, delta);
+        list.append(row);
+      });
+      showCoins();
+      const result = document.createElement("p");
+      result.className = "mt-4 font-semibold";
+      result.textContent = copy.result.replace("{coins}", String(coins));
+      const why = document.createElement("p");
+      why.className = "mt-1 text-sm text-(--color-ink-soft)";
+      why.textContent = copy.why;
+      $stage.replaceChildren(list, result, why);
+      $controls.replaceChildren(btn(`${copy.freer.replace(/[.:]$/, "")} →`, freer));
+    };
+
+    const freer = () => {
+      $label.textContent = "Grammar Auction · freer practice";
+      $say.textContent = copy.freer;
+      const form = document.createElement("form");
+      form.className = "freer";
+      const stem = document.createElement("label");
+      stem.htmlFor = "auction-freer";
+      stem.textContent = copy.stem;
+      const input = document.createElement("input");
+      input.id = "auction-freer";
+      input.placeholder = copy.placeholder;
+      input.maxLength = 140;
+      input.autocomplete = "off";
+      form.append(stem, input);
+      $stage.replaceChildren(form);
+      const done = () => {
+        const text = input.value.trim();
+        if (!text) return input.focus();
+        const line = `${copy.stem}${text}`;
+        $say.textContent = /\bwill\b|'ll\b/i.test(text) ? copy.praise : copy.nudge;
+        $stage.replaceChildren(sentence(line));
+        const send = document.createElement("a");
+        send.className = "btn btn-primary";
+        send.href = `mailto:${email}?subject=${encodeURIComponent("My first conditional")}&body=${encodeURIComponent(line)}`;
+        send.textContent = `${copy.send} ↗`;
+        $controls.replaceChildren(send, btn(copy.again, start, "ghost"));
+      };
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        done();
+      });
+      $controls.replaceChildren(btn("Done →", done));
+      input.focus();
+    };
+
+    const start = () => {
+      coins = copy.coins;
+      picks = [];
+      example();
+    };
+    root.querySelector("[data-act='start']")!.addEventListener("click", start);
+  });
+</script>

@@ -5,13 +5,16 @@
 // says, pass different `lines`.
 // inline: sits inside a sentence (hero). Her speech bubble pops above her and fades
 // out again instead of staying on screen.
+// quiet: no bubble of her own (the desk guide does the talking); a click fires an
+// "avatar:poke" event the guide listens for.
 interface Props {
-  lines: string[];
+  lines?: string[];
   class?: string;
   bubble?: "left" | "right";
   inline?: boolean;
+  quiet?: boolean;
 }
-const { lines, class: className = "", bubble = "left", inline = false } = Astro.props;
+const { lines = [], class: className = "", bubble = "left", inline = false, quiet = false } = Astro.props;
 ---
 
 <span
@@ -20,16 +23,20 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
   data-lines={JSON.stringify(lines)}
   data-autohide={inline ? "" : undefined}
 >
-  <span
-    class:list={[
-      "bubble hand sketch absolute z-10 block px-4 py-2 text-xl leading-tight font-normal tracking-normal md:text-2xl",
-      inline ? "bubble-top" : `bubble-${bubble}`,
-    ]}
-    data-bubble
-    aria-live="polite"
-  >
-    {inline ? "" : lines[0]}
-  </span>
+  {
+    !quiet && (
+      <span
+        class:list={[
+          "bubble hand sketch absolute z-10 block px-4 py-2 text-xl leading-tight font-normal tracking-normal md:text-2xl",
+          inline ? "bubble-top" : `bubble-${bubble}`,
+        ]}
+        data-bubble
+        aria-live="polite"
+      >
+        {inline ? "" : lines[0]}
+      </span>
+    )
+  }
   <button type="button" class="block w-full cursor-pointer rounded-[24px]" aria-label="Say hi to Ziyue. Each click, she says something new.">
     <svg viewBox="0 0 300 340" class="block h-auto w-full overflow-visible" aria-hidden="true">
       <g class="boil"><g class="av-figure" stroke="var(--color-ink)" stroke-linecap="round" stroke-linejoin="round">
@@ -335,12 +342,13 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
   const say = new Map<HTMLElement, (i: number) => void>();
   for (const a of avatars) {
     const lines: string[] = JSON.parse(a.dataset.lines || "[]");
-    const bubble = a.querySelector<HTMLElement>("[data-bubble]")!;
+    const bubble = a.querySelector<HTMLElement>("[data-bubble]");
     const autohide = a.dataset.autohide !== undefined;
     let i = 0;
     let talkTimer = 0;
     let hideTimer = 0;
     const speak = (n: number) => {
+      if (!bubble || !lines.length) return;
       bubble.textContent = lines[n];
       bubble.classList.remove("pop");
       void bubble.offsetWidth;
@@ -356,10 +364,11 @@ const { lines, class: className = "", bubble = "left", inline = false } = Astro.
     say.set(a, speak);
     const button = a.querySelector("button")!;
     button.addEventListener("click", () => {
-      i = (i + 1) % lines.length;
+      if (lines.length) i = (i + 1) % lines.length;
       speak(i);
       wave(a);
       wink(a);
+      a.dispatchEvent(new CustomEvent("avatar:poke", { bubbles: true }));
     });
     button.addEventListener("pointerenter", (e) => {
       if (e.pointerType === "mouse") wink(a, 700);

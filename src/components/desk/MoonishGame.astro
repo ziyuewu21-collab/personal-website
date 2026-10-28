@@ -1,0 +1,230 @@
+---
+// Moonish: learn three made-up words in 30 seconds. One instruction per screen.
+// toma is only told; dax and wug are worked out from a hand gesture, then confirmed.
+// The final check gives no hints and keeps its feedback for the very end.
+import { game } from "../../data/desk";
+
+const objects = {
+  blob: "a squishy blob",
+  spinner: "a spinning top",
+  bird: "a round little bird",
+};
+---
+
+<div class="moonish" data-game data-copy={JSON.stringify(game)} data-objects={JSON.stringify(objects)}>
+  <p class="mono text-(--color-ink-soft)" data-stage-label>Moonish · 30 sec</p>
+  <p class="mt-2 text-xl font-semibold tracking-tight" aria-live="polite" data-say>{game.intro}</p>
+  <p class="sr-only" data-hint-sr></p>
+
+  <div class="gesture" data-gesture hidden aria-hidden="true">
+    <svg viewBox="0 0 80 80">
+      <g class="hand" fill="var(--color-skin)" stroke="var(--color-ink)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M30 58 C 24 50, 22 40, 26 34 L 30 22 C 31 18, 36 18, 36 22 L 36 34 L 38 18 C 39 14, 44 14, 44 18 L 43 34 L 46 22 C 47 18, 52 19, 51 23 L 49 36 L 52 30 C 54 27, 58 29, 57 32 L 52 48 C 50 56, 44 60, 38 60 Z" />
+      </g>
+      <path class="trail" d="M14 40 A 26 26 0 1 1 40 66" fill="none" stroke="var(--color-cardigan-dark)" stroke-width="2.4" stroke-dasharray="4 5" stroke-linecap="round" />
+    </svg>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-3" data-stage></div>
+
+  <div class="mt-6 flex flex-wrap items-center gap-3" data-controls>
+    <button type="button" class="btn btn-primary" data-act="play">{game.play} →</button>
+  </div>
+</div>
+
+<template data-object="blob">
+  <svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="var(--color-ink)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M16 56 C 8 44, 16 26, 32 28 C 36 14, 58 14, 60 30 C 72 32, 74 54, 60 58 C 48 64, 28 64, 16 56 Z" fill="var(--color-lilac)" /><circle cx="34" cy="42" r="2.6" fill="var(--color-ink)" stroke="none" /><circle cx="50" cy="42" r="2.6" fill="var(--color-ink)" stroke="none" /><path d="M38 50 Q42 53 46 50" fill="none" /></g></svg>
+</template>
+<template data-object="spinner">
+  <svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="var(--color-ink)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M40 10 L40 20" fill="none" /><path d="M14 34 C 14 26, 66 26, 66 34 C 66 44, 48 58, 40 70 C 32 58, 14 44, 14 34 Z" fill="var(--color-cardigan)" /><path d="M14 34 C 24 40, 56 40, 66 34" fill="none" /><path d="M26 26 C 30 20, 50 20, 54 26" fill="none" /></g></svg>
+</template>
+<template data-object="bird">
+  <svg viewBox="0 0 80 80" aria-hidden="true"><g stroke="var(--color-ink)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M18 46 C 16 28, 30 18, 44 20 C 58 22, 66 34, 62 48 C 58 60, 26 62, 18 46 Z" fill="var(--color-sweater)" /><path d="M62 34 L72 32 L63 40" fill="#fff" /><circle cx="52" cy="32" r="2.6" fill="var(--color-ink)" stroke="none" /><path d="M30 60 L28 70 M42 60 L44 70" fill="none" /><path d="M24 40 C 30 46, 40 46, 44 40" fill="none" /></g></svg>
+</template>
+
+<style>
+  .moonish :global(.obj) {
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    width: 108px;
+    padding: 0.6rem 0.4rem 0.5rem;
+    border: 1.5px solid var(--color-line);
+    border-radius: 14px;
+    background: #fff;
+    transition: border-color 150ms ease, transform 150ms ease;
+  }
+  .moonish :global(button.obj:hover) {
+    border-color: var(--color-ink);
+    transform: translateY(-2px);
+  }
+  .moonish :global(.obj svg) {
+    width: 72px;
+    height: 72px;
+  }
+  .moonish :global(.obj.is-right) {
+    border-color: var(--color-ink);
+    background: var(--color-cardigan);
+  }
+  .moonish :global(.obj.is-wrong) {
+    opacity: 0.45;
+  }
+  .moonish :global(.obj-word) {
+    font-family: var(--font-hand);
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .gesture {
+    width: 96px;
+    margin-top: 0.75rem;
+  }
+  .gesture[hidden] {
+    display: none;
+  }
+  .gesture .hand {
+    transform-box: view-box;
+    transform-origin: 40px 40px;
+  }
+  .gesture.spin .hand {
+    animation: g-spin 1.2s ease-in-out infinite;
+  }
+  .gesture.hop .hand {
+    animation: g-hop 0.9s ease-in-out infinite;
+  }
+  .gesture.hop .trail {
+    d: path("M8 62 Q 22 30, 36 62 Q 50 30, 64 62");
+  }
+  @keyframes g-spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes g-hop {
+    0%, 100% { transform: translateY(6px); }
+    50% { transform: translateY(-10px); }
+  }
+</style>
+
+<script>
+  type Word = { word: string; object: string; mode: "told" | "guess"; say: string; gesture?: "spin" | "hop" };
+
+  document.querySelectorAll<HTMLElement>("[data-game]").forEach((root) => {
+    const copy = JSON.parse(root.dataset.copy || "{}");
+    const names: Record<string, string> = JSON.parse(root.dataset.objects || "{}");
+    const words: Word[] = copy.words;
+    const $say = root.querySelector<HTMLElement>("[data-say]")!;
+    const $stage = root.querySelector<HTMLElement>("[data-stage]")!;
+    const $controls = root.querySelector<HTMLElement>("[data-controls]")!;
+    const $gesture = root.querySelector<HTMLElement>("[data-gesture]")!;
+    const $hintSr = root.querySelector<HTMLElement>("[data-hint-sr]")!;
+    const $label = root.querySelector<HTMLElement>("[data-stage-label]")!;
+    const all = Object.keys(names);
+
+    const shuffle = <T,>(a: T[]) => a.map((v) => [Math.random(), v] as const).sort((x, y) => x[0] - y[0]).map(([, v]) => v);
+    const card = (object: string, word?: string, asButton = false) => {
+      const el = document.createElement(asButton ? "button" : "div");
+      el.className = "obj";
+      if (asButton) (el as HTMLButtonElement).type = "button";
+      el.dataset.object = object;
+      el.setAttribute("aria-label", names[object]);
+      const tpl = document.querySelector<HTMLTemplateElement>(`template[data-object="${object}"]`)!;
+      el.append(tpl.content.cloneNode(true));
+      if (word) {
+        const w = document.createElement("span");
+        w.className = "obj-word";
+        w.textContent = word;
+        el.append(w);
+      }
+      return el;
+    };
+    const button = (label: string, act: () => void, style = "primary") => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = `btn btn-${style}`;
+      b.textContent = label;
+      b.addEventListener("click", act);
+      return b;
+    };
+    const gesture = (kind?: "spin" | "hop") => {
+      $gesture.hidden = !kind;
+      $gesture.className = `gesture ${kind ?? ""}`;
+      $hintSr.textContent = kind ? `Hint: my hand ${kind === "spin" ? "spins round and round" : "hops up and down"}.` : "";
+    };
+
+    let answers: boolean[] = [];
+
+    const learn = (i: number) => {
+      const w = words[i];
+      $label.textContent = `Moonish · word ${i + 1} of ${words.length}`;
+      $say.textContent = w.say;
+      $controls.replaceChildren();
+      if (w.mode === "told") {
+        gesture();
+        $stage.replaceChildren(card(w.object, w.word));
+        $controls.append(button(`${copy.gotIt} →`, () => next(i)));
+        return;
+      }
+      gesture(w.gesture);
+      const options = shuffle(all).map((o) => card(o, undefined, true));
+      options.forEach((o) =>
+        o.addEventListener("click", () => {
+          // Confirm while learning: show which one it is, whatever they picked.
+          options.forEach((x) => {
+            (x as HTMLButtonElement).disabled = true;
+            x.classList.add(x.dataset.object === w.object ? "is-right" : "is-wrong");
+          });
+          const right = options.find((x) => x.dataset.object === w.object)!;
+          const tag = document.createElement("span");
+          tag.className = "obj-word";
+          tag.textContent = w.word;
+          right.append(tag);
+          $say.textContent = o.dataset.object === w.object ? `Yes! That's a ${w.word}.` : `Close! This one's the ${w.word}. See how it moves like my hand?`;
+          gesture();
+          $controls.replaceChildren(button(`${copy.gotIt} →`, () => next(i)));
+        }),
+      );
+      $stage.replaceChildren(...options);
+    };
+
+    const next = (i: number) => (i + 1 < words.length ? learn(i + 1) : check(shuffle(words.map((_, k) => k)), 0));
+
+    const check = (order: number[], q: number) => {
+      if (q === 0) answers = [];
+      if (q >= order.length) return result();
+      const w = words[order[q]];
+      gesture();
+      $label.textContent = `Moonish · check ${q + 1} of ${order.length}`;
+      $say.textContent = `${q === 0 ? copy.checkIntro + " " : ""}${copy.checkSay.replace("{word}", w.word)}`;
+      $controls.replaceChildren();
+      const options = shuffle(all).map((o) => card(o, undefined, true));
+      // No feedback yet: it waits for the end, like in MyTurn.
+      options.forEach((o) =>
+        o.addEventListener("click", () => {
+          answers[order[q]] = o.dataset.object === w.object;
+          check(order, q + 1);
+        }),
+      );
+      $stage.replaceChildren(...options);
+    };
+
+    const result = () => {
+      const score = answers.filter(Boolean).length;
+      $label.textContent = "Moonish · feedback";
+      $say.textContent = copy.resultTitle.replace("{score}", String(score));
+      const list = document.createElement("ul");
+      list.className = "grid gap-2 text-sm";
+      words.forEach((w, k) => {
+        const li = document.createElement("li");
+        li.textContent = `${answers[k] ? "✓" : "✗"}  ${w.word} · ${w.mode === "told" ? "you were told" : "you worked it out"}`;
+        list.append(li);
+      });
+      const p = document.createElement("p");
+      p.className = "mt-3 max-w-[48ch]";
+      p.textContent = copy.result;
+      const box = document.createElement("div");
+      box.append(list, p);
+      $stage.replaceChildren(box);
+      $controls.replaceChildren(button(copy.again, () => learn(0), "ghost"));
+    };
+
+    root.querySelector("[data-act='play']")!.addEventListener("click", () => learn(0));
+  });
+</script>

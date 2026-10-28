@@ -1,0 +1,123 @@
+---
+// Desk file icons: black ink line drawings on white, cardigan yellow as the one accent.
+import type { IconKind } from "../../data/desk";
+
+interface Props {
+  kind: IconKind;
+}
+const { kind } = Astro.props;
+---
+
+<svg viewBox="0 0 64 64" class="desk-icon-art" aria-hidden="true">
+  <g fill="#fff" stroke="var(--color-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    {
+      kind === "app" && (
+        <>
+          <path d="M18 6 L46 6 Q52 6 52 12 L52 52 Q52 58 46 58 L18 58 Q12 58 12 52 L12 12 Q12 6 18 6 Z" />
+          <path d="M19 17 L45 17 L45 33 L31 33 L24 40 L24 33 L19 33 Z" fill="var(--color-cardigan)" />
+          <path d="M28 51 L36 51" />
+        </>
+      )
+    }
+    {
+      kind === "folder" && (
+        <>
+          <path d="M6 18 L6 52 Q6 55 9 55 L55 55 Q58 55 58 52 L58 22 Q58 19 55 19 L30 19 L25 13 L9 13 Q6 13 6 16 Z" />
+          <path d="M6 26 L58 26" />
+        </>
+      )
+    }
+    {
+      kind === "board" && (
+        <>
+          <path d="M7 10 L57 9 L57 42 L7 43 Z" />
+          <path d="M17 43 L12 58 M47 42 L52 58" />
+          <path d="M15 20 C 20 16, 25 24, 30 19 S 40 23, 46 19" stroke="var(--color-ink)" />
+          <path d="M15 31 L34 30" />
+          <circle cx="47" cy="31" r="4" fill="var(--color-cardigan)" />
+        </>
+      )
+    }
+    {
+      kind === "flask" && (
+        <>
+          <path d="M18 44 C 26 40, 38 48, 47 42 L51 52 C 52 55, 51 57, 48 57 L16 57 C 13 57, 12 55, 13 52 Z" fill="var(--color-cardigan)" stroke="none" />
+          <path d="M23 7 L41 7 M27 7 L27 24 L13 52 C 12 55, 13 57, 16 57 L48 57 C 51 57, 52 55, 51 52 L37 24 L37 7" fill="none" />
+          <circle cx="29" cy="48" r="2" />
+          <circle cx="37" cy="44" r="1.5" />
+        </>
+      )
+    }
+    {
+      kind === "pdf" && (
+        <>
+          <path d="M14 5 L40 5 L52 17 L52 59 L14 59 Z" />
+          <path d="M40 5 L40 17 L52 17" />
+          <path d="M21 28 L45 28 M21 36 L45 36 M21 44 L37 44" />
+          <rect x="20" y="49" width="17" height="7" rx="2" fill="var(--color-cardigan)" stroke="none" />
+        </>
+      )
+    }
+    {
+      kind === "chat" && (
+        <>
+          <path d="M8 12 C 8 9, 10 7, 13 7 L51 7 C 54 7, 56 9, 56 12 L56 38 C 56 41, 54 43, 51 43 L26 43 L15 54 L16 43 L13 43 C 10 43, 8 41, 8 38 Z" />
+          <circle cx="22" cy="25" r="2.6" fill="var(--color-ink)" stroke="none" />
+          <circle cx="32" cy="25" r="2.6" fill="var(--color-ink)" stroke="none" />
+          <circle cx="42" cy="25" r="2.6" fill="var(--color-cardigan)" />
+        </>
+      )
+    }
+    {
+      kind === "game" && (
+        <>
+          <path d="M10 22 C 10 16, 14 13, 20 13 L44 13 C 50 13, 54 16, 54 22 L57 42 C 58 49, 52 53, 47 49 L40 42 L24 42 L17 49 C 12 53, 6 49, 7 42 Z" />
+          <path d="M19 24 L19 32 M15 28 L23 28" />
+          <circle cx="42" cy="25" r="2.6" fill="var(--color-cardigan)" />
+          <circle cx="47" cy="31" r="2.6" fill="var(--color-ink)" stroke="none" />
+        </>
+      )
+    }
+    {
+      kind === "auction" && (
+        <>
+          <path d="M10 56 L42 56 L42 50 C 42 48, 40 46, 38 46 L14 46 C 12 46, 10 48, 10 50 Z" fill="var(--color-cardigan)" />
+          <path d="M30 26 L50 46" stroke-width="4" fill="none" />
+          <path d="M18 14 L34 4 L44 20 L28 30 Z" />
+          <path d="M24 10 L38 30" fill="none" />
+          <path d="M48 8 L54 4 M52 16 L58 15 M46 2 L46 -2" fill="none" />
+        </>
+      )
+    }
+    {
+      kind === "secret" && (
+        <>
+          <path d="M14 5 L40 5 L52 17 L52 59 L14 59 Z" />
+          <path d="M40 5 L40 17 L52 17" />
+          <path d="M21 30 L45 30 M21 38 L45 38" />
+          <path d="M8 46 L56 34 L58 42 L10 54 Z" fill="var(--color-ink)" />
+          <text x="33" y="47.5" fill="#fff" stroke="none" font-family="var(--font-mono)" font-size="6.5" font-weight="700" text-anchor="middle" transform="rotate(-14 33 46)">
+            TEACHERS ONLY
+          </text>
+        </>
+      )
+    }
+    {
+      kind === "trash" && (
+        <>
+          <path d="M14 18 L50 18 L46 58 L18 58 Z" />
+          <path d="M10 18 L54 18 M26 18 L26 11 L38 11 L38 18" fill="none" />
+          <path d="M25 27 L27 50 M32 27 L32 50 M39 27 L37 50" />
+        </>
+      )
+    }
+  </g>
+</svg>
+
+<style>
+  .desk-icon-art {
+    width: 56px;
+    height: 56px;
+    overflow: visible;
+  }
+</style>

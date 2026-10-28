@@ -1,0 +1,110 @@
+---
+// A desk window: title bar (drag it on desktop), close button, scrolling body.
+// Opened and closed by the desk script in pages/index.astro via data-win.
+import { titles } from "../../data/desk";
+
+interface Props {
+  id: string;
+  width?: string; // CSS width on desktop, e.g. "min(880px, 92vw)"
+}
+const { id, width = "min(560px, 92vw)" } = Astro.props;
+---
+
+<section class="win" data-win={id} role="dialog" aria-labelledby={`win-${id}-title`} hidden style={`--win-w:${width}`}>
+  <header class="win-bar" data-drag>
+    <button type="button" class="win-close" data-close aria-label={`Close ${titles[id]}`}>
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3 L9 9 M9 3 L3 9" /></svg>
+    </button>
+    <h2 id={`win-${id}-title`} class="mono win-title" tabindex="-1">{titles[id]}</h2>
+    <span class="win-grip" aria-hidden="true"></span>
+  </header>
+  <div class="win-body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .win {
+    position: fixed;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    width: var(--win-w);
+    max-height: min(78vh, 760px);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 18px 50px rgb(31 29 26 / 0.18), 0 2px 0 var(--color-ink);
+    animation: win-in 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  .win[hidden] {
+    display: none;
+  }
+  @keyframes win-in {
+    from { opacity: 0; scale: 0.96; }
+    to { opacity: 1; scale: 1; }
+  }
+  .win-bar {
+    display: grid;
+    grid-template-columns: 32px 1fr 32px;
+    align-items: center;
+    padding: 6px 8px;
+    border-bottom: 1.5px solid var(--color-ink);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .win.is-dragging .win-bar {
+    cursor: grabbing;
+  }
+  .win-title {
+    text-align: center;
+    color: var(--color-ink);
+    outline: none;
+  }
+  .win-close {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 999px;
+    background: var(--color-cardigan);
+  }
+  .win-close svg {
+    width: 10px;
+    height: 10px;
+    stroke: var(--color-ink);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .win-close:hover svg, .win-close:focus-visible svg {
+    opacity: 1;
+  }
+  .win-body {
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 1.25rem 1.4rem 1.6rem;
+  }
+  /* Phones: every window is a full-screen sheet under the menu bar. */
+  @media (max-width: 767px) {
+    .win {
+      inset: 44px 0 0 0 !important;
+      width: 100%;
+      max-height: none;
+      border-radius: 14px 14px 0 0;
+      border-bottom: none;
+    }
+    .win-bar {
+      cursor: default;
+    }
+    .win-close svg {
+      opacity: 1;
+    }
+    .win-body {
+      padding-bottom: 7rem; /* room for the guide */
+    }
+  }
+</style>

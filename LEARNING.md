@@ -53,3 +53,18 @@
   - 改聊天框说的话 → `src/data/lesson.ts` 的 `chat`,`{name}` 会被替换成访客的名字
 
 **检验问题**:如果你在页面中间新加一个区块,但没在 lesson.ts 里加对应的 stage,底部的教案条会怎样?为什么聊天框不需要后端?
+
+## v4 桌面首页 — 2026-10-28
+
+- **代码在哪**:
+  - `src/pages/index.astro` — 桌面本体:菜单栏、图标、便利贴、所有窗口的内容,底部 `<script>` 是"窗口管理员"(打开、关闭、拖动、置顶、打勾)
+  - `src/components/desk/Guide.astro` — 引导者。它不直接碰窗口,只"听"两个广播:`desk:open`(某个窗口开了)和 `desk:close`(关了),据此决定下一句说什么
+  - `src/components/desk/InkField.astro` — 背景字母场,一块 canvas 画布,鼠标附近的字放大变深;没人动时不重画,省电
+  - `src/data/desk.ts` — 桌面上所有文字:图标、导览台词、彩蛋、三个游戏的题目
+- **数据怎么流**:点图标 → 窗口管理员打开窗口 → 广播 "desk:open, myturn" → 引导者听到"刚才让你开的就是这个" → 换成下一句;便利贴同时打勾,并记在浏览器里(下次来会说 Welcome back)
+- **想自己改的话**:
+  - 改引导者说的话 → `desk.ts` 的 `tour.steps`,每步三句:`say`(指令)、`after`(打开后)、`task`(可选,做完任务后)
+  - 改猜词游戏的词 → `desk.ts` 的 `guess.words`,每个词 4 个选项(英 + 中 + 拼音)和 3 条线索
+  - 加一个桌面文件 → `items` 加一行 + `titles` 加标题 + index.astro 加一个 `<Window id="...">`
+
+**检验问题**:如果你想让引导者第一步改成先看简历,你要改 `desk.ts` 里的哪一部分?为什么引导者知道你已经打开了 MyTurn?

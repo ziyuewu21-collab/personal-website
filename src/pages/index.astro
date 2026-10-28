@@ -1,11 +1,15 @@
 ---
-// One page, laid out as a CELTA lesson plan: each section is a stage (see data/lesson.ts),
-// and the LessonHud bar tracks where you are. Section ids must match the stage ids.
+// Homepage: Ziyue's Desk. A desktop with files to open, a lesson-plan sticky note that
+// ticks off as you go, and Ziyue as the guide, giving one instruction at a time.
+// The long scrolling page lives on at /classic. Copy: src/data/desk.ts.
 import Base from "../layouts/Base.astro";
-import Avatar from "../components/Avatar.astro";
-import HeroIcon from "../components/HeroIcon.astro";
-import Scribble from "../components/Scribble.astro";
-import SectionHead from "../components/SectionHead.astro";
+import InkField from "../components/desk/InkField.astro";
+import DeskIcon from "../components/desk/DeskIcon.astro";
+import Window from "../components/desk/Window.astro";
+import Guide from "../components/desk/Guide.astro";
+import MoonishGame from "../components/desk/MoonishGame.astro";
+import GrammarAuction from "../components/desk/GrammarAuction.astro";
+import GuessWord from "../components/desk/GuessWord.astro";
 import Classroom from "../components/Classroom.astro";
 import ReportCard from "../components/ReportCard.astro";
 import PairLearning from "../components/PairLearning.astro";
@@ -13,263 +17,713 @@ import ChatContact from "../components/ChatContact.astro";
 import { site } from "../data/site";
 import { projects, research } from "../data/projects";
 import { celta, principles } from "../data/teaching";
+import { items, plan, answerKey, trash, education, games } from "../data/desk";
 
-const heroLines = [
-  { href: "#teaching", icon: "board", text: "taught in the classroom," },
-  { href: "#research", icon: "flask", text: "tested in the lab, and" },
-  { href: "#projects", icon: "phone", text: "shipped to real learners." },
-] as const;
-
-const elsewhere = [
+const [myturn] = projects;
+const profiles = [
   { label: "LinkedIn", href: site.linkedin },
   { label: "Substack", href: site.substack },
   { label: "GitHub", href: site.github },
 ].filter((l) => l.href);
 ---
 
-<Base>
-  <!-- Stage 01 · Lead-in -->
-  <section id="top" class="mx-auto w-full max-w-[1100px] px-4 pt-14 pb-20 md:pt-20 md:pb-28">
-    <h1 class="mono text-(--color-ink-soft)">{site.name} · Product manager for language learning</h1>
-    <p class="hero mt-20 max-w-[23ch] text-[30px] leading-[1.35] font-semibold tracking-tight md:text-[52px]">
-      I'm Ziyue.
-      <Avatar inline lines={site.heroLines} class="hero-avatar mx-1" />
-      I&nbsp;design language&#8209;learning products from what&nbsp;I've
+<Base bare>
+  <InkField />
+
+  <div class="desk">
+    <nav class="menubar" aria-label="Desk menu">
+      <a href="/" class="hand logo">Ziyue's Desk</a>
+      <button type="button" class="menu-item" data-tour-btn>Tour</button>
+      <button type="button" class="menu-item" data-open="resume">Resume</button>
+      <a href="/classic" class="menu-item">Classic view</a>
+      <span class="mono clock" data-clock aria-label="Time in London">London --:--</span>
+    </nav>
+
+    <div class="wallpaper">
+      <p class="mono text-(--color-ink-soft)">You found my desk</p>
+      <h1 class="mt-2 text-[40px] leading-none font-semibold tracking-tight md:text-[64px]">{site.name}</h1>
+      <p class="mt-3 text-lg font-semibold md:text-xl">Product manager for language learning</p>
+      <p class="mono mt-2 text-(--color-ink-soft)">UCL speech science · CELTA {celta.grade} · shipped edtech</p>
+    </div>
+
+    <ul class="icons" aria-label="Files on the desk">
       {
-        heroLines.map((l) => (
-          <a href={l.href} class="hero-line">
-            <HeroIcon kind={l.icon} />
-            <span>{l.text}</span>
-          </a>
+        items.map((it) => (
+          <li class:list={["icon-slot", `slot-${it.id}`, it.loose && "is-loose"]}>
+            <button type="button" class="desk-icon" data-open={it.id}>
+              <DeskIcon kind={it.icon} />
+              <span class="desk-label">{it.label}</span>
+            </button>
+          </li>
         ))
       }
-    </p>
-    <p class="mt-8 max-w-[52ch] text-lg text-(--color-ink-soft)">
-      UCL speech science, CELTA teacher training and a shipped edtech product.
-      I build for how people actually learn to communicate:{" "}
-      <Scribble kind="mark">with other people</Scribble>.
-    </p>
-    <div class="mt-10 flex flex-wrap items-start gap-6">
-      <div class="aim max-w-[26rem] border-l-2 border-(--color-ink) pl-4">
-        <p class="mono text-(--color-accent)">Lesson aim</p>
-        <p class="mt-1">{site.lessonAim}</p>
-      </div>
-      {
-        site.cvReady && (
-          <a href="/cv.pdf" class="btn btn-ghost">
-            Download CV
-          </a>
-        )
-      }
-    </div>
-  </section>
+    </ul>
 
-  <!-- Stage 02 · Context -->
-  <section id="projects" class="scroll-mt-6 border-t border-(--color-line)">
-    <div class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-20">
-      <SectionHead stage="projects" title="What I've shipped">
-        <p>Three products, from a government tender to my own app.</p>
-      </SectionHead>
-      <ol class="mt-10">
+    <aside class="note" aria-labelledby="plan-title">
+      <p id="plan-title" class="hand note-title">
+        {plan.title} <span class="mono note-min">{plan.minutes}</span>
+      </p>
+      <ol class="note-rows">
         {
-          projects.map((p, i) => (
-            <li class="project grid gap-6 border-t border-(--color-line) py-10 md:grid-cols-[1fr_1.15fr] md:gap-12">
-              <div>
-                <p class="mono text-(--color-ink-soft)">
-                  {String(i + 1).padStart(2, "0")} · {p.status === "building" ? "Building now" : "Shipped"}
-                </p>
-                <h3 class="mt-3 text-2xl tracking-tight md:text-[28px]">{p.title}</h3>
-                <p class="mt-3 text-sm text-(--color-ink-soft)">{p.role}</p>
-                <p class="mono mt-4 text-(--color-ink-soft)">{p.tags.join(" · ")}</p>
-              </div>
-              <div>
-                <p>{p.description}</p>
-                <p class="mt-4 font-semibold">{p.result}</p>
-                {p.links && p.links.length > 0 && (
-                  <ul class="mt-6 flex flex-wrap gap-3">
-                    {p.links.map((l, k) => (
-                      <li>
-                        <a href={l.url} class:list={["btn", k === 0 ? "btn-primary" : "btn-ghost"]} rel="noopener" target="_blank">
-                          {l.label} ↗
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+          plan.rows.map((r, i) => (
+            <li>
+              <button type="button" class="note-row" data-open={r.id} data-plan-row={r.id}>
+                <span class="tick" aria-hidden="true">
+                  <svg viewBox="0 0 20 20"><path d="M4 10.5 L8.5 15 L16 5" /></svg>
+                </span>
+                <span class="mono note-n">{String(i + 1).padStart(2, "0")}</span>
+                <span>{r.label}</span>
+                <span class="sr-only" data-done-sr></span>
+              </button>
             </li>
           ))
         }
       </ol>
+      <p class="hand note-aim">{plan.aim}</p>
+    </aside>
+    <p class="classic-link"><a href="/classic">Prefer scrolling? Classic view →</a></p>
+  </div>
+
+  <noscript>
+    <p class="noscript">This desk needs JavaScript. <a href="/classic">Read the classic version →</a></p>
+  </noscript>
+
+  <!-- Windows -->
+  <Window id="myturn" width="min(620px, 92vw)">
+    <p class="mono text-(--color-ink-soft)">Shipped · {myturn.tags.join(" · ")}</p>
+    <h3 class="mt-2 text-2xl tracking-tight">{myturn.title}</h3>
+    <p class="mt-2 text-sm text-(--color-ink-soft)">{myturn.role}</p>
+    <p class="mt-4">{myturn.description}</p>
+    <p class="mt-4 font-semibold">{myturn.result}</p>
+    <ul class="mt-5 flex flex-wrap gap-3">
+      {
+        myturn.links?.map((l, k) => (
+          <li>
+            <a href={l.url} class:list={["btn", k === 0 ? "btn-primary" : "btn-ghost"]} rel="noopener" target="_blank">
+              {l.label} ↗
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </Window>
+
+  <Window id="work" width="min(720px, 92vw)">
+    <ol class="divide-y divide-(--color-line)">
+      {
+        projects.map((p, i) => (
+          <li class="py-5 first:pt-0">
+            <p class="mono text-(--color-ink-soft)">{String(i + 1).padStart(2, "0")} · {p.tags.join(" · ")}</p>
+            <h3 class="mt-2 text-xl tracking-tight">{p.title}</h3>
+            <p class="mt-1 text-sm text-(--color-ink-soft)">{p.role}</p>
+            <p class="mt-3 text-sm">{p.description}</p>
+            <p class="mt-3 text-sm font-semibold">{p.result}</p>
+            {p.links && p.links.length > 0 && (
+              <ul class="mt-3 flex flex-wrap gap-x-5 text-sm font-semibold">
+                {p.links.map((l) => (
+                  <li>
+                    <a href={l.url} class="inline-block py-2 underline underline-offset-4 hover:text-(--color-accent)" rel="noopener" target="_blank">
+                      {l.label} ↗
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </Window>
+
+  <Window id="classroom" width="min(920px, 94vw)">
+    <p class="text-(--color-ink-soft)">
+      {celta.course} at {celta.centre}, {celta.dates}: {celta.hours}, with {celta.modes.toLowerCase()}.
+      Overall grade <strong class="text-(--color-ink)">{celta.grade}</strong>, {celta.gradeNote}.
+    </p>
+    <p class="mt-4 text-xl font-semibold tracking-tight">
+      My best lessons run on <s class="text-(--color-ink-soft)">me talking</s> my students talking.
+    </p>
+    <div class="mt-6">
+      <Classroom />
     </div>
-  </section>
-
-  <!-- Stage 03 · Task -->
-  <section id="teaching" class="scroll-mt-6 border-t border-(--color-line) bg-(--color-paper-alt)">
-    <div class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-20">
-      <SectionHead stage="teaching" title="How I teach">
-        <p>
-          {celta.course} at {celta.centre}, {celta.dates}: {celta.hours}, with
-          {" "}{celta.modes.toLowerCase()}. Overall grade
-          {" "}<strong class="text-(--color-ink)">{celta.grade}</strong>, {celta.gradeNote}.
-        </p>
-      </SectionHead>
-
-      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1.35fr_0.65fr]">
-        <Classroom />
-        <div class="lg:pt-16">
-          <p class="text-xl font-semibold tracking-tight">
-            My best lessons run on <s class="text-(--color-ink-soft)">me talking</s> my students talking.
-          </p>
-          <p class="mt-4">
-            Flip the classroom. When it's student-centred, the learners do most
-            of the talking, and my job moves from explaining to{" "}
-            <Scribble kind="mark">designing the task</Scribble>, monitoring and
-            giving feedback.
-          </p>
-          <p class="mt-3 text-(--color-ink-soft)">
-            It's the same job I do as a PM: set up the conditions, then watch
-            what people actually do.
-          </p>
-        </div>
-      </div>
-
-      <h3 class="mt-20 text-2xl tracking-tight">Classroom habits I build products with</h3>
-      <div class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        {
-          principles.map((p) => (
-            <article class="sketch flex flex-col p-5">
-              <svg viewBox="0 0 48 48" class="boil h-10 w-10" aria-hidden="true">
-                <g fill="none" stroke="var(--color-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  {p.icon === "ear" && (
-                    <>
-                      <path d="M16 20 C 16 10, 34 8, 34 20 C 34 28, 26 30, 26 36 C 26 42, 18 42, 17 37" fill="var(--color-skin)" />
-                      <path d="M22 20 C 22 16, 28 16, 28 20 C 28 23, 24 24, 24 27" />
-                      <path d="M38 14 C 41 18, 41 24, 38 28 M42 10 C 47 17, 47 25, 42 32" stroke="var(--color-accent)" />
-                    </>
-                  )}
-                  {p.icon === "question" && (
-                    <>
-                      <path d="M8 10 C 20 6, 36 6, 42 10 C 44 18, 44 26, 40 30 C 32 32, 24 32, 18 31 L 10 40 L 12 30 C 6 26, 6 16, 8 10 Z" fill="var(--color-highlight)" />
-                      <path d="M20 16 C 20 11, 30 11, 30 16 C 30 20, 25 20, 25 24" />
-                      <circle cx="25" cy="27.5" r="0.8" fill="var(--color-ink)" />
-                    </>
-                  )}
-                  {p.icon === "steps" && (
-                    <>
-                      <path d="M6 40 L 18 40 L 18 30 L 28 30 L 28 20 L 38 20 L 38 10 L 44 10" />
-                      <circle cx="12" cy="34" r="3" fill="var(--color-accent)" stroke="none" />
-                    </>
-                  )}
-                  {p.icon === "flag" && (
-                    <>
-                      <path d="M12 42 L 12 6" />
-                      <path d="M12 8 C 20 4, 26 12, 38 8 L 38 24 C 26 28, 20 20, 12 24 Z" fill="var(--color-highlight)" />
-                    </>
-                  )}
-                </g>
-              </svg>
-              <h4 class="mt-4 text-lg font-semibold tracking-tight">{p.habit}</h4>
-              <p class="mt-2 text-sm text-(--color-ink-soft)">{p.classroom}</p>
-              <p class="mono mt-5 text-(--color-accent)">→ In product</p>
-              <p class="mt-1 text-sm font-semibold">{p.product}</p>
-            </article>
-          ))
-        }
-      </div>
-
-      <div class="mt-16">
-        <ReportCard />
-      </div>
+    <h3 class="mt-10 text-xl tracking-tight">Classroom habits I build products with</h3>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      {
+        principles.map((p) => (
+          <article class="sketch p-4">
+            <h4 class="font-semibold">{p.habit}</h4>
+            <p class="mt-1 text-sm text-(--color-ink-soft)">{p.classroom}</p>
+            <p class="mono mt-3 text-(--color-accent)">→ In product</p>
+            <p class="mt-1 text-sm font-semibold">{p.product}</p>
+          </article>
+        ))
+      }
     </div>
-  </section>
-
-  <!-- Stage 04 · Language focus -->
-  <section id="research" class="scroll-mt-6 border-t border-(--color-line)">
-    <div class="mx-auto w-full max-w-[1100px] px-4 py-16 md:py-20">
-      <SectionHead stage="research" title="Why learning is social">
-        <p>
-          I study how people learn new words from each other: the questions, the
-          gestures, the looking back and forth. I use that science to make product
-          decisions, not papers for their own sake.
-        </p>
-      </SectionHead>
-      <div class="mt-10 grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-        <PairLearning />
-        <div class="divide-y divide-(--color-line) lg:pt-14">
-          {
-            research.map((r) => (
-              <article class="py-5 first:pt-0">
-                <p>{r.finding}</p>
-                <p class="mt-3 font-semibold text-(--color-accent)">→ {r.takeaway}</p>
-              </article>
-            ))
-          }
-        </div>
-      </div>
+    <div class="mt-10">
+      <ReportCard />
     </div>
-  </section>
+  </Window>
 
-  <!-- Stage 05 · Feedback -->
-  <section id="contact" class="scroll-mt-6 border-t border-(--color-line) bg-(--color-paper-alt)">
-    <div class="mx-auto grid w-full max-w-[1100px] gap-10 px-4 py-16 md:py-20 lg:grid-cols-[0.8fr_1.2fr]">
-      <SectionHead stage="contact" title="Your turn to talk">
-        <p>
-          Looking for a PM who has taught the learner, studied the science, and
-          shipped the product? Tell me here, or email {site.email}.
-        </p>
-        <p class="mt-4">
-          I also write in public about building AI products for language learning.
-        </p>
-        <ul class="mt-4 flex flex-wrap gap-x-6 font-semibold">
-          {
-            elsewhere.map((l) => (
-              <li>
-                <a href={l.href} class="inline-block py-3 text-(--color-ink) hover:text-(--color-accent)" rel="noopener">
-                  {l.label} ↗
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </SectionHead>
-      <ChatContact />
+  <Window id="lab" width="min(860px, 94vw)">
+    <p class="text-(--color-ink-soft)">
+      I study how people learn new words from each other: the questions, the gestures, the
+      looking back and forth.
+    </p>
+    <div class="mt-6">
+      <PairLearning />
     </div>
-  </section>
+    <div class="mt-8 divide-y divide-(--color-line)">
+      {
+        research.map((r) => (
+          <article class="py-4 first:pt-0">
+            <p>{r.finding}</p>
+            <p class="mt-2 font-semibold text-(--color-accent)">→ {r.takeaway}</p>
+          </article>
+        ))
+      }
+    </div>
+    <button type="button" class="btn btn-ghost mt-6" data-open="game">Try it: Moonish →</button>
+  </Window>
+
+  <Window id="games" width="min(520px, 92vw)">
+    <p class="text-(--color-ink-soft)">Three 30-second games. Each one is a technique from my CELTA classroom.</p>
+    <ul class="mt-4 divide-y divide-(--color-line)">
+      {
+        games.map((g) => (
+          <li class="flex items-center justify-between gap-4 py-4">
+            <div>
+              <p class="font-semibold">{g.name}</p>
+              <p class="mt-1 text-sm text-(--color-ink-soft)">{g.blurb}</p>
+            </div>
+            <button type="button" class="btn btn-primary shrink-0" data-open={g.id}>Play</button>
+          </li>
+        ))
+      }
+    </ul>
+  </Window>
+
+  <Window id="guess" width="min(560px, 92vw)">
+    <GuessWord />
+  </Window>
+
+  <Window id="auction" width="min(580px, 92vw)">
+    <GrammarAuction />
+  </Window>
+
+  <Window id="resume" width="min(680px, 92vw)">
+    <header class="border-b border-(--color-line) pb-4">
+      <h3 class="text-2xl tracking-tight">{site.name}</h3>
+      <p class="mt-1 font-semibold">Product manager for language learning</p>
+      <p class="mt-2 text-sm text-(--color-ink-soft)">
+        <a href={`mailto:${site.email}`} class="underline underline-offset-4">{site.email}</a>
+        {profiles.map((l) => (
+          <>
+            {" · "}
+            <a href={l.href} class="underline underline-offset-4" rel="noopener" target="_blank">{l.label}</a>
+          </>
+        ))}
+      </p>
+    </header>
+    <h4 class="mono mt-5 text-(--color-accent)">Experience</h4>
+    <ul class="mt-2 space-y-4">
+      {
+        projects.map((p) => (
+          <li>
+            <p class="font-semibold">{p.title}</p>
+            <p class="text-sm text-(--color-ink-soft)">{p.role}</p>
+            <p class="mt-1 text-sm">{p.result}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <h4 class="mono mt-6 text-(--color-accent)">Education & training</h4>
+    <ul class="mt-2 space-y-3">
+      {
+        education.map((e) => (
+          <li>
+            <p class="font-semibold">{e.what}</p>
+            <p class="text-sm text-(--color-ink-soft)">{e.where}</p>
+            <p class="mt-1 text-sm">{e.note}</p>
+          </li>
+        ))
+      }
+      <li>
+        <p class="font-semibold">{celta.course} · {celta.grade}</p>
+        <p class="text-sm text-(--color-ink-soft)">{celta.centre}</p>
+        <p class="mt-1 text-sm">{celta.dates} · {celta.hours}</p>
+      </li>
+    </ul>
+    <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-(--color-line) pt-5">
+      {
+        site.cvReady ? (
+          <a href="/cv.pdf" class="btn btn-primary" target="_blank">Download PDF ↗</a>
+        ) : (
+          <a href={`mailto:${site.email}?subject=${encodeURIComponent("CV request")}`} class="btn btn-primary">Email me for the PDF</a>
+        )
+      }
+      <a href="/classic" class="btn btn-ghost">Prefer scrolling? Classic view</a>
+    </div>
+  </Window>
+
+  <Window id="chat" width="min(520px, 92vw)">
+    <ChatContact />
+  </Window>
+
+  <Window id="game" width="min(560px, 92vw)">
+    <MoonishGame />
+  </Window>
+
+  <Window id="answers" width="min(440px, 92vw)">
+    <p class="hand text-5xl">{answerKey.big}</p>
+    {answerKey.lines.map((l) => <p class="mt-3">{l}</p>)}
+  </Window>
+
+  <Window id="trash" width="min(480px, 92vw)">
+    <ul class="divide-y divide-(--color-line)">
+      {
+        trash.map((t) => (
+          <li class="py-3 first:pt-0">
+            <p class="mono text-(--color-ink)">{t.file}</p>
+            <p class="mt-1 text-sm text-(--color-ink-soft)">{t.note}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Window>
+
+  <Guide />
 </Base>
 
 <style>
-  .hero {
-    text-wrap: pretty;
+  .desk {
+    position: relative;
+    z-index: 1;
+    height: 100dvh;
+    min-height: 560px;
+    overflow: hidden;
   }
-  .hero :global(.hero-avatar) {
-    width: 3.2em;
-    margin-bottom: -0.1em;
-  }
-  @media (max-width: 640px) {
-    .hero :global(.hero-avatar) {
-      width: 2.7em;
-    }
-  }
-  .hero-line {
+
+  /* menu bar */
+  .menubar {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 200;
     display: flex;
     align-items: center;
-    gap: 0.45em;
-    width: fit-content;
-    margin-top: 0.15em;
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.18em;
-    transition: text-decoration-color 200ms ease;
+    gap: 0.25rem;
+    height: 44px;
+    padding: 0 0.75rem;
+    border-bottom: 1.5px solid var(--color-ink);
+    background: rgb(255 255 255 / 0.92);
+    backdrop-filter: blur(8px);
+    font-size: 0.875rem;
   }
-  .hero-line:first-of-type {
-    margin-top: 0.3em;
+  .logo {
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
   }
-  .hero-line:hover {
-    text-decoration-color: var(--color-accent);
+  .menu-item {
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
   }
-  .hero-line:hover :global(.hero-icon) {
-    transform: rotate(-8deg) scale(1.1);
+  .menu-item:hover {
+    background: var(--color-cardigan);
+  }
+  .clock {
+    margin-left: auto;
+    color: var(--color-ink-soft);
+  }
+
+  /* wallpaper text */
+  .wallpaper {
+    position: absolute;
+    left: 6%;
+    bottom: 9%;
+    max-width: 34rem;
+    pointer-events: none;
+  }
+
+  /* icons */
+  .icons {
+    position: absolute;
+    top: 68px;
+    left: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 112px);
+    grid-auto-rows: 112px;
+  }
+  .icon-slot {
+    display: flex;
+    justify-content: center;
+  }
+  /* the secret file and the trash sit apart from the grid */
+  .slot-answers {
+    position: fixed;
+    left: calc(24px + 336px + 6vw);
+    top: 46vh;
+  }
+  .slot-trash {
+    position: fixed;
+    right: calc(4% + 300px);
+    top: 72px;
+  }
+  .desk-icon {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    width: 104px;
+    padding: 0.5rem 0.25rem;
+    border-radius: 12px;
+  }
+  .desk-icon :global(.desk-icon-art) {
+    transition: transform 180ms cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .desk-icon:hover :global(.desk-icon-art) {
+    transform: translateY(-3px) rotate(-4deg);
+  }
+  .desk-label {
+    padding: 0.05rem 0.45rem;
+    border-radius: 6px;
+    background: rgb(255 255 255 / 0.85);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .desk-icon[aria-expanded="true"] .desk-label,
+  .desk-icon:focus-visible .desk-label {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  /* "open me next": a little hop, a dashed ring, a handwritten nudge */
+  .desk-icon:global(.is-next) {
+    animation: hop 1.4s ease-in-out infinite;
+  }
+  .desk-icon:global(.is-next)::before {
+    content: "";
+    position: absolute;
+    inset: -6px 6px 18px;
+    border: 2px dashed var(--color-cardigan-dark);
+    border-radius: 999px;
+    z-index: -1;
+    background: rgb(246 201 69 / 0.25);
+  }
+  .desk-icon:global(.is-next)::after {
+    content: "here!";
+    position: absolute;
+    top: -18px;
+    right: -10px;
+    font-family: var(--font-hand);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+    rotate: 10deg;
+  }
+  @keyframes hop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-7px); }
+  }
+  /* the secret file sits at an angle, begging to be opened */
+  .slot-answers .desk-icon {
+    rotate: -8deg;
+  }
+
+  /* sticky note */
+  .note {
+    position: absolute;
+    top: 76px;
+    right: 4%;
+    width: 280px;
+    padding: 1.1rem 1.1rem 1rem;
+    background: var(--color-cardigan);
+    box-shadow: 0 10px 30px rgb(31 29 26 / 0.14), 0 1.5px 0 var(--color-ink);
+    rotate: -1.5deg;
+  }
+  .note::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 84px;
+    height: 22px;
+    translate: -50% 0;
+    rotate: 3deg;
+    background: rgb(255 255 255 / 0.7);
+    border: 1px solid rgb(31 29 26 / 0.12);
+  }
+  .note-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .note-min {
+    margin-left: 0.25rem;
+    font-size: 0.65rem;
+    vertical-align: middle;
+  }
+  .note-rows {
+    margin-top: 0.6rem;
+  }
+  .note-row {
+    display: grid;
+    grid-template-columns: 22px 22px 1fr;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+    min-height: 40px;
+    padding: 0.2rem 0.3rem;
+    border-radius: 6px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .note-row:hover {
+    background: rgb(255 255 255 / 0.45);
+  }
+  .note-row:global(.is-next) {
+    background: rgb(255 255 255 / 0.6);
+  }
+  .note-n {
+    font-size: 0.65rem;
+  }
+  .tick {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 4px;
+    background: rgb(255 255 255 / 0.6);
+  }
+  .tick svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    transition: stroke-dashoffset 400ms ease;
+  }
+  .note-row:global(.is-done) .tick svg {
+    stroke-dashoffset: 0;
+  }
+  .note-aim {
+    margin-top: 0.6rem;
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .classic-link {
+    display: none;
+  }
+
+  .noscript {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 300;
+    padding: 1rem;
+    background: var(--color-ink);
+    color: #fff;
+    text-align: center;
+  }
+
+  /* Phones: the desk becomes a home screen that scrolls. */
+  @media (max-width: 767px) {
+    .desk {
+      height: auto;
+      min-height: 100dvh;
+      overflow: visible;
+      padding: 64px 16px 150px;
+    }
+    .menubar .menu-item[href] {
+      display: none;
+    }
+    .logo {
+      font-size: 1.3rem;
+      margin-right: auto;
+    }
+    .clock {
+      display: none;
+    }
+    .wallpaper {
+      position: static;
+    }
+    .icons {
+      position: static;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: auto;
+      gap: 0.75rem 0.25rem;
+      margin-top: 1.75rem;
+    }
+    .slot-answers,
+    .slot-trash {
+      position: static;
+    }
+    .slot-answers .desk-icon {
+      rotate: -4deg;
+    }
+    .note {
+      position: relative;
+      inset: auto;
+      width: auto;
+      margin-top: 2rem;
+      rotate: -0.5deg;
+    }
+    .classic-link {
+      display: block;
+      margin-top: 1.5rem;
+      text-align: center;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+  }
+  :global(html.win-open) {
+    overflow: hidden;
   }
 </style>
+
+<script>
+  // The desk's window manager: open, focus, drag, close, and tick the lesson plan.
+  const KEY = "ziyue-desk";
+  const load = (): { opened?: string[] } => {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || "{}");
+    } catch {
+      return {};
+    }
+  };
+  const save = (patch: object) => {
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ ...load(), ...patch }));
+    } catch {
+      /* private mode: progress isn't remembered */
+    }
+  };
+
+  const wins = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>("[data-win]").forEach((w) => wins.set(w.dataset.win!, w));
+  const openers = new Map<string, HTMLElement | null>();
+  const opened = new Set<string>(load().opened ?? []);
+  const isPhone = () => matchMedia("(max-width: 767px)").matches;
+  let z = 20;
+  let cascade = 0;
+
+  const tick = () => {
+    document.querySelectorAll<HTMLElement>("[data-plan-row]").forEach((row) => {
+      const done = opened.has(row.dataset.planRow!);
+      row.classList.toggle("is-done", done);
+      row.querySelector("[data-done-sr]")!.textContent = done ? " (done)" : "";
+    });
+  };
+  const syncScrollLock = () => {
+    const any = [...wins.values()].some((w) => !w.hidden);
+    document.documentElement.classList.toggle("win-open", any && isPhone());
+  };
+  const front = (w: HTMLElement) => {
+    w.style.zIndex = String(++z);
+  };
+  const place = (w: HTMLElement) => {
+    if (isPhone() || w.dataset.placed) return;
+    const rect = w.getBoundingClientRect();
+    const left = Math.max(12, (innerWidth - rect.width) / 2 - 120 + cascade * 28);
+    const top = Math.max(56, Math.min(84 + cascade * 24, innerHeight - rect.height - 12));
+    w.style.left = `${left}px`;
+    w.style.top = `${top}px`;
+    w.dataset.placed = "1";
+    cascade = (cascade + 1) % 5;
+  };
+
+  const open = (id: string, opener: HTMLElement | null = null) => {
+    const w = wins.get(id);
+    if (!w) return;
+    openers.set(id, opener);
+    w.hidden = false;
+    place(w);
+    front(w);
+    document.querySelectorAll(`[data-open="${id}"]`).forEach((b) => b.setAttribute("aria-expanded", "true"));
+    w.querySelector<HTMLElement>(".win-title")?.focus({ preventScroll: true });
+    opened.add(id);
+    save({ opened: [...opened] });
+    tick();
+    syncScrollLock();
+    window.dispatchEvent(new CustomEvent("desk:open", { detail: { id } }));
+  };
+  const close = (id: string) => {
+    const w = wins.get(id);
+    if (!w || w.hidden) return;
+    w.hidden = true;
+    document.querySelectorAll(`[data-open="${id}"]`).forEach((b) => b.setAttribute("aria-expanded", "false"));
+    openers.get(id)?.focus({ preventScroll: true });
+    syncScrollLock();
+    window.dispatchEvent(new CustomEvent("desk:close", { detail: { id } }));
+  };
+
+  document.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const opener = t.closest<HTMLElement>("[data-open]");
+    if (opener) {
+      open(opener.dataset.open!, opener);
+      return;
+    }
+    const closer = t.closest<HTMLElement>("[data-close]");
+    if (closer) close(closer.closest<HTMLElement>("[data-win]")!.dataset.win!);
+  });
+  document.querySelectorAll("[data-tour-btn]").forEach((b) =>
+    b.addEventListener("click", () => window.dispatchEvent(new CustomEvent("desk:tour"))),
+  );
+  window.addEventListener("desk:request", (e) => open((e as CustomEvent).detail.id));
+
+  // Click anywhere in a window to bring it forward.
+  wins.forEach((w) => w.addEventListener("pointerdown", () => front(w)));
+
+  // Esc closes the window on top.
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const top = [...wins.values()].filter((w) => !w.hidden).sort((a, b) => Number(b.style.zIndex) - Number(a.style.zIndex))[0];
+    if (top) close(top.dataset.win!);
+  });
+
+  // Drag windows by their title bar (not on phones, where they're full-screen sheets).
+  wins.forEach((w) => {
+    const bar = w.querySelector<HTMLElement>("[data-drag]")!;
+    bar.addEventListener("pointerdown", (e) => {
+      if (isPhone() || (e.target as HTMLElement).closest("button")) return;
+      const r = w.getBoundingClientRect();
+      const dx = e.clientX - r.left;
+      const dy = e.clientY - r.top;
+      bar.setPointerCapture(e.pointerId);
+      w.classList.add("is-dragging");
+      const move = (ev: PointerEvent) => {
+        const left = Math.min(innerWidth - 80, Math.max(80 - r.width, ev.clientX - dx));
+        const top = Math.min(innerHeight - 40, Math.max(44, ev.clientY - dy));
+        w.style.left = `${left}px`;
+        w.style.top = `${top}px`;
+      };
+      const up = () => {
+        w.classList.remove("is-dragging");
+        bar.removeEventListener("pointermove", move);
+        bar.removeEventListener("pointerup", up);
+        bar.removeEventListener("pointercancel", up);
+      };
+      bar.addEventListener("pointermove", move);
+      bar.addEventListener("pointerup", up);
+      bar.addEventListener("pointercancel", up);
+    });
+  });
+
+  // London clock in the menu bar.
+  const clock = document.querySelector<HTMLElement>("[data-clock]");
+  const fmt = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" });
+  const tickClock = () => {
+    if (clock) clock.textContent = `London ${fmt.format(new Date())}`;
+  };
+  tickClock();
+  setInterval(tickClock, 20_000);
+
+  document.querySelectorAll("[data-open]").forEach((b) => b.setAttribute("aria-expanded", "false"));
+  tick();
+</script>

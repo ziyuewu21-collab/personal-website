@@ -17,7 +17,8 @@
 3. CV 按钮由 `site.ts` 的 `cvReady` 开关控制,`public/cv.pdf` 存在后才设 true
 4. 样式只用 global.css 里的 tokens 和 Tailwind scale 值(design-system.md 的禁止清单适用)
 5. CELTA 报告的评级只能照抄原件(`src/data/teaching.ts` 顶部注释),不许"四舍五入"成 excellent
-6. 区块 `id` 必须和 `src/data/lesson.ts` 的 stage `id` 一致,否则底部 lesson-plan 条会认错 stage
+6. 区块 `id` 必须和 `src/data/lesson.ts` 的 stage `id` 一致,否则底部 lesson-plan 条会认错 stage(只影响 `/classic`)
+7. 桌面(首页):每个图标的 `id`、`titles` 里的标题、index.astro 里 `<Window id>` 三者必须一致;引导步骤的 `target` 也是这个 id
 
 ## 任务(按顺序,每个做完跑 verify loop 再 commit)
 
@@ -65,3 +66,4 @@
 - 2026-10-23 — v3(看过参考站截图后):整页改为 CELTA lesson plan 概念。新增 `LessonHud`(底部教案条 + plan 弹窗)、`ChatContact`(聊天式联系,mailto)、`HeroIcon`、`AvatarHead`、`src/data/lesson.ts`;Avatar 加 inline 模式(嵌在 hero 句子里,气泡弹出后自动消失);白底 + 等宽标签,Work 改细线列表,Writing 并入 Contact,删 Squiggle。全局组件类移入 `@layer components`(否则 Tailwind 的 `hidden` 等工具类压不过它们)。`npm run build` 通过;1280 + 375 截图无横向滚动、console 无报错;交互脚本验证:5 个 stage 切换 + 导航高亮 + 时钟到 45:00、聊天三步 + mailto 链接正确且访客输入不被当 HTML、plan 弹窗 Esc 关闭。**T1 仍未做**
 - 2026-10-23 — 头像按本人照片重画(透明方框眼镜、深棕中分层次发、项链);同步改聊天头像、教室里的老师、favicon。新 tokens:`--color-hair` / `--color-hair-light` / `--color-gold` / `--color-frame`。照片未存入 repo。build 通过,1280 + 375 无横向滚动、console 无报错
 - 2026-10-23 — 头像按 Ziyue 选定的插画重画:黄色开衫 + 白 T、侧分、耳朵、痣;眨眼成为招牌动作(打招呼、点击、鼠标悬停时眨眼,偶尔随机眨眼代替眨两眼)。聊天头像改为眨眼版 + 淡紫圆底,favicon 同步;教室里的老师穿黄开衫;talk 条配色改为 T = 开衫黄、Ss = 蓝。build 通过,1280 + 375 无横向滚动、console 无报错,交互脚本全过
+- 2026-10-28 — v4 Ziyue's Desk:首页改为桌面(菜单栏、图标、教案便利贴、窗口可拖动、Esc 关闭、手机全屏),原长页面移到 `/classic`。新增 `src/components/desk/`(DeskIcon、Window、Guide、InkField、GuessWord、GrammarAuction、MoonishGame)和 `src/data/desk.ts`;Avatar 加 quiet 模式;Base 加 bare 模式。build 通过;Playwright 跑完整导览 5 步 + 三个游戏全流程 + 彩蛋,1280×720 / 1440×900 / 390 宽截图,无横向滚动、console 无报错。参考站(amandatreutler.com 等)被云端网络策略拦截,按截图和描述实现。**T1 仍未做**

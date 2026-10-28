@@ -1,0 +1,199 @@
+---
+// Guess my word: Ziyue describes a word one clue at a time (eliciting); pick it as
+// soon as you know it. Options are bilingual; the reveal adds pinyin.
+import { guess } from "../../data/desk";
+---
+
+<div class="guess" data-guess data-copy={JSON.stringify(guess)}>
+  <div class="flex items-center justify-between gap-4">
+    <p class="mono text-(--color-ink-soft)" data-label>Guess my word</p>
+    <p class="mono stars" data-stars hidden></p>
+  </div>
+  <p class="mt-2 text-lg font-semibold tracking-tight" aria-live="polite" data-say>{guess.intro}</p>
+  <ol class="clues mt-4" data-clues></ol>
+  <div class="options mt-4" data-options></div>
+  <div class="mt-5 flex flex-wrap items-center gap-3" data-controls>
+    <button type="button" class="btn btn-primary" data-act="start">{guess.start} →</button>
+  </div>
+</div>
+
+<style>
+  .clues :global(li) {
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--color-line);
+    animation: clue-in 220ms ease;
+  }
+  .clues :global(li span:first-child) {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-ink-soft);
+    padding-top: 0.2rem;
+  }
+  @keyframes clue-in {
+    from { opacity: 0; translate: 0 6px; }
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+  .options :global(button) {
+    display: grid;
+    gap: 0.1rem;
+    min-height: 56px;
+    padding: 0.55rem 0.8rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 10px;
+    background: #fff;
+    text-align: left;
+    transition: transform 120ms ease;
+  }
+  .options :global(button:hover:not(:disabled)) {
+    transform: translateY(-2px);
+  }
+  .options :global(button .en) {
+    font-weight: 600;
+  }
+  .options :global(button .zh) {
+    font-size: 0.9rem;
+    color: var(--color-ink-soft);
+  }
+  .options :global(button.is-right) {
+    background: var(--color-cardigan);
+  }
+  .options :global(button:disabled:not(.is-right)) {
+    opacity: 0.4;
+  }
+  .stars {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-cardigan);
+    color: var(--color-ink);
+  }
+</style>
+
+<script>
+  type Option = { en: string; zh: string; py: string };
+  type Word = { answer: string; options: Option[]; clues: string[] };
+
+  document.querySelectorAll<HTMLElement>("[data-guess]").forEach((root) => {
+    const copy = JSON.parse(root.dataset.copy || "{}");
+    const words: Word[] = copy.words;
+    const $say = root.querySelector<HTMLElement>("[data-say]")!;
+    const $clues = root.querySelector<HTMLOListElement>("[data-clues]")!;
+    const $options = root.querySelector<HTMLElement>("[data-options]")!;
+    const $controls = root.querySelector<HTMLElement>("[data-controls]")!;
+    const $stars = root.querySelector<HTMLElement>("[data-stars]")!;
+    const $label = root.querySelector<HTMLElement>("[data-label]")!;
+    const max = words.length * 3;
+    let stars = 0;
+
+    const fill = (tpl: string, o: Option) => tpl.replace("{en}", o.en).replace("{zh}", o.zh).replace("{py}", o.py);
+    const btn = (label: string, act: () => void, style = "primary") => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = `btn btn-${style}`;
+      b.textContent = label;
+      b.addEventListener("click", act);
+      return b;
+    };
+    const showStars = () => {
+      $stars.hidden = false;
+      $stars.textContent = `★ ${stars}`;
+    };
+
+    const play = (i: number) => {
+      if (i >= words.length) return result();
+      const w = words[i];
+      const answer = w.options.find((o) => o.en === w.answer)!;
+      let shown = 0;
+      let over = false;
+      $label.textContent = `Guess my word · ${i + 1} of ${words.length}`;
+      $clues.replaceChildren();
+      const addClue = () => {
+        const li = document.createElement("li");
+        const n = document.createElement("span");
+        n.textContent = `Clue ${shown + 1}`;
+        const t = document.createElement("span");
+        t.textContent = w.clues[shown];
+        li.append(n, t);
+        $clues.append(li);
+        shown++;
+        $say.textContent = shown === 1 ? "What's the word?" : $say.textContent;
+        $controls.replaceChildren(...(shown < w.clues.length ? [btn(copy.another, addClue, "ghost")] : []));
+      };
+      const end = (won: boolean) => {
+        over = true;
+        buttons.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.en === w.answer) b.classList.add("is-right");
+        });
+        if (won) stars += w.clues.length + 1 - shown;
+        showStars();
+        $say.textContent = fill(won ? copy.right : copy.reveal, answer);
+        $controls.replaceChildren(btn(`${i + 1 < words.length ? copy.next : "See my stars"} →`, () => play(i + 1)));
+      };
+      const buttons = w.options.map((o) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.en = o.en;
+        const en = document.createElement("span");
+        en.className = "en";
+        en.textContent = o.en;
+        const zh = document.createElement("span");
+        zh.className = "zh";
+        zh.lang = "zh";
+        zh.textContent = o.zh;
+        b.append(en, zh);
+        b.addEventListener("click", () => {
+          if (over) return;
+          if (o.en === w.answer) return end(true);
+          b.disabled = true;
+          if (shown < w.clues.length) {
+            $say.textContent = copy.wrong;
+            addClue();
+          } else end(false);
+        });
+        return b;
+      });
+      $options.replaceChildren(...buttons);
+      addClue();
+    };
+
+    const result = () => {
+      $label.textContent = "Guess my word · feedback";
+      $say.textContent = copy.result.replace("{stars}", String(stars)).replace("{max}", String(max));
+      const bonus = document.createElement("li");
+      bonus.className = "block";
+      const p = document.createElement("p");
+      p.textContent = copy.bonus;
+      const learned = document.createElement("p");
+      learned.className = "mt-1 font-semibold";
+      learned.lang = "zh";
+      learned.textContent = words
+        .map((w) => w.options.find((o) => o.en === w.answer)!)
+        .map((o) => `${o.zh} ${o.py}`)
+        .join(" · ");
+      const why = document.createElement("p");
+      why.className = "mt-3 text-sm text-(--color-ink-soft)";
+      why.textContent = copy.why;
+      bonus.append(p, learned, why);
+      $clues.replaceChildren(bonus);
+      $options.replaceChildren();
+      $controls.replaceChildren(
+        btn(copy.again, () => {
+          stars = 0;
+          play(0);
+        }, "ghost"),
+      );
+    };
+
+    root.querySelector("[data-act='start']")!.addEventListener("click", () => {
+      stars = 0;
+      showStars();
+      play(0);
+    });
+  });
+</script>

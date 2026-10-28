@@ -1,0 +1,284 @@
+---
+// The desk guide: Ziyue's avatar plus a speech card. It gives one instruction at a time
+// and waits for the visitor to do it, the way a CELTA lesson stages instructions.
+// Talks to the desk through window events: listens for "desk:open" / "desk:close",
+// asks for a window with "desk:request". Copy: src/data/desk.ts (tour).
+import Avatar from "../Avatar.astro";
+import { tour } from "../../data/desk";
+---
+
+<div class="guide" data-guide data-tour={JSON.stringify(tour)}>
+  <div class="guide-card" data-card>
+    <p class="mono guide-step" data-progress hidden></p>
+    <p class="guide-text" aria-live="polite" data-text>{tour.hello}</p>
+    <div class="guide-actions" data-actions>
+      <button type="button" class="btn btn-primary" data-act="start">{tour.start} →</button>
+      <button type="button" class="btn btn-ghost" data-act="skip">{tour.skip}</button>
+    </div>
+    <button type="button" class="guide-min" data-min aria-label="Hide the guide">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 6 L9 6" /></svg>
+    </button>
+  </div>
+  <Avatar quiet class="guide-avatar" />
+</div>
+
+<style>
+  .guide {
+    position: fixed;
+    right: 12px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .guide > * {
+    pointer-events: auto;
+  }
+  .guide :global(.guide-avatar) {
+    width: 132px;
+    flex: none;
+  }
+  .guide-card {
+    position: relative;
+    width: 300px;
+    margin-bottom: 44px;
+    padding: 1rem 1.1rem 1.05rem;
+    border: 1.5px solid var(--color-ink);
+    border-radius: 16px 16px 4px 16px;
+    background: #fff;
+    box-shadow: 0 12px 36px rgb(31 29 26 / 0.16);
+  }
+  .guide-card[hidden] {
+    display: none;
+  }
+  .guide-step {
+    color: var(--color-ink-soft);
+    margin-bottom: 0.35rem;
+  }
+  .guide-text {
+    padding-right: 1.4rem; /* clear of the hide button */
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+  .guide-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+  }
+  .guide-actions :global(.btn) {
+    min-height: 40px;
+    padding: 0.5rem 0.95rem;
+    font-size: 0.9rem;
+  }
+  .guide-actions :global(.link) {
+    min-height: 40px;
+    padding: 0 0.25rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .guide-min {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    color: var(--color-ink-soft);
+  }
+  .guide-min:hover {
+    background: var(--color-paper-alt);
+  }
+  .guide-min svg {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+  @media (max-width: 767px) {
+    .guide {
+      left: 8px;
+      right: 8px;
+    }
+    .guide :global(.guide-avatar) {
+      width: 78px;
+    }
+    .guide-card {
+      flex: 1;
+      width: auto;
+      margin-bottom: 18px;
+      padding: 0.8rem 0.9rem 0.85rem;
+    }
+    .guide-text {
+      font-size: 0.95rem;
+    }
+    .guide-actions {
+      flex-wrap: nowrap;
+      margin-top: 0.6rem;
+    }
+    .guide-actions :global(.btn) {
+      min-height: 40px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+  }
+</style>
+
+<script>
+  type Step = { target: string; say: string; after: string; task?: string };
+  type Tour = {
+    hello: string; welcomeBack: string; start: string; skip: string; next: string; later: string;
+    steps: Step[]; tease: string; restart: string; pokes: string[];
+  };
+
+  const root = document.querySelector<HTMLElement>("[data-guide]");
+  if (root) {
+    const tour: Tour = JSON.parse(root.dataset.tour || "{}");
+    const card = root.querySelector<HTMLElement>("[data-card]")!;
+    const $text = root.querySelector<HTMLElement>("[data-text]")!;
+    const $actions = root.querySelector<HTMLElement>("[data-actions]")!;
+    const $progress = root.querySelector<HTMLElement>("[data-progress]")!;
+    const KEY = "ziyue-desk";
+
+    const load = (): { tourDone?: boolean } => {
+      try {
+        return JSON.parse(localStorage.getItem(KEY) || "{}");
+      } catch {
+        return {};
+      }
+    };
+    const save = (patch: object) => {
+      try {
+        localStorage.setItem(KEY, JSON.stringify({ ...load(), ...patch }));
+      } catch {
+        /* private mode: the tour just forgets */
+      }
+    };
+
+    // step: -1 = hello, 0..n-1 = in the tour, n = finished, "free" = visitor chose to roam
+    let step: number | "free" = -1;
+    let phase: "say" | "after" = "say";
+    let current: { text: string; actions: [string, string, string][]; progress?: string } = { text: "", actions: [] };
+    let pokeTimer = 0;
+    let pokeIndex = 0;
+
+    const highlight = (id: string | null) => {
+      document.querySelectorAll(".is-next").forEach((el) => el.classList.remove("is-next"));
+      if (id) document.querySelectorAll(`[data-open="${id}"]`).forEach((el) => el.classList.add("is-next"));
+    };
+
+    // actions: [act, label, style] where style is "primary" | "ghost" | "link"
+    const render = (text: string, actions: [string, string, string][] = [], progress?: string) => {
+      current = { text, actions, progress };
+      $text.textContent = text;
+      $progress.hidden = !progress;
+      $progress.textContent = progress ?? "";
+      $actions.replaceChildren(
+        ...actions.map(([act, label, style]) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.dataset.act = act;
+          b.className = style === "link" ? "link" : `btn btn-${style}`;
+          b.textContent = label;
+          return b;
+        }),
+      );
+      $actions.hidden = actions.length === 0;
+    };
+
+    const n = tour.steps.length;
+    const hello = () => {
+      step = -1;
+      highlight(null);
+      render(load().tourDone ? tour.welcomeBack : tour.hello, [
+        ["start", `${tour.start} →`, "primary"],
+        ["skip", tour.skip, "ghost"],
+      ]);
+    };
+    const go = (i: number) => {
+      step = i;
+      phase = "say";
+      if (i >= n) return finish();
+      const s = tour.steps[i];
+      highlight(s.target);
+      render(s.say, [["later", tour.later, "link"]], `${i + 1} / ${n}`);
+    };
+    const finish = () => {
+      step = n;
+      highlight(null);
+      save({ tourDone: true });
+      window.setTimeout(() => {
+        if (step !== n) return;
+        highlight("answers");
+        render(tour.tease, [["start", tour.restart, "link"]]);
+      }, 4200);
+    };
+    const request = (id: string) => window.dispatchEvent(new CustomEvent("desk:request", { detail: { id } }));
+
+    $actions.addEventListener("click", (e) => {
+      const act = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-act]")?.dataset.act;
+      if (act === "start") go(0);
+      else if (act === "skip") {
+        step = "free";
+        highlight(null);
+        request("resume");
+        render("Here's my resume. I'll be down here if you'd like the tour.", [["start", `${tour.start} →`, "ghost"]]);
+      } else if (act === "next" || act === "later") go((step as number) + 1);
+    });
+
+    window.addEventListener("desk:open", (e) => {
+      const id = (e as CustomEvent).detail.id as string;
+      if (typeof step !== "number" || step < 0 || step >= n) return;
+      const s = tour.steps[step];
+      if (id !== s.target || phase !== "say") return;
+      phase = "after";
+      highlight(null);
+      if (step === n - 1) {
+        render(s.after, [], `${n} / ${n}`);
+        finish();
+      } else {
+        render(s.after, [["next", `${tour.next} →`, "primary"]], `${step + 1} / ${n}`);
+      }
+    });
+    // Closing the window you were sent to counts as "done, what's next?"
+    window.addEventListener("desk:close", (e) => {
+      const id = (e as CustomEvent).detail.id as string;
+      if (typeof step === "number" && step >= 0 && step < n - 1 && phase === "after" && tour.steps[step].target === id) go(step + 1);
+    });
+    // The classroom step has a task inside it: flip to student-centred.
+    document.addEventListener("click", (e) => {
+      if (!(e.target as HTMLElement).closest('[data-classroom] [data-set="sc"]')) return;
+      if (typeof step !== "number" || step < 0 || step >= n) return;
+      const s = tour.steps[step];
+      if (s.task && phase === "after") render(s.task, [["next", `${tour.next} →`, "primary"]], `${step + 1} / ${n}`);
+    });
+
+    // Poking her: a fun line for a few seconds, then back to the instruction.
+    root.addEventListener("avatar:poke", () => {
+      card.hidden = false;
+      const saved = current;
+      clearTimeout(pokeTimer);
+      $text.textContent = tour.pokes[pokeIndex++ % tour.pokes.length];
+      pokeTimer = window.setTimeout(() => render(saved.text, saved.actions, saved.progress), 3800);
+    });
+    root.querySelector("[data-min]")!.addEventListener("click", () => {
+      card.hidden = true;
+    });
+    // "Tour" in the menu bar restarts from step one.
+    window.addEventListener("desk:tour", () => {
+      card.hidden = false;
+      go(0);
+    });
+
+    hello();
+  }
+</script>

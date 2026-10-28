@@ -1,6 +1,7 @@
 ---
 // Base layout: head metadata, fonts, doodle filters, header, footer, lesson-plan bar.
-// Every page uses this; pass hud={false} on pages that aren't the lesson (404).
+// Every page uses this; pass hud={false} on pages that aren't the lesson (404), and
+// bare to drop header, footer and lesson bar entirely (the desk homepage).
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
@@ -11,9 +12,10 @@ interface Props {
   title?: string;
   description?: string;
   hud?: boolean;
+  bare?: boolean;
 }
 
-const { title = site.title, description = site.description, hud = true } = Astro.props;
+const { title = site.title, description = site.description, hud = true, bare = false } = Astro.props;
 ---
 
 <html lang="en">
@@ -53,12 +55,12 @@ const { title = site.title, description = site.description, hud = true } = Astro
         }
       </defs>
     </svg>
-    <Header />
+    {!bare && <Header />}
     <main id="main" class="flex-1">
       <slot />
     </main>
-    <Footer />
-    {hud && <LessonHud />}
+    {!bare && <Footer />}
+    {!bare && hud && <LessonHud />}
   </body>
 </html>
 

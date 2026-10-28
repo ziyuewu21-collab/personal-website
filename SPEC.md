@@ -83,3 +83,25 @@ date: 2026-07-06
 **待 Ziyue 决定**:
 - [ ] 是否做 Ryan 式"稿纸/田字格"拼贴 hero(需要你的中文名 + 人生片段插画,插画需另外生成)
 - [ ] v2 留下的文案/长相确认项仍有效(见上)
+
+---
+
+## v4 — Ziyue's Desk(2026-10-28)
+
+**为什么**:Ziyue 看了 Amanda Treutler 的桌面式网站、rai.codes 的鼠标流体、kirbs 的小游戏,核心诉求是"我作为引导者,无痛地一步一步引导 HR 的好奇心"。
+
+**首页 `/` = 桌面**;原长页面保留在 `/classic`(给喜欢滚动的人,菜单栏和简历窗口都有入口)。
+- **引导者**:右下角眨眼头像 + 对话卡,一次只给一条指令,等对方做完再给下一条(CELTA 的 instruct → do)。第 2 步里有个"任务":亲手把教室切到 student-centred。全程可跳过,"Just the resume" 一键直达简历
+- **便利贴 = 教案**:5 行,打开对应窗口就打勾;点任意一行直接跳转(解决 Ritik's Desk "隐藏内容被跳过"的问题)
+- **背景**:多语种字母场,随鼠标放大、变深、被推开(语言学习版的 rai.codes / kirbs 背景),喜茶式黑白线稿 + 开衫黄单一强调色
+- **彩蛋**:`answer_key.pdf`(学生永远拿不到答案:guided discovery)、`Trash`(红笔、单词表、一次给六条指令)
+- **Classroom games 文件夹**(一个图标,三个 30 秒小游戏,每个对应一个 CELTA 技巧):
+  - Guess my word:描述猜词 = eliciting;中英双语选项,揭晓时给拼音
+  - Grammar Auction:来自 Ziyue 的 CP 笔记(grammar gamble 改叫 auction,因为赌博在部分课堂是禁忌);第一句老师示范,一次只做一个决定,反馈留到最后用红笔,结尾是 freer practice "If I hire Ziyue, ..."
+  - Moonish:学三个自造词(一个被告知、两个靠手势自己猜),体验论文的 active vs passive
+- **手机**:桌面变成可滚动的主屏,窗口全屏打开
+
+**待 Ziyue 确认**:
+- [ ] "中英双语"指的是整站切换(EN / 中文),还是只要游戏双语(已做)
+- [ ] `src/data/desk.ts` 里引导台词、彩蛋、游戏文案用她自己的话改
+- [ ] 简历窗口的 UCL 学位全称和日期(`education`,有 TODO)
