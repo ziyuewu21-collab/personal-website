@@ -58,3 +58,4 @@
 
 - 2026-07-06 — 架构 + v1 全部区块 + 验证 + 首次 commit(强模型完成)
 - 2026-07-22 — MyTurn 卡片更新为 shipped + live/demo 外链 + 移到第一张;`Project` 类型新增可选 `links[]`,卡片模板按"有就画、没有就隐藏"渲染(沿用架构规则 #2)。`npm run build` 通过;dev server 1280px + 375px 验证通过(无横向滚动,链接可点 41px 高),console 无报错;commit `8a49414`。**T1 仍未做——站点尚未上线,无 git remote**
+- 2026-11-07 — 新增项目卡片「Critical reading & writing toolkit」(第二张,GitHub 外链);事实来自 Ziyue 本人 + 公开 repo 的 SKILL.md,待同步进 master-cv.md。`npm run build` 通过;375px / 1280px 无横向滚动

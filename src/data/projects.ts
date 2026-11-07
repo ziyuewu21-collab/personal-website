@@ -30,6 +30,23 @@ export const projects: Project[] = [
     ],
   },
   {
+    // Facts from Ziyue (2026-11) and the public repo's SKILL.md files — add to master-cv.md too.
+    title: "Critical reading & writing toolkit — AI that asks instead of answers",
+    role: "Designer — diagnosis, learning design and prompt design; open source",
+    description:
+      "Built from my own marked work: seven assignments across a wide grade range, traced to five recurring ways I lost marks. Two shaped the design — claims that outran the evidence, and a critical review that listed weaknesses but no strengths. Four tools cover choosing sources, close reading, drafting and self-review, on one rule: automate the searching and formatting, leave the reading, judging and writing to the student. The reading tool gives only the page and the opening words of a passage, never its content; every paper needs one weakness and one strength, each backed by evidence.",
+    result:
+      "Every essay I have written with the toolkit has scored 70+ (First-class / Distinction in UK marking). None of the tools summarises a paper, writes a paragraph or rewrites a draft.",
+    tags: ["Critical thinking", "Academic writing", "AI in learning"],
+    status: "shipped",
+    links: [
+      {
+        label: "GitHub",
+        url: "https://github.com/ziyuewu21-collab/critical-thinking-academic-read-write-review",
+      },
+    ],
+  },
+  {
     title: "AI story-based vocabulary product",
     role: "PM intern — owned the company's first consumer product, reporting to the CEO",
     description:
